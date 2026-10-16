@@ -6,7 +6,7 @@ echo Oyun takildigi ekranda acik kalsin. Kayit aliniyor...
 %PY% araclar\emulator.py kayit || (pause & exit /b 1)
 git add -f teshis.txt
 git commit -m "Anlik kayit" >nul
-git pull --no-edit >nul 2>nul
+git pull --no-rebase --no-edit >nul 2>nul
 git push || (echo Gonderilemedi, ekran goruntusu at. & pause & exit /b 1)
 echo.
 echo TAMAM. Claude a "kayit gonderdim" yaz.

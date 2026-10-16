@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-git pull
+git pull --no-rebase --no-edit
 pause
