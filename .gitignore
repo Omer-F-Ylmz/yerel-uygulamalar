@@ -13,3 +13,7 @@ __pycache__/
 ben10/indir/
 ben10/fp_yolu.txt
 ben10/ilk_acilis_tamam
+
+# Ollama oturumlarinin urettikleri
+lua_cozulmus/
+out.txt
