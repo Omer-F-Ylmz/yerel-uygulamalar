@@ -1,4 +1,10 @@
-"""Orijinal OBB'den, oyunu yerel sunucuya yönlendiren yamalı bir OBB üretir.
+"""Oyunu yerel sunucuya yönlendiren yamalı Lua dosyalarını üretir.
+
+ÖNEMLİ: OBB'nin kendisi değiştirilmemeli. Unity, OBB'nin son 65558 baytının MD5'ini
+APK'daki settings.xml kimliğiyle karşılaştırıyor; değişen OBB reddediliyor. Bunun yerine
+yamalı Lua'lar oyunun üzerine yazma klasörüne konur (LuaScriptMgr.LoaderSuperStar önce
+<persistentDataPath>!/assets/Lua/<ad>.lua dosyasına bakar):
+  /sdcard/Android/data/com.seastar.gpplay.streetball/files!/assets/Lua/
 
 Değişen Lua betikleri (OBB içinde XOR 0xFF ile şifreli):
   - XmlReadInAdvanceManager.lua: HTTPS'i ve Seastar SDK girişini kapatır.
@@ -67,7 +73,21 @@ def xor(veri):
     return bytes(b ^ 0xFF for b in veri)
 
 
+def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
+    """{'Lua/...lua': şifreli bayt} sözlüğü döner; OBB'ye dokunmaz."""
+    cikti = {}
+    with zipfile.ZipFile(kaynak) as giris:
+        metin = xor(giris.read(XML_YOLU)).decode("utf-8")
+        if XML_CAPA not in metin:
+            raise SystemExit("XmlReadInAdvanceManager.lua beklenen satiri icermiyor")
+        cikti[XML_YOLU] = xor(metin.replace(XML_CAPA, XML_CAPA + XML_EK, 1).encode("utf-8"))
+        cikti[CDN_YOLU] = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
+        cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
+    return {ad[len("assets/"):]: veri for ad, veri in cikti.items()}
+
+
 def yamala(kaynak, hedef, ip, port):
+    """Eski yöntem: yamalı OBB yazar. Unity kimlik kontrolü yüzünden cihazda KULLANILMAZ."""
     with zipfile.ZipFile(kaynak) as giris, zipfile.ZipFile(hedef, "w") as cikis:
         bulunan = set()
         for bilgi in giris.infolist():
@@ -94,7 +114,14 @@ def yamala(kaynak, hedef, ip, port):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
+    # Kullanım: python obb_yamala.py <orijinal.obb> <cikis klasoru> [ip] [port]
+    import os
+    if len(sys.argv) < 3:
         raise SystemExit(__doc__)
-    yamala(sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]) if len(sys.argv) > 4 else 8881)
-    print("Yamali OBB yazildi:", sys.argv[2])
+    ip = sys.argv[3] if len(sys.argv) > 3 else "127.0.0.1"
+    port = int(sys.argv[4]) if len(sys.argv) > 4 else 8881
+    for ad, veri in lua_yamalari(sys.argv[1], ip, port).items():
+        yol = os.path.join(sys.argv[2], ad)
+        os.makedirs(os.path.dirname(yol), exist_ok=True)
+        open(yol, "wb").write(veri)
+        print("yazildi:", yol)

@@ -10,10 +10,12 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAKET = "com.seastar.gpplay.streetball"
 PORT = 8881
+YAMA_KLASORU = "/sdcard/Android/data/%s/files!/assets/" % PAKET
 ADB_ADAYLARI = [
     r"C:\LDPlayer\LDPlayer9\adb.exe",
     r"C:\LDPlayer\LDPlayer4.0\adb.exe",
@@ -82,7 +84,7 @@ def dosya_bul(desen, haric=None):
 
 def kur():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from obb_yamala import yamala
+    from obb_yamala import lua_yamalari
 
     apk = os.path.join(KOK, "apk", PAKET + ".apk")
     if not os.path.exists(apk):
@@ -91,18 +93,27 @@ def kur():
     if not apk or not obb:
         hata("apk klasorunde 1.1.8 APK'si veya OBB bulunamadi.")
     obb_adi = os.path.basename(obb)
-    yamali = os.path.join(KOK, "apk", "yamali_" + obb_adi)
-    print("OBB yamalaniyor (bir dakika surebilir)...")
-    yamala(obb, yamali, "127.0.0.1", PORT)
 
     adb_yolu = adb_bul()
     cihaz = cihaz_sec(adb_yolu)
+    a = lambda *x, kontrol=True: adb(adb_yolu, "-s", cihaz, *x, kontrol=kontrol)
     print("APK kuruluyor...")
-    adb(adb_yolu, "-s", cihaz, "install", "-r", apk)
+    a("install", "-r", apk)
+    # OBB orijinal kalmali: Unity dosya sonunun MD5'ini APK kimligiyle karsilastiriyor.
     hedef = "/sdcard/Android/obb/%s/" % PAKET
-    adb(adb_yolu, "-s", cihaz, "shell", "mkdir", "-p", hedef)
-    print("Yamali OBB emulatore kopyalaniyor...")
-    adb(adb_yolu, "-s", cihaz, "push", yamali, hedef + obb_adi)
+    a("shell", "mkdir -p '%s'" % hedef)
+    print("Orijinal OBB emulatore kopyalaniyor (bir dakika surebilir)...")
+    a("push", obb, hedef + obb_adi)
+    print("Yerel sunucu yamalari kopyalaniyor...")
+    with tempfile.TemporaryDirectory() as gecici:
+        for ad, veri in lua_yamalari(obb, "127.0.0.1", PORT).items():
+            yerel = os.path.join(gecici, ad.replace("/", "_"))
+            with open(yerel, "wb") as f:
+                f.write(veri)
+            uzak = YAMA_KLASORU + ad
+            a("shell", "mkdir -p '%s'" % uzak.rsplit("/", 1)[0])
+            a("push", yerel, uzak)
+            print("  ", ad)
     print("\nKurulum tamam. Artik baslat.bat ile sunucuyu acip oyunu baslatabilirsin.")
 
 
@@ -130,6 +141,7 @@ def teshis():
         "== obb klasoru:\n" + a("shell", "ls", "-la", "/sdcard/Android/obb/%s/" % PAKET),
         "== paket:\n" + a("shell", "dumpsys", "package", PAKET),
         "== reverse:\n" + a("reverse", "--list"),
+        "== veri klasoru:\n" + a("shell", "ls -laR '/sdcard/Android/data/%s/' | head -80" % PAKET),
         "== logcat:\n" + a("logcat", "-d", "-v", "time"),
     ]
     yol = os.path.join(KOK, "teshis.txt")
