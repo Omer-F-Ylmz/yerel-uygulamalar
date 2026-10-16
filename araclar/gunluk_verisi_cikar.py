@@ -63,11 +63,18 @@ def tablolari_oku(kaynak):
     return t
 
 
+def sayi(x):
+    try:
+        return int(x)
+    except (TypeError, ValueError):
+        return 0
+
+
 def derle(t):
     esya_var = {i["id"] for i in t["ItemBaseInfo"]}
     gorevler = {}
     for m in t["MissionBaseInfo"]:
-        gorevler[m["id"]] = [m["missionType"], m["condition1"], m["rewardId"]]
+        gorevler[m["id"]] = [m["missionType"], m["condition1"], m["rewardId"], sayi(m["preShowID"])]
     iki_hafta = sorted({r["missionId"] for r in t["ActivityTwoWeekMission"] if r["missionId"] in gorevler})
     odul_bilgi = t["ActivityTwoWeekRewardInfo"][0]
 

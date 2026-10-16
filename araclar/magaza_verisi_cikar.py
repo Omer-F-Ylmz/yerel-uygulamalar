@@ -117,7 +117,7 @@ def derle(k):
     for r in t("PlayerShopManualPropertyConfig"):
         kara_borsa["yenileme"].setdefault(r["shopTab"], {})[r["num"]] = r["costCoin"]
 
-    kisitli = {r["index"]: [r["droplist_id"], r["cost_gem"], r["limit"], r["vip_level"]]
+    kisitli = {r["index"]: [r["droplist_id"], r["cost_gem"], r["limit"], r["vip_level"], r["day"]]
                for r in t("data_restriction_product")}
 
     takas = {}
