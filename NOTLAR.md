@@ -14,6 +14,12 @@
 - HTTP: `http://{host}:{port}/login`, `/get_user_info`, `/client`, `/change_team`, `/op_bag`,
   `/player_advance`, `/player_break`, `/player_dress_equip`, `/player_skill_uplevel`, `/gm`, `/gm_tool`
 - TCP: `SocketClientNew` / `LuaTcpManager`, paketler Lua tarafında `SplitPackage` ile çözülüyor.
+- **Asıl kullanılan istek biçimi** (yerel sunucu bunu karşılıyor, bkz. `sunucu/cekirdek.py`): HTTP POST form
+  verisi `session_id, proto, proto_sub, param (JSON), sign`; `sign = md5(veri + "!1AQaq#3")`. Örnek: `7/705`
+  = proto 7, proto_sub 705 (maç başlat). İstemci cevabı yalnızca metinde `"result":0` geçiyorsa başarılı
+  sayar (sıkışık JSON, `null` yok); hata `{"result":-1,"error":"HintXxx"}`. İşleyiciler `sunucu/sunucu.py`
+  ve `sunucu/*.py` içindeki `kur(yon, durum)` fonksiyonlarında `yon.proto(ana, alt)` ile kaydediliyor.
+- İstemcideki Lua hataları `999/1` isteğiyle sunucuya gelir, `sunucu/kayit/istemci_hatalari.txt`'ye yazılır.
 - Kodda geçen eski adresler: `139.224.32.217`, `192.168.80.11`, `192.168.88.15`, `localhost:6688`.
 
 ## OBB doğrulaması ve yama yöntemi
