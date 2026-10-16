@@ -223,6 +223,8 @@ class GelisimTesti(unittest.TestCase):
         data = self.op("/player_equip", "strength", self.pid, 1, 1)  # gidebildiği yere kadar
         tavan = gelisim.guc_tavani(0, self.k["takim"]["seviye"])
         self.assertEqual(data["equip"][0]["lv"], tavan)
+        data = self.op("/player_equip", "strength", self.pid, 1, 2)  # gruptaki üç yuva
+        self.assertEqual([e["lv"] for e in data["equip"]], [tavan] * 3 + [5] * 3)
         data = self.op("/player_equip", "break", self.pid, 2, 2)  # ilk üç yuva
         self.assertEqual([e["blv"] for e in data["equip"]], [1, 1, 1, 0, 0, 0])
         data = self.op("/player_equip", "break", self.pid, 5, 1)

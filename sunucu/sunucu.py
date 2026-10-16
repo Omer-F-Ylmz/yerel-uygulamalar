@@ -443,6 +443,10 @@ import esya  # noqa: E402
 
 esya.kur(yon, durum)
 
+import gelisim  # noqa: E402
+
+gelisim.kur(yon, durum)
+
 
 # ---------------------------------------------------------------- başlatma
 
