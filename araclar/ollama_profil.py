@@ -51,6 +51,11 @@ def kopyala(kaynak, hedef, sayac, ziyaret=None):
     gercek = os.path.realpath(kaynak)
     if gercek in ziyaret:  # kendi atasını gösteren bağlantı: sonsuz döngü olurdu
         return
+    if os.path.islink(hedef):  # önceki yarım denemeden kalan bağlantı: gerçek klasörle değiştir
+        try:
+            os.unlink(hedef)
+        except OSError:
+            os.rmdir(hedef)
     os.makedirs(hedef, exist_ok=True)
     try:
         girdiler = os.listdir(gercek)
