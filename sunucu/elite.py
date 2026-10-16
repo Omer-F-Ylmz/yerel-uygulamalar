@@ -1,7 +1,7 @@
 """Elite (Street Fight) şehir listesi ve maç verisi yükleyici; sunucu.py ile mac.py'nin ortak yardımcısı.
 
 Kayıtta tutulanlar (durum.veri):
-  elite          {"<battleId>": yıldız}         oynanmamış maç VARSAYILAN_YILDIZ ile gösterilir
+  elite          {"<battleId>": yıldız}         yalnızca kazanılmış maçlar; şehirler sırayla açılır
   elite_sandik   {"mac": [battleId, ...],        açılmış maç sandıkları (battle_status 2)
                   "yildiz": {"<stageId>": [star_count, ...]}}   açılmış yıldız sandıkları (status 1)
 """
@@ -11,7 +11,6 @@ import os
 from durum import VERI
 
 KOK = os.path.dirname(os.path.abspath(__file__))
-VARSAYILAN_YILDIZ = 3
 
 
 def _int_anahtar(d):
@@ -40,31 +39,49 @@ def sandiklar(k):
 
 
 def mac_yildizi(k, battle_id):
-    return int(k.get("elite", {}).get(str(battle_id), VARSAYILAN_YILDIZ))
+    """Kazanılmış maçın yıldızı; hiç kazanılmamışsa 0."""
+    return int(k.get("elite", {}).get(str(battle_id), 0))
 
 
 def elite_json(k):
-    """Tüm şehirler açık ve tamamlanmış, her maç tekrar oynanabilir, sınırsız deneme."""
-    k.setdefault("elite", {})
+    """Şehirler sırayla açılır: kazanılan maçlar 1, ilk kazanılmamış maç oynanabilir (0),
+    önceki şehir bitmeden sonraki şehir kapalıdır. Panelden hepsi açılabilir."""
+    kazanilan = k.setdefault("elite", {})
     acilan = sandiklar(k)
+    acilan_yildiz_tum = acilan["yildiz"]
     acilan_mac = set(acilan["mac"])
     sehirler = []
-    for e in VERI["elite"]:
+    pi_s, pi_b = 0, 0
+    onceki_bitti = True
+    for e in sorted(VERI["elite"], key=lambda x: x["id"]):
         maclar = []
         for b in e["maclar"]:
-            durum_ = 2 if b in acilan_mac else 1
-            maclar.append({"battle_id": b, "star": mac_yildizi(k, b), "count": 0, "supply_times": 0,
-                           "battle_status": durum_})
-        acilan_yildiz = set(acilan["yildiz"].get(str(e["id"]), []))
+            temiz = str(b) in kazanilan
+            maclar.append({"battle_id": b, "star": mac_yildizi(k, b) if temiz else 0, "count": 0,
+                           "supply_times": 0,
+                           "battle_status": (2 if b in acilan_mac else 1) if temiz else 0})
+        bitti = all(m["battle_status"] for m in maclar)
+        if not onceki_bitti:
+            durum_ = 0
+        elif bitti:
+            durum_ = 2
+        else:
+            durum_ = 1
+            pi_s = e["id"]
+            pi_b = next(m["battle_id"] for m in maclar if not m["battle_status"])
+        onceki_bitti = onceki_bitti and bitti
+        toplam = sum(m["star"] for m in maclar)
+        acilan_yildiz = set(acilan_yildiz_tum.get(str(e["id"]), []))
         sehirler.append({
             "stage_id": e["id"],
-            "stage_status": 2,
-            "star_all": sum(m["star"] for m in maclar),
-            "chests_list": [{"star_count": s, "status": 1 if s in acilan_yildiz else 0} for s in e["sandiklar"]],
-            "stage_status_ex": 2,
+            "stage_status": durum_,
+            "star_all": toplam,
+            "chests_list": [{"star_count": s, "status": 2 if s in acilan_yildiz else (1 if toplam >= s else 0)}
+                            for s in e["sandiklar"]],
+            "stage_status_ex": durum_,
             "battle_list": maclar,
         })
-    return {"pi_s": 0, "pi_b": 0, "stage_list": sehirler}
+    return {"pi_s": pi_s, "pi_b": pi_b, "stage_list": sehirler}
 
 
 def elite_yildiz_json(k):

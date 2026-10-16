@@ -88,6 +88,8 @@ def kur(yon, durum):
                     return {"hata": "boyle bir esya yok"}
                 k["canta"][str(eid)] = _sayi(veri.get("adet", 0), 0, 99999)
             elif ad == "elite_full":
+                k["elite"] = {str(b): 3 for e in VERI["elite"] for b in e["maclar"]}
+            elif ad == "elite_sifirla":
                 k["elite"] = {}
             elif ad == "sifirla":
                 durum.sifirla()

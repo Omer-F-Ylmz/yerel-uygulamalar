@@ -9,7 +9,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from cekirdek import Yonlendirici, json_yaz  # noqa: E402
-from durum import Durum  # noqa: E402
+from durum import Durum, VERI as DURUM_VERI  # noqa: E402
 import mac  # noqa: E402
 
 # lua/MatchLoader.lua:32 tutorial_data'nın anahtar yapısı
@@ -119,11 +119,14 @@ class MacTesti(unittest.TestCase):
 
     def test_elite_sandik_ve_supurme(self):
         bid = next(iter(mac.MV["elite_mac_sandik"]))
+        with self.durum.kilit:  # sandık yalnızca kazanılmış maçta açılır; 1. şehri bitmiş say
+            for b in sorted(DURUM_VERI["elite"], key=lambda e: e["id"])[0]["maclar"]:
+                self.durum.veri["elite"][str(b)] = 3
         data = self.cagir(16, 1606, {"stage": 0, "battle": bid})
         mac_ = [b for s in data["elite"]["stage_list"] for b in s["battle_list"] if b["battle_id"] == bid][0]
         self.assertEqual(mac_["battle_status"], 2)
         data = self.cagir(16, 1607, {"stage": 0, "star": 5})
-        self.assertEqual(data["elite"]["stage_list"][0]["chests_list"][0]["status"], 1)
+        self.assertEqual(data["elite"]["stage_list"][0]["chests_list"][0]["status"], 2)
         data = self.cagir(16, 1605, {"stage": 0, "battle": 16000101, "count": 5})
         self.assertEqual(len(data["resultlist"]), 5)
         self.assertIn("player_exp_new", data["elite"]["battle_result"])

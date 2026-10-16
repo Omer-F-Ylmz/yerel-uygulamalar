@@ -94,7 +94,8 @@
   <section>
     <h2>Diğer</h2>
     <div class="satir" style="margin-top:0">
-      <button class="ikincil" onclick="islem({islem:'elite_full'}, 'Tüm bölümler 3 yıldız')">Tüm bölümleri 3 yıldız yap</button>
+      <button class="ikincil" onclick="islem({islem:'elite_full'}, 'Tüm bölümler açıldı, 3 yıldız')">Tüm bölümleri aç (3 yıldız)</button>
+      <button class="ikincil" onclick="if(confirm('Bölüm ilerlemesi sıfırlansın mı? 1. bölümden başlarsın.')) islem({islem:'elite_sifirla'}, 'Bölümler sıfırlandı')">Bölümleri sıfırla</button>
       <a href="/panel/api/yedek" download="kayit-yedek.json"><button class="ikincil">Kaydı yedek olarak indir</button></a>
       <button class="tehlike" onclick="sifirla()">Kaydı sıfırla</button>
     </div>
