@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streetball Paneli</title>
+<style>
+  :root {
+    --zemin: #f4f1ec; --kart: #ffffff; --yazi: #1d1b18; --soluk: #6b655c; --cizgi: #e2ddd4;
+    --vurgu: #e2561f; --vurgu-yazi: #ffffff; --iyi: #2f7d4f; --kotu: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --zemin: #151412; --kart: #1f1d1a; --yazi: #ece7df; --soluk: #a39b8f; --cizgi: #34312c;
+      --vurgu: #f0743e; --vurgu-yazi: #151412; --iyi: #6cc28f; --kotu: #f0857b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--zemin); color: var(--yazi);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 20px 16px 8px; max-width: 1100px; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; color: var(--soluk); }
+  main { max-width: 1100px; margin: 0 auto; padding: 8px 16px 48px; display: grid; gap: 16px; }
+  section { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px; padding: 16px; }
+  h2 { margin: 0 0 12px; font-size: 16px; }
+  .izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  label { display: grid; gap: 4px; font-size: 13px; color: var(--soluk); }
+  input, select { width: 100%; padding: 8px 10px; border: 1px solid var(--cizgi); border-radius: 8px;
+                  background: var(--zemin); color: var(--yazi); font: inherit; }
+  button { padding: 8px 14px; border: 0; border-radius: 8px; background: var(--vurgu); color: var(--vurgu-yazi);
+           font: inherit; font-weight: 600; cursor: pointer; }
+  button.ikincil { background: transparent; color: var(--yazi); border: 1px solid var(--cizgi); font-weight: 500; }
+  button.tehlike { background: var(--kotu); color: #fff; }
+  .satir { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .tablo-kap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--cizgi); text-align: left; white-space: nowrap; }
+  th { color: var(--soluk); font-weight: 500; font-size: 12px; }
+  td input { width: 72px; padding: 4px 6px; }
+  .soluk { color: var(--soluk); }
+  #bildirim { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); padding: 10px 16px;
+              border-radius: 8px; background: var(--yazi); color: var(--zemin); opacity: 0; transition: opacity .2s;
+              pointer-events: none; max-width: calc(100% - 32px); }
+  #bildirim.goster { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Streetball Hero · Yönetim paneli</h1>
+  <p>Değişiklikler kayda hemen yazılır. Oyunda görmek için oyundan çıkıp tekrar giriş yap.</p>
+</header>
+<main>
+  <section>
+    <h2>Kaynaklar ve takım</h2>
+    <div class="izgara" id="kaynaklar"></div>
+    <div class="satir">
+      <button onclick="kaynakKaydet()">Kaydet</button>
+      <button class="ikincil" onclick="sinirsiz()">Hepsini sınırsız yap</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kadro (sahadaki 3 oyuncu)</h2>
+    <div class="izgara" id="kadro"></div>
+    <div class="satir"><button onclick="kadroKaydet()">Kadroyu kaydet</button></div>
+  </section>
+
+  <section>
+    <h2>Oyuncular</h2>
+    <div class="satir" style="margin-top:0;margin-bottom:12px">
+      <button onclick="islem({islem:'hepsini_fulle'}, 'Tüm oyuncular açıldı ve fullendi')">Hepsini aç ve fulle</button>
+      <span class="soluk" id="oyuncu-sinir"></span>
+    </div>
+    <div class="tablo-kap"><table>
+      <thead><tr><th>Oyuncu</th><th>Pozisyon</th><th>Seviye</th><th>Yıldız</th><th>Kalite</th>
+        <th>Beceri</th><th>Antrenman</th><th></th></tr></thead>
+      <tbody id="oyuncular"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Çanta</h2>
+    <div class="satir" style="margin-top:0;margin-bottom:12px">
+      <input id="esya-ara" placeholder="Eşya ara (ad veya numara)" style="max-width:280px" oninput="esyalariCiz()">
+      <button onclick="islem({islem:'esyalari_doldur', adet:999}, 'Tüm eşyalar 999 yapıldı')">Tüm eşyaları 999 yap</button>
+    </div>
+    <div class="tablo-kap"><table>
+      <thead><tr><th>No</th><th>Eşya</th><th>Adet</th><th></th></tr></thead>
+      <tbody id="esyalar"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Diğer</h2>
+    <div class="satir" style="margin-top:0">
+      <button class="ikincil" onclick="islem({islem:'elite_full'}, 'Tüm bölümler 3 yıldız')">Tüm bölümleri 3 yıldız yap</button>
+      <a href="/panel/api/yedek" download="kayit-yedek.json"><button class="ikincil">Kaydı yedek olarak indir</button></a>
+      <button class="tehlike" onclick="sifirla()">Kaydı sıfırla</button>
+    </div>
+  </section>
+</main>
+<div id="bildirim"></div>
+<script>
+let D = null;
+const ADLAR = {gold:'Altın', gem:'Elmas', star:'Yıldız parası', stamina:'Enerji', vip:'VIP seviyesi', rm_ticket:'Bilet'};
+
+function bildir(metin) {
+  const b = document.getElementById('bildirim');
+  b.textContent = metin; b.classList.add('goster');
+  clearTimeout(bildir.t); bildir.t = setTimeout(() => b.classList.remove('goster'), 2200);
+}
+function kacis(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function yukle() {
+  D = await (await fetch('/panel/api/durum')).json();
+  ciz();
+}
+async function islem(veri, mesaj) {
+  const c = await (await fetch('/panel/api/islem', {method:'POST', body: JSON.stringify(veri)})).json();
+  if (c.hata) { bildir('Hata: ' + c.hata); return; }
+  bildir(mesaj || 'Kaydedildi'); await yukle();
+}
+
+function ciz() {
+  const k = D.kaynak;
+  document.getElementById('kaynaklar').innerHTML =
+    Object.keys(ADLAR).map(a => `<label>${ADLAR[a]}<input id="k-${a}" type="number" value="${k[a]}"></label>`).join('') +
+    `<label>Takım seviyesi<input id="k-seviye" type="number" min="1" max="${D.sinir.takim_seviye}" value="${D.takim.seviye}"></label>` +
+    `<label>Takım adı<input id="k-ad" value="${kacis(D.takim.ad)}"></label>`;
+
+  const sahip = D.oyuncular.filter(o => o.sahip);
+  document.getElementById('kadro').innerHTML = [1,2,3].map((p, i) => {
+    const sec = (D.secili.find(s => s.pos === p) || {}).id;
+    return `<label>${['Pivot','Skorer','Oyun kurucu'][i]} (${p}. pozisyon)<select id="kadro-${p}">` +
+      sahip.map(o => `<option value="${o.id}" ${o.id === sec ? 'selected' : ''}>${kacis(o.ad)} · ${o.pozisyon}</option>`).join('') +
+      `</select></label>`;
+  }).join('');
+
+  const s = D.sinir;
+  document.getElementById('oyuncu-sinir').textContent =
+    `Üst sınırlar: seviye ${s.oyuncu_seviye}, yıldız ${s.yildiz}, kalite ${s.renk}, beceri ${s.beceri_seviye}, antrenman ${s.antrenman}`;
+  document.getElementById('oyuncular').innerHTML = D.oyuncular.map(o => {
+    if (!o.sahip) return `<tr><td>${kacis(o.ad)} <span class="soluk">#${o.id}</span></td><td>${o.pozisyon}</td>
+      <td colspan="5" class="soluk">Sende yok</td><td><button class="ikincil" onclick="oyuncuAc(${o.id})">Aç</button></td></tr>`;
+    const g = (alan, ust) => `<input type="number" id="o-${o.id}-${alan}" min="0" max="${ust}" value="${o[alan]}">`;
+    return `<tr><td>${kacis(o.ad)} <span class="soluk">#${o.id}</span></td><td>${o.pozisyon}</td>
+      <td>${g('level', s.oyuncu_seviye)}</td><td>${g('break_level', s.yildiz)}</td><td>${g('color', s.renk)}</td>
+      <td>${g('beceri', s.beceri_seviye)}</td><td>${g('train', s.antrenman)}</td>
+      <td><button onclick="oyuncuKaydet(${o.id})">Kaydet</button>
+          <button class="ikincil" onclick="oyuncuFulle(${o.id})">Fulle</button>
+          <button class="ikincil" onclick="islem({islem:'oyuncu_kaldir', id:${o.id}}, 'Oyuncu kaldırıldı')">Kaldır</button></td></tr>`;
+  }).join('');
+  esyalariCiz();
+}
+
+function esyalariCiz() {
+  const ara = document.getElementById('esya-ara').value.trim().toLowerCase();
+  const liste = D.esyalar.filter(e => !ara || String(e.id).includes(ara) || e.ad.toLowerCase().includes(ara)).slice(0, 150);
+  document.getElementById('esyalar').innerHTML = liste.map(e =>
+    `<tr><td class="soluk">${e.id}</td><td>${kacis(e.ad)}</td>
+     <td><input type="number" id="e-${e.id}" min="0" value="${e.adet}"></td>
+     <td><button class="ikincil" onclick="esyaKaydet(${e.id})">Kaydet</button></td></tr>`).join('') +
+    (liste.length === 150 ? '<tr><td colspan="4" class="soluk">İlk 150 sonuç gösteriliyor, aramayı daralt.</td></tr>' : '');
+}
+
+function kaynakKaydet() {
+  const v = {islem:'kaynak', takim_seviye: +document.getElementById('k-seviye').value,
+             takim_adi: document.getElementById('k-ad').value};
+  for (const a of Object.keys(ADLAR)) v[a] = +document.getElementById('k-' + a).value;
+  islem(v, 'Kaynaklar kaydedildi');
+}
+function sinirsiz() {
+  islem({islem:'kaynak', gold:99999999, gem:99999999, star:99999999, stamina:9999, vip:15, rm_ticket:99,
+         takim_seviye: D.sinir.takim_seviye}, 'Her şey sınırsız');
+}
+function kadroKaydet() {
+  islem({islem:'kadro', idler:[1,2,3].map(p => +document.getElementById('kadro-' + p).value)}, 'Kadro kaydedildi');
+}
+function oyuncuKaydet(id) {
+  const v = {islem:'oyuncu', id};
+  for (const a of ['level','break_level','color','beceri','train']) v[a] = +document.getElementById(`o-${id}-${a}`).value;
+  islem(v, 'Oyuncu kaydedildi');
+}
+function oyuncuFulle(id) {
+  const s = D.sinir;
+  islem({islem:'oyuncu', id, level:s.oyuncu_seviye, break_level:s.yildiz, color:s.renk, beceri:s.beceri_seviye,
+         train:s.antrenman}, 'Oyuncu fullendi');
+}
+function oyuncuAc(id) { oyuncuFulle(id); }
+function esyaKaydet(id) { islem({islem:'esya', id, adet: +document.getElementById('e-' + id).value}, 'Eşya kaydedildi'); }
+function sifirla() {
+  if (confirm('Kayıt sıfırlansın mı? Bütün ilerleme baştan başlar (yine her şey açık ve sınırsız olur).'))
+    islem({islem:'sifirla'}, 'Kayıt sıfırlandı');
+}
+yukle();
+</script>
+</body>
+</html>

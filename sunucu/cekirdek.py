@@ -65,12 +65,28 @@ def param_coz(metin):
         return {}
 
 
+class Ham:
+    """JSON zarfı olmadan gönderilecek cevap (XML, metin, dosya)."""
+
+    def __init__(self, govde, tur="text/plain; charset=utf-8", durum=200):
+        self.govde = govde.encode("utf-8") if isinstance(govde, str) else govde
+        self.tur = tur
+        self.durum = durum
+
+
 class Yonlendirici:
-    """Yol (/login) ve proto/proto_sub (/client) için işleyici kaydı."""
+    """Yol (/login), proto/proto_sub (/client) ve ön ek (/res/...) için işleyici kaydı."""
 
     def __init__(self):
         self.yollar = {}
         self.protolar = {}
+        self.onekler = []
+
+    def onek(self, on):
+        def kaydet(f):
+            self.onekler.append((on, f))
+            return f
+        return kaydet
 
     def yol(self, ad):
         def kaydet(f):
@@ -93,15 +109,28 @@ def http_sunucu_kur(adres, port, yonlendirici, oturum_bul):
             pass
 
         def _cevapla(self, nesne, durum=200):
-            govde = json_yaz(nesne).encode("utf-8")
+            if isinstance(nesne, Ham):
+                govde, tur, durum = nesne.govde, nesne.tur, nesne.durum
+            else:
+                govde, tur = json_yaz(nesne).encode("utf-8"), "application/json; charset=utf-8"
             self.send_response(durum)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Type", tur)
             self.send_header("Content-Length", str(len(govde)))
             self.end_headers()
             self.wfile.write(govde)
 
         def _isle(self, ham):
-            yol = urllib.parse.urlsplit(self.path).path.rstrip("/") or "/"
+            yol = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)
+            for on, f in yonlendirici.onekler:
+                if yol.startswith(on):
+                    log.info("GET %s", yol)
+                    try:
+                        ek = {"govde": ham} if getattr(f, "govde_ister", False) else {}
+                        return f(yol=yol[len(on):], istek=self, **ek)
+                    except Exception:
+                        log.exception("%s işlenirken hata", yol)
+                        return Ham("", durum=500)
+            yol = yol.rstrip("/") or "/"
             if "?" in self.path and not ham:
                 ham = urllib.parse.urlsplit(self.path).query
             alanlar = form_coz(ham)
@@ -119,7 +148,7 @@ def http_sunucu_kur(adres, port, yonlendirici, oturum_bul):
                 return basarili({"updatelist": {"op_flag": 0, "paramlist": {}}})
             log.info("%s param=%s", etiket, json_yaz(param)[:300])
             try:
-                return f(alanlar=alanlar, param=param, oturum=oturum)
+                return f(alanlar=alanlar, param=param, oturum=oturum, istek=self)
             except Exception:
                 log.exception("%s işlenirken hata", etiket)
                 return hata()
