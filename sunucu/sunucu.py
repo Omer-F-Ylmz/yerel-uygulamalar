@@ -447,6 +447,14 @@ import gelisim  # noqa: E402
 
 gelisim.kur(yon, durum)
 
+import gunluk  # noqa: E402
+
+gunluk.kur(yon, durum)
+
+import magaza  # noqa: E402
+
+magaza.kur(yon, durum)
+
 
 # ---------------------------------------------------------------- başlatma
 
