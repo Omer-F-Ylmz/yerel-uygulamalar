@@ -3,6 +3,7 @@
   python ollama_profil.py hepsi      -> skill, ajan, komut, eklenti ve MCP sunucularının hepsini aktarır
   python ollama_profil.py mcp        -> MCP sunucularını listeler, seçtiklerini aktarır
   python ollama_profil.py durum      -> iki profilde ne olduğunu gösterir
+  python ollama_profil.py hafif      -> eklentileri, hook'ları ve MCP sunucularını kapatır ("Prompt is too long" için)
   python ollama_profil.py sifirla    -> Ollama profilindeki aktarılmış her şeyi siler (giriş/oturum kalır)
 
 Aktarılmayanlar: kimlik bilgileri, oturum geçmişi, hook'lar ve settings.json'daki env ayarları
@@ -101,6 +102,7 @@ def eklenti_ayarlarini_aktar():
     for anahtar in ("enabledPlugins", "extraKnownMarketplaces"):
         if anahtar in eski:
             yeni[anahtar] = eski[anahtar]
+    yeni.pop("disableAllHooks", None)  # hafif moddan çıkış
     json_yaz(yeni_yol, yeni)
     print("  eklenti secimleri aktarildi (%d eklenti)" % len(eski.get("enabledPlugins", {})))
 
@@ -146,12 +148,40 @@ def mcp_sec():
     mcp_aktar(secilen)
 
 
+def hafif():
+    """Her istekte modele giden yükü azaltır: eklentilerin araçları/hook'ları ve MCP araç tanımları
+    sistem istemini şişirip 'Prompt is too long' hatasına yol açıyor. Skill'lere dokunmaz."""
+    ayar_yol = os.path.join(YENI, "settings.json")
+    ayar = json_oku(ayar_yol)
+    eklentiler = ayar.get("enabledPlugins", {})
+    for ad in eklentiler:
+        eklentiler[ad] = False
+    ayar["disableAllHooks"] = True
+    json_yaz(ayar_yol, ayar)
+    print("  %d eklenti kapatildi, hook'lar kapatildi (claude-mem, hookify vb.)" % len(eklentiler))
+    yeni = json_oku(YENI_JSON)
+    mcp = yeni.pop("mcpServers", {})
+    for proje in yeni.get("projects", {}).values():
+        mcp.update(proje.pop("mcpServers", None) or {})
+    if mcp:
+        yedek = os.path.join(YENI, "mcp_yedek.json")
+        eski_yedek = json_oku(yedek)
+        eski_yedek.update(mcp)
+        json_yaz(yedek, eski_yedek)
+    json_yaz(YENI_JSON, yeni)
+    print("  %d MCP sunucusu kapatildi (yedek: %s)" % (len(mcp), os.path.join(YENI, "mcp_yedek.json")))
+    print("\nTamam. Gerekirse menuden tek tek MCP ekleyebilirsin; her eklenen istemi biraz buyutur.")
+
+
 def durum():
     for baslik, kok, jsn in (("Normal profil", ESKI, ESKI_JSON), ("Ollama profili", YENI, YENI_JSON)):
         print("== %s (%s)" % (baslik, kok))
         for ad in KLASORLER:
             print("  %-9s %d" % (ad, say(os.path.join(kok, ad))))
         print("  mcp       %d" % len(json_oku(jsn).get("mcpServers", {})))
+        ayar = json_oku(os.path.join(kok, "settings.json"))
+        print("  eklenti   %d acik%s" % (sum(1 for v in ayar.get("enabledPlugins", {}).values() if v),
+                                      ", hook'lar kapali" if ayar.get("disableAllHooks") else ""))
 
 
 def sifirla():
@@ -173,5 +203,5 @@ def sifirla():
 
 if __name__ == "__main__":
     komut = sys.argv[1] if len(sys.argv) > 1 else ""
-    {"hepsi": hepsi, "mcp": mcp_sec, "durum": durum, "sifirla": sifirla}.get(
+    {"hepsi": hepsi, "mcp": mcp_sec, "hafif": hafif, "durum": durum, "sifirla": sifirla}.get(
         komut, lambda: print(__doc__))()
