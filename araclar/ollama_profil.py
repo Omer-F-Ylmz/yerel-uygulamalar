@@ -46,9 +46,15 @@ def klasorleri_aktar():
         kaynak, hedef = os.path.join(ESKI, ad), os.path.join(YENI, ad)
         if not os.path.isdir(kaynak):
             continue
-        shutil.copytree(kaynak, hedef, dirs_exist_ok=True, symlinks=True,
-                        ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
-        print("  %-9s %d oge aktarildi" % (ad, say(kaynak)))
+        try:
+            # symlinks=False: bağlantının gösterdiği içerik kopyalanır (Windows'ta var olan bağlantı hatası olmaz)
+            shutil.copytree(kaynak, hedef, dirs_exist_ok=True, symlinks=False, ignore_dangling_symlinks=True,
+                            ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
+            atlanan = 0
+        except shutil.Error as hata:
+            atlanan = len(hata.args[0]) if hata.args and isinstance(hata.args[0], list) else 1
+        print("  %-9s %d oge aktarildi%s" % (ad, say(kaynak),
+                                             ("  (%d dosya kopyalanamadi, atlandi)" % atlanan) if atlanan else ""))
 
 
 def eklenti_ayarlarini_aktar():
