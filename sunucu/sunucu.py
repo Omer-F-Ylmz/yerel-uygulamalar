@@ -67,6 +67,11 @@ def sabit_yol(yol, data):
 
 # ---------------------------------------------------------------- oyun verisi şekillendirme
 
+# equipPlayerInfo: yuva i'nin eşyası = önek + oyuncu id (1011007 ...); sınırlar equipMaxConfig'ten
+# (güçlendirme 100, kırılma 19-1, uyanış 5; equipBreakAttr/equipWakeAttr bu seviyelere kadar satır içerir)
+EKIPMAN_ONEK = (101, 102, 103, 201, 202, 203)
+
+
 def oyuncu_json(pid, o):
     bilgi = OYUNCU_VERI[int(pid)]
     return {
@@ -78,7 +83,9 @@ def oyuncu_json(pid, o):
         "fight": o["level"] * 1000,
         "qualifily": {"qa": 0, "t": 0},
         "s_equipment_list": [],
-        "equip": [],
+        # 6 yuva şart: EquipDataManager.IsCanStrength equipInfoList[1..6] okur (PanMain.InitButtonTip)
+        "equip": [{"no": i + 1, "id": int("%d%d" % (on, pid)), "lv": 100, "blv": 18, "wlv": 5}
+                  for i, on in enumerate(EKIPMAN_ONEK)],
         "s_skill_list": [{"skill_id": s, "skill_level": o["beceri"]} for s in bilgi["beceriler"]],
         "other_skill_list": bilgi["diger_beceriler"],
         "train": [{"level": o["train"]} for _ in range(5)],

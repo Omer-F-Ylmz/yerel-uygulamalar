@@ -34,6 +34,7 @@ def kur(yon, durum):
             "esyalar": [dict(id=e["id"], ad=e["ad"], tur=e["tur"], adet=k["canta"].get(str(e["id"]), 0))
                         for e in VERI["esyalar"] if e["cantada"]],
             "sinir": SINIR,
+            "guc_carpani": k.get("guc_carpani", 2.5),
         }
 
     def islem(veri):
@@ -46,6 +47,8 @@ def kur(yon, durum):
                         k[a] = _sayi(veri[a])
                 if "takim_seviye" in veri:
                     k["takim"]["seviye"] = _sayi(veri["takim_seviye"], 1, SINIR["takim_seviye"])
+                if "guc_carpani" in veri:
+                    k["guc_carpani"] = max(0.1, min(20.0, float(veri["guc_carpani"])))
                 if veri.get("takim_adi"):
                     k["takim"]["ad"] = str(veri["takim_adi"])[:20]
             elif ad == "hepsini_fulle":
