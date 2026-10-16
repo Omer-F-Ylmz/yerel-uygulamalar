@@ -433,6 +433,20 @@ op_yolu("/op_bag", {}, lambda **_: basarili({"backpack": canta_json(kayit())}))
 sabit(1, 113, lambda: {"backpack": canta_json(kayit())})
 
 
+# ---------------------------------------------------------------- istemci hata raporları
+
+@yon.proto(999, 1)
+def istemci_hatasi(param, **_):
+    """Lua yamasındaki hata yakalayıcı, OnReceive içinde çıkan hataları buraya yollar."""
+    metin = str((param or {}).get("m", ""))
+    log.error("!!! OYUN HATASI: %s", metin)
+    yol = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kayit", "istemci_hatalari.txt")
+    os.makedirs(os.path.dirname(yol), exist_ok=True)
+    with open(yol, "a", encoding="utf-8") as f:
+        f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + metin + "\n")
+    return hata("HintBallTeamError")
+
+
 # ---------------------------------------------------------------- maçlar
 
 import mac  # noqa: E402
