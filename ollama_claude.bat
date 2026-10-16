@@ -30,6 +30,11 @@ if "%S%"=="5" (set "MODEL=qwen3.6:35b" & set "YEREL=1")
 if "%S%"=="6" (set "MODEL=gpt-oss:20b" & set "YEREL=1")
 if "%S%"=="7" goto openrouter
 if /i "%S%"=="T" goto test
+rem Claude Code bu modelleri tanimiyor, baglami 200K saniyor; gercek pencereyi bildir
+set "CTX=262144"
+if "%MODEL%"=="gpt-oss:120b-cloud" set "CTX=131072"
+if defined YEREL set "CTX=65536"
+set "CLAUDE_CODE_MAX_CONTEXT_TOKENS=%CTX%"
 if defined YEREL (
   if not defined OLLAMA_CONTEXT_LENGTH echo [Ipucu] Bellek ayarlari yapilmamis. Once ollama_ayar.bat'i bir kez calistir.
   ollama list | find /i "%MODEL%" >nul || (echo %MODEL% indiriliyor, bir kez yapilir... & ollama pull %MODEL%)
@@ -69,6 +74,9 @@ set "ORMODEL=nvidia/nemotron-3-ultra-550b-a55b:free"
 if "%S%"=="2" set "ORMODEL=poolside/laguna-s-2.1:free"
 if "%S%"=="3" set "ORMODEL=nvidia/nemotron-3-super-120b-a12b:free"
 if "%S%"=="4" set "ORMODEL=google/gemma-4-31b-it:free"
+set "CLAUDE_CODE_MAX_CONTEXT_TOKENS=262144"
+if "%S%"=="2" set "CLAUDE_CODE_MAX_CONTEXT_TOKENS=131072"
+if "%S%"=="3" set "CLAUDE_CODE_MAX_CONTEXT_TOKENS=131072"
 set "ANTHROPIC_BASE_URL=https://openrouter.ai/api"
 set "ANTHROPIC_AUTH_TOKEN=%OPENROUTER_API_KEY%"
 set "ANTHROPIC_API_KEY="

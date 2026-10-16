@@ -13,8 +13,10 @@ yüzlerce araç tanımı yerine yalnızca iki araç (mcp_ara, mcp_cagir) görür
 Aktarılmayanlar: kimlik bilgileri, oturum geçmişi, hook'lar ve settings.json'daki env ayarları
 (env içindeki ANTHROPIC_BASE_URL gibi ayarlar Ollama bağlantısını bozar).
 """
+import glob
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -28,6 +30,10 @@ KAPI_AD = "mcp-kapi"
 KAPI_KAYNAK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcp_kapi.py")
 KAPI_PY = os.path.join(YENI, "mcp_kapi.py")
 KAPI_AYAR = os.path.join(YENI, "mcp_kapi.json")
+PROJE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace("\\", "/")
+# Kapıya alınmayan eklentiler: kendi skill/hook'ları MCP araçlarını adıyla çağırıyor
+KAPI_DISI_EKLENTILER = {"claude-mem"}
+AJAN_ACIKLAMA_SINIRI = 160  # karakter; Claude Code bütün ajan açıklamalarını her istekte gönderiyor
 
 
 def json_oku(yol):
@@ -158,7 +164,113 @@ def hepsi():
     klasorleri_aktar()
     eklenti_ayarlarini_aktar()
     mcp_aktar(list(mcp_sunuculari()))
+    eklenti_mcplerini_kapiya_al()
+    ajan_aciklamalarini_kisalt()
     hookify_onar()
+
+
+def _aciklama_kisalt(metin):
+    metin = re.sub(r"<example>.*?(</example>|$)", " ", metin, flags=re.S)
+    metin = re.sub(r"<[^>]+>", " ", metin.replace("\\n", " "))
+    metin = " ".join(metin.split())
+    nokta = re.search(r"[.!?](\s|$)", metin)
+    if nokta and nokta.end() <= AJAN_ACIKLAMA_SINIRI:
+        return metin[:nokta.end()].strip()
+    return metin if len(metin) <= AJAN_ACIKLAMA_SINIRI else metin[:AJAN_ACIKLAMA_SINIRI - 1].rstrip() + "…"
+
+
+def ajan_aciklamalarini_kisalt():
+    """Ollama profilindeki ajan kopyalarının açıklamasını ilk cümleye indirir; ajanların hepsi kalır.
+    Normal profildeki asıllarına dokunmaz (her aktarımda yeniden kopyalanıyor)."""
+    kisalan, once, sonra = 0, 0, 0
+    for yol in glob.glob(os.path.join(YENI, "agents", "**", "*.md"), recursive=True):
+        try:
+            with open(yol, encoding="utf-8") as f:
+                satirlar = f.read().split("\n")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if not satirlar or satirlar[0].strip() != "---" or "---" not in [x.strip() for x in satirlar[1:]]:
+            continue
+        son = 1 + [x.strip() for x in satirlar[1:]].index("---")
+        bas = next((i for i in range(1, son) if satirlar[i].startswith("description:")), None)
+        if bas is None:
+            continue
+        bit = bas + 1
+        while bit < son and not re.match(r"[A-Za-z_][\w-]*\s*:", satirlar[bit]):
+            bit += 1
+        ham = "\n".join(satirlar[bas:bit])[len("description:"):].strip()
+        if ham[:1] in "|>":
+            ham = ham[1:].lstrip("+-")
+        if len(ham) >= 2 and ham[0] == ham[-1] and ham[0] in "\"'":
+            ham = ham[1:-1]
+        kisa = _aciklama_kisalt(ham)
+        once, sonra = once + len(ham), sonra + len(kisa)
+        if len(kisa) >= len(ham):
+            continue
+        satirlar[bas:bit] = ["description: " + json.dumps(kisa, ensure_ascii=False)]
+        with open(yol, "w", encoding="utf-8") as f:
+            f.write("\n".join(satirlar))
+        kisalan += 1
+    if kisalan:
+        print("  %d ajanin aciklamasi kisaltildi (~%dk -> ~%dk token; ajanlarin hepsi duruyor)"
+              % (kisalan, once // 4000, sonra // 4000))
+
+
+def _eklenti_yollari():
+    """Açık eklentilerin {ad@pazar: kurulum klasörü}."""
+    acik = {k for k, v in json_oku(os.path.join(YENI, "settings.json")).get("enabledPlugins", {}).items() if v}
+    kayit = json_oku(os.path.join(YENI, "plugins", "installed_plugins.json")).get("plugins", {})
+    yollar = {}
+    for anahtar in acik:
+        girdi = kayit.get(anahtar)
+        girdi = girdi[0] if isinstance(girdi, list) and girdi else girdi
+        yol = (girdi or {}).get("installPath") if isinstance(girdi, dict) else None
+        if not yol or not os.path.isdir(yol):
+            ad, _, pazar = anahtar.partition("@")
+            adaylar = sorted(glob.glob(os.path.join(YENI, "plugins", "cache", pazar, ad, "*")))
+            yol = adaylar[-1] if adaylar else None
+        if yol:
+            yollar[anahtar] = yol
+    return yollar
+
+
+def _eklenti_mcp(kok):
+    ayar = json_oku(os.path.join(kok, ".claude-plugin", "plugin.json")).get("mcpServers")
+    if isinstance(ayar, str):
+        ayar = json_oku(os.path.join(kok, ayar))
+    if not ayar:
+        ayar = json_oku(os.path.join(kok, ".mcp.json"))
+    if isinstance(ayar, dict) and isinstance(ayar.get("mcpServers"), dict):
+        ayar = ayar["mcpServers"]
+    if not isinstance(ayar, dict):
+        return {}
+    metin = json.dumps(ayar).replace("${CLAUDE_PLUGIN_ROOT}", kok.replace("\\", "/"))
+    return json.loads(metin)
+
+
+def eklenti_mcplerini_kapiya_al():
+    """Eklentilerle gelen MCP sunucularını da kapıdan bağlar: kapıya eklenir, Claude Code'un onlara
+    doğrudan bağlanması bu profilde kapatılır (yoksa araç tanımları yine her istekte gider)."""
+    kapiya, kapatilacak = {}, []
+    for anahtar, kok in _eklenti_yollari().items():
+        ad = anahtar.partition("@")[0]
+        if ad in KAPI_DISI_EKLENTILER:
+            continue
+        for sunucu, ayar in _eklenti_mcp(kok).items():
+            if isinstance(ayar, dict):
+                kapiya["%s:%s" % (ad, sunucu)] = ayar
+                kapatilacak.append("plugin:%s:%s" % (ad, sunucu))
+    if not kapiya:
+        return
+    kapi_kur(kapiya)
+    yeni = json_oku(YENI_JSON)
+    projeler = yeni.setdefault("projects", {})
+    projeler.setdefault(PROJE, {})
+    for proje in projeler.values():
+        liste = proje.setdefault("disabledMcpServers", [])
+        liste += [x for x in kapatilacak if x not in liste]
+    json_yaz(YENI_JSON, yeni)
+    print("  eklentilerin %d MCP sunucusu kapiya alindi (dogrudan degil kapidan calisiyorlar)" % len(kapiya))
 
 
 def mcp_sec():
@@ -222,6 +334,8 @@ def onar():
     if eski_yedek:
         os.remove(yedek)
     print("  %d MCP sunucusu kapidan bagli: hepsi acik, model yalnizca 2 arac goruyor" % len(toplam))
+    eklenti_mcplerini_kapiya_al()
+    ajan_aciklamalarini_kisalt()
     hookify_onar()
     print("\nTamam. MCP'lerin calistigini gormek icin menude 'MCP baglanti testi'ni sec.")
 
