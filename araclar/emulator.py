@@ -128,6 +128,17 @@ def baglan():
     print("Emulator sunucuya baglandi (127.0.0.1:%d)." % PORT)
 
 
+def anlik_kayit():
+    """Oyunu yeniden başlatmadan şu anki emülatör kaydını teshis.txt'ye yazar (takıldığı anda)."""
+    adb_yolu = adb_bul()
+    cihaz = cihaz_sec(adb_yolu)
+    kayit = adb(adb_yolu, "-s", cihaz, "logcat", "-d", "-v", "time", "-t", "4000", kontrol=False)
+    yol = os.path.join(KOK, "teshis.txt")
+    with open(yol, "w", encoding="utf-8", errors="replace") as f:
+        f.write("== anlik kayit\n" + kayit)
+    print("Kayit yazildi:", yol)
+
+
 def teshis():
     import time
     adb_yolu = adb_bul()
@@ -162,5 +173,7 @@ if __name__ == "__main__":
         baglan()
     elif komut == "teshis":
         teshis()
+    elif komut == "kayit":
+        anlik_kayit()
     else:
         hata(__doc__)
