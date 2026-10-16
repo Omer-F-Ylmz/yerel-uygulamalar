@@ -1,6 +1,7 @@
 @echo off
 cd /d "%~dp0"
-rem tokyo_ghoul klasorune koydugun APK/XAPK dosyalarini parcalayip Claude'a gonderir
+rem Tokyo Ghoul APK'larini indirtir, parcalayip Claude'a gonderir
+powershell -NoProfile -ExecutionPolicy Bypass -File araclar\tg_indir.ps1 || goto hata
 echo Dosyalar parcalaniyor...
 powershell -NoProfile -ExecutionPolicy Bypass -File araclar\dosya_parcala.ps1 tokyo_ghoul tokyo_ghoul_parca || goto hata
 git add -f tokyo_ghoul_parca || goto hata
