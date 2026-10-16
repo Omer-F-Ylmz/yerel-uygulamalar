@@ -12,8 +12,9 @@ __pycache__/
 # Ben 10 / Flashpoint indirmeleri ve yerel ayarlar
 ben10/indir/
 ben10/fp_yolu.txt
-ben10/ilk_acilis_tamam
+ben10/ilk_acilis_tamam*
 
 # Ollama oturumlarinin urettikleri
 lua_cozulmus/
 out.txt
+/preferences.json

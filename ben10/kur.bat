@@ -43,11 +43,14 @@ if not exist "%KOK%CLIFp.exe" (echo CLIFp.exe bulunamadi. & pause & exit /b 1)
 
 :ilk_acilis
 echo %KOK%> "%~dp0fp_yolu.txt"
-if exist "%~dp0ilk_acilis_tamam" goto bitti
+rem Onceki surum Flashpoint'i yanlis klasorden acip proje klasorune preferences.json yaziyordu
+if exist "%~dp0..\preferences.json" del "%~dp0..\preferences.json"
+if exist "%~dp0ilk_acilis_tamam2" goto bitti
 echo [4/4] Flashpoint bir kez kendi penceresiyle acilacak (gerekli).
 echo       Acilip oyun listesi yuklenince pencereyi KAPAT; kurulum kendiliginden biter.
-start "" /wait "%KOK%Launcher\Flashpoint.exe"
-echo.> "%~dp0ilk_acilis_tamam"
+rem Flashpoint yollari calisma klasorune gore cozuyor: Launcher klasorunden acilmali
+start "" /D "%KOK%Launcher" /wait "%KOK%Launcher\Flashpoint.exe"
+echo.> "%~dp0ilk_acilis_tamam2"
 
 :bitti
 echo.
