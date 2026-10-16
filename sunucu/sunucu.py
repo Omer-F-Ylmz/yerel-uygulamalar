@@ -52,7 +52,7 @@ def op_yolu(yol, islevler, varsayilan=None):
         f = islevler.get(op, varsayilan)
         if f is None:
             log.warning("BILINMEYEN %s op=%s alanlar=%s", yol, op, alanlar)
-            return basarili({})
+            return hata("HintBallTeamError")
         return f(alanlar=alanlar, param=param)
     yon.yollar[yol] = isle
 
@@ -438,6 +438,10 @@ sabit(1, 113, lambda: {"backpack": canta_json(kayit())})
 import mac  # noqa: E402
 
 mac.kur(yon, durum)
+
+import esya  # noqa: E402
+
+esya.kur(yon, durum)
 
 
 # ---------------------------------------------------------------- başlatma

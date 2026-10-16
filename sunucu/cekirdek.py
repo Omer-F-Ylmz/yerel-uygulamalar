@@ -144,8 +144,10 @@ def http_sunucu_kur(adres, port, yonlendirici, oturum_bul):
                 etiket = yol
             param = param_coz(alanlar.get("param", ""))
             if f is None:
+                # Boş "başarılı" cevap bazı ekranları kilitliyor; hata cevabında istemci maskeyi kapatıp
+                # kısa bir uyarı gösterir ve devam eder.
                 log.warning("BILINMEYEN %s alanlar=%s", etiket, {k: v[:300] for k, v in alanlar.items()})
-                return basarili({"updatelist": {"op_flag": 0, "paramlist": {}}})
+                return hata("HintBallTeamError")
             log.info("%s param=%s", etiket, json_yaz(param)[:300])
             try:
                 return f(alanlar=alanlar, param=param, oturum=oturum, istek=self)

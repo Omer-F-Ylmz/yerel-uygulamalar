@@ -18,7 +18,7 @@ TABLOLAR = ["PlayerBaseInfo", "PlayerGrowUpValue", "PlayerStarUpValue", "PlayerD
             "data_droplist", "data_droplist_item", "data_droplist_item_odds", "data_droplist_item_weight",
             "data_elite_stage", "data_elite_stage_chests", "data_elite_stage_battle_chests",
             "data_elite_sweep_droplist", "data_story_stage", "PlayerExperienceInfo", "TeamExperience",
-            "ItemBaseInfo"]
+            "ItemBaseInfo", "data_item_usage"]
 
 # Oyuncu nitelikleri, PlayerAttributeLua.lua'daki sırayla (attrFind dizisi)
 NITELIK = ["morale", "attackMorale", "defendMorale", "shot", "dribble", "rebound", "block", "defend",
@@ -176,6 +176,8 @@ def derle(t):
     dusus_gerek |= set(elite_mac_sandik.values()) | set(elite_supurme.values())
     for s in elite_yildiz_sandik.values():
         dusus_gerek |= set(s.values())
+    kullanim = {u["id"]: [u["use_type"], u["param"]] for u in t["data_item_usage"]}
+    dusus_gerek |= {p for tur, p in kullanim.values() if tur == 1}
     dusus_gerek.discard(0)
     dususler = {}
     for d in t["data_droplist"]:
@@ -206,6 +208,8 @@ def derle(t):
         "hikaye": hikaye,
         "oyuncu_exp": {r["level"]: r["experience"] for r in t["PlayerExperienceInfo"]},
         "takim_exp": {r["level"]: r["exp"] for r in t["TeamExperience"]},
+        "esya_kullanim": kullanim,
+        "esya_fiyat": {i["id"]: i.get("price", 0) for i in t["ItemBaseInfo"]},
     }
 
 

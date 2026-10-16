@@ -23,7 +23,7 @@ def mac_verisi_yukle(yol=os.path.join(KOK, "veri", "mac_verisi.json")):
     with open(yol, encoding="utf-8") as f:
         v = json.load(f)
     for ad in ("oyuncu", "egitim_dugum", "amigo", "mac", "takim", "dusman", "dusus", "elite_mac_sandik",
-               "elite_supurme", "hikaye", "oyuncu_exp", "takim_exp"):
+               "elite_supurme", "hikaye", "oyuncu_exp", "takim_exp", "esya_kullanim", "esya_fiyat"):
         v[ad] = _int_anahtar(v[ad])
     v["elite_yildiz_sandik"] = {int(s): _int_anahtar(c) for s, c in v["elite_yildiz_sandik"].items()}
     return v
