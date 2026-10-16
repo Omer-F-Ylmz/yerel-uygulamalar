@@ -5,6 +5,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File araclar\obb_parcala.ps1 || g
 git add -f obb_parca || goto hata
 git commit -m "OBB parcalari eklendi" || goto hata
 echo Gonderiliyor, birkac dakika surebilir...
+git pull --no-edit >nul 2>nul
+git pull --no-edit >nul 2>nul
 git push || goto hata
 echo.
 echo TAMAM. Claude a "gonderdim" yaz.
