@@ -90,6 +90,9 @@ def oyuncu_json(pid, o):
         "s_skill_list": [{"skill_id": s, "skill_level": o["beceri"]} for s in bilgi["beceriler"]],
         "other_skill_list": bilgi["diger_beceriler"],
         "train": [{"level": o["train"]} for _ in range(5)],
+        # playerGrowUpCnts: c kademesi antrenmanı 30+10c'ye açar (7 -> 100); yoksa NextMaxTrainLv 0 kalır
+        "grow_up_cnts": min(7, max(0, -(-(o["train"] - 30) // 10))),
+        "next_max_up_lv": SINIR["oyuncu_seviye"],  # yoksa istemci 80 varsayar (PlayerDataLua.NextMaxPlayerLv)
         "rela": [],
     }
 
@@ -165,32 +168,7 @@ def ballteam_json(k):
     }
 
 
-def elite_json(k):
-    """Tüm şehirler açık ve tamamlanmış, her maç tekrar oynanabilir."""
-    ilerleme = k.setdefault("elite", {})
-    sehirler = []
-    for e in VERI["elite"]:
-        maclar = []
-        for b in e["maclar"]:
-            yildiz = ilerleme.get(str(b), 3)
-            maclar.append({"battle_id": b, "star": yildiz, "count": 0, "supply_times": 0, "battle_status": 1})
-        toplam = sum(m["star"] for m in maclar)
-        sehirler.append({
-            "stage_id": e["id"],
-            "stage_status": 2,
-            "star_all": toplam,
-            "chests_list": [{"star_count": s, "status": 0} for s in e["sandiklar"]],
-            "stage_status_ex": 2,
-            "battle_list": maclar,
-        })
-    return {"pi_s": 0, "pi_b": 0, "stage_list": sehirler}
-
-
-def elite_yildiz_json(k):
-    data = elite_json(k)
-    data.update({"su_t_s": 0, "pi_ss": 0, "pi_bs": 0, "pi_ss_h": 0, "pi_bs_h": 0,
-                 "st_s_s": 0, "ts_ss": 0, "ts_ss_e": 0, "h_r": 0})
-    return data
+from elite import elite_json, elite_yildiz_json  # noqa: E402,F401  (maç modülüyle ortak)
 
 
 # ---------------------------------------------------------------- CDN ve kaynak dosyaları
@@ -453,6 +431,13 @@ def kadro_degistir(param, **_):
 
 op_yolu("/op_bag", {}, lambda **_: basarili({"backpack": canta_json(kayit())}))
 sabit(1, 113, lambda: {"backpack": canta_json(kayit())})
+
+
+# ---------------------------------------------------------------- maçlar
+
+import mac  # noqa: E402
+
+mac.kur(yon, durum)
 
 
 # ---------------------------------------------------------------- başlatma
