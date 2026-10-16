@@ -3,8 +3,12 @@
   python ollama_profil.py hepsi      -> skill, ajan, komut, eklenti ve MCP sunucularının hepsini aktarır
   python ollama_profil.py mcp        -> MCP sunucularını listeler, seçtiklerini aktarır
   python ollama_profil.py durum      -> iki profilde ne olduğunu gösterir
-  python ollama_profil.py hafif      -> eklentileri, hook'ları ve MCP sunucularını kapatır ("Prompt is too long" için)
+  python ollama_profil.py onar       -> hiçbir şeyi kapatmadan "Prompt is too long" ve hookify hatasını giderir
+  python ollama_profil.py hafiza     -> claude-mem'i ücretsiz Gemini anahtarına geçirir
   python ollama_profil.py sifirla    -> Ollama profilindeki aktarılmış her şeyi siler (giriş/oturum kalır)
+
+MCP sunucuları Ollama profilinde doğrudan değil, mcp_kapi.py üzerinden bağlanır: model her mesajda
+yüzlerce araç tanımı yerine yalnızca iki araç (mcp_ara, mcp_cagir) görür, sunucuların hepsi yine kullanılabilir.
 
 Aktarılmayanlar: kimlik bilgileri, oturum geçmişi, hook'lar ve settings.json'daki env ayarları
 (env içindeki ANTHROPIC_BASE_URL gibi ayarlar Ollama bağlantısını bozar).
@@ -20,6 +24,10 @@ YENI = os.path.join(EV, ".claude-ollama")
 ESKI_JSON = os.path.join(EV, ".claude.json")
 YENI_JSON = os.path.join(YENI, ".claude.json")
 KLASORLER = ("skills", "agents", "commands", "plugins")
+KAPI_AD = "mcp-kapi"
+KAPI_KAYNAK = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcp_kapi.py")
+KAPI_PY = os.path.join(YENI, "mcp_kapi.py")
+KAPI_AYAR = os.path.join(YENI, "mcp_kapi.json")
 
 
 def json_oku(yol):
@@ -108,18 +116,41 @@ def eklenti_ayarlarini_aktar():
 
 
 def mcp_sunuculari():
-    return json_oku(ESKI_JSON).get("mcpServers", {})
+    """Normal profildeki kullanıcı ve proje düzeyindeki MCP sunucuları."""
+    j = json_oku(ESKI_JSON)
+    sunucular = {}
+    for proje in j.get("projects", {}).values():
+        sunucular.update(proje.get("mcpServers") or {})
+    sunucular.update(j.get("mcpServers", {}))
+    return sunucular
+
+
+def kapi_sunuculari():
+    return json_oku(KAPI_AYAR).get("mcpServers", {})
+
+
+def kapi_kur(eklenecek):
+    """Sunucuları kapının ayarına ekler; profilde doğrudan duranları da kapıya taşır."""
+    yeni = json_oku(YENI_JSON)
+    kapi = kapi_sunuculari()
+    dogrudan = yeni.pop("mcpServers", {}) or {}
+    for proje in yeni.get("projects", {}).values():
+        dogrudan.update(proje.pop("mcpServers", None) or {})
+    dogrudan.pop(KAPI_AD, None)
+    kapi.update(dogrudan)
+    kapi.update(eklenecek)
+    json_yaz(KAPI_AYAR, {"mcpServers": kapi})
+    shutil.copy2(KAPI_KAYNAK, KAPI_PY)
+    yeni["mcpServers"] = {KAPI_AD: {"type": "stdio", "command": sys.executable, "args": [KAPI_PY, KAPI_AYAR]}}
+    json_yaz(YENI_JSON, yeni)
+    return kapi
 
 
 def mcp_aktar(adlar):
     sunucular = mcp_sunuculari()
-    yeni = json_oku(YENI_JSON)
-    hedef = yeni.setdefault("mcpServers", {})
-    for ad in adlar:
-        if ad in sunucular:
-            hedef[ad] = sunucular[ad]
-    json_yaz(YENI_JSON, yeni)
-    print("  %d MCP sunucusu aktarildi" % len([a for a in adlar if a in sunucular]))
+    secilen = {ad: sunucular[ad] for ad in adlar if ad in sunucular}
+    toplam = kapi_kur(secilen)
+    print("  %d MCP sunucusu aktarildi (kapida toplam %d; model yalnizca 2 arac gorur)" % (len(secilen), len(toplam)))
 
 
 def hepsi():
@@ -127,13 +158,12 @@ def hepsi():
     klasorleri_aktar()
     eklenti_ayarlarini_aktar()
     mcp_aktar(list(mcp_sunuculari()))
-    print("\nUYARI: Her sey aktarildi. Model 'Prompt is too long' derse sifirla secenegini kullan,")
-    print("sonra yalnizca ihtiyacin olanlari tek tek ekle.")
+    hookify_onar()
 
 
 def mcp_sec():
     sunucular = sorted(mcp_sunuculari())
-    mevcut = set(json_oku(YENI_JSON).get("mcpServers", {}))
+    mevcut = set(kapi_sunuculari())
     if not sunucular:
         print("Normal profilde MCP sunucusu bulunamadi.")
         return
@@ -148,29 +178,81 @@ def mcp_sec():
     mcp_aktar(secilen)
 
 
-def hafif():
-    """Her istekte modele giden yükü azaltır: eklentilerin araçları/hook'ları ve MCP araç tanımları
-    sistem istemini şişirip 'Prompt is too long' hatasına yol açıyor. Skill'lere dokunmaz."""
-    ayar_yol = os.path.join(YENI, "settings.json")
-    ayar = json_oku(ayar_yol)
-    eklentiler = ayar.get("enabledPlugins", {})
-    for ad in eklentiler:
-        eklentiler[ad] = False
-    ayar["disableAllHooks"] = True
-    json_yaz(ayar_yol, ayar)
-    print("  %d eklenti kapatildi, hook'lar kapatildi (claude-mem, hookify vb.)" % len(eklentiler))
-    yeni = json_oku(YENI_JSON)
-    mcp = yeni.pop("mcpServers", {})
-    for proje in yeni.get("projects", {}).values():
-        mcp.update(proje.pop("mcpServers", None) or {})
-    if mcp:
-        yedek = os.path.join(YENI, "mcp_yedek.json")
-        eski_yedek = json_oku(yedek)
-        eski_yedek.update(mcp)
-        json_yaz(yedek, eski_yedek)
-    json_yaz(YENI_JSON, yeni)
-    print("  %d MCP sunucusu kapatildi (yedek: %s)" % (len(mcp), os.path.join(YENI, "mcp_yedek.json")))
-    print("\nTamam. Gerekirse menuden tek tek MCP ekleyebilirsin; her eklenen istemi biraz buyutur.")
+HOOKIFY_SIM = (
+    "# Ollama profili onarimi: eski hookify surumleri 'hookify' paketini eklenti klasorunun ustunde\n"
+    "# ariyor, eklenti onbellekte surum klasorunde durunca bulamiyordu. Bu paket eklentinin kendisini gosterir.\n"
+    "import os\n"
+    "__path__ = [os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))]\n")
+
+
+def hookify_onar():
+    """'Hookify import error: No module named hookify' hatasını giderir (iki profilde de)."""
+    onarilan = 0
+    for kok in (ESKI, YENI):
+        for klasor, alt, dosyalar in os.walk(os.path.join(kok, "plugins")):
+            alt[:] = [a for a in alt if a not in ATLA]
+            if os.path.basename(klasor) != "hooks" or not os.path.isdir(os.path.join(os.path.dirname(klasor), "core")):
+                continue
+            if not any(_icerir(os.path.join(klasor, d), "hookify") for d in dosyalar if d.endswith(".py")):
+                continue
+            hedef = os.path.join(klasor, "hookify", "__init__.py")
+            os.makedirs(os.path.dirname(hedef), exist_ok=True)
+            with open(hedef, "w", encoding="utf-8") as f:
+                f.write(HOOKIFY_SIM)
+            onarilan += 1
+    if onarilan:
+        print("  hookify onarildi (%d kopya)" % onarilan)
+
+
+def _icerir(yol, metin):
+    try:
+        with open(yol, encoding="utf-8", errors="replace") as f:
+            return ("from %s." % metin) in f.read()
+    except OSError:
+        return False
+
+
+def onar():
+    """Hiçbir şeyi kapatmadan istemi küçültür: MCP'leri kapıya alır, hookify'ı onarır.
+    Önceki 'hafif mod' kapattıklarını da geri açar."""
+    eklenti_ayarlarini_aktar()
+    yedek = os.path.join(YENI, "mcp_yedek.json")
+    eski_yedek = json_oku(yedek)
+    toplam = kapi_kur(eski_yedek)
+    if eski_yedek:
+        os.remove(yedek)
+    print("  %d MCP sunucusu kapidan bagli: hepsi acik, model yalnizca 2 arac goruyor" % len(toplam))
+    hookify_onar()
+    print("\nTamam. MCP'lerin calistigini gormek icin menude 'MCP baglanti testi'ni sec.")
+
+
+def hafiza():
+    """claude-mem'in gözlem sağlayıcısını ücretsiz Gemini anahtarına geçirir (iki profil de kullanır)."""
+    yol = os.path.join(EV, ".claude-mem", "settings.json")
+    ayar = json_oku(yol)
+    print("claude-mem hafizasi su an: %s" % ayar.get("CLAUDE_MEM_PROVIDER", "claude"))
+    print("Ucretsiz Gemini anahtari: https://aistudio.google.com/app/apikey  (kart gerekmez)")
+    anahtar = input("Anahtari yapistir (vazgecmek icin bos Enter): ").strip()
+    if not anahtar:
+        print("Degisiklik yapilmadi.")
+        return
+    ayar.update({
+        "CLAUDE_MEM_PROVIDER": "gemini",
+        "CLAUDE_MEM_GEMINI_API_KEY": anahtar,
+        "CLAUDE_MEM_GEMINI_MODEL": "gemini-flash-lite-latest",  # ücretsizde dakikada en çok istek
+        "CLAUDE_MEM_GEMINI_RATE_LIMITING_ENABLED": "true",
+        "CLAUDE_MEM_SKIP_SUBAGENT_OBSERVATIONS": "true",  # ücretsiz kotayı alt ajanlar tüketmesin
+    })
+    json_yaz(yol, ayar)
+    print("Tamam: claude-mem artik Gemini ile calisiyor (yeniden baslatmak gerekmez).")
+
+
+def kapi_dene():
+    if not os.path.exists(KAPI_AYAR):
+        print("Kapida sunucu yok. Once 'Her seyi aktar' ya da 'Onar' sec.")
+        return
+    import subprocess
+    subprocess.call([sys.executable, KAPI_PY, KAPI_AYAR, "--dene"])
 
 
 def durum():
@@ -178,7 +260,11 @@ def durum():
         print("== %s (%s)" % (baslik, kok))
         for ad in KLASORLER:
             print("  %-9s %d" % (ad, say(os.path.join(kok, ad))))
-        print("  mcp       %d" % len(json_oku(jsn).get("mcpServers", {})))
+        mcp = json_oku(jsn).get("mcpServers", {})
+        if KAPI_AD in mcp:
+            print("  mcp       %d (kapidan; model 2 arac goruyor)" % len(kapi_sunuculari()))
+        else:
+            print("  mcp       %d" % len(mcp))
         ayar = json_oku(os.path.join(kok, "settings.json"))
         print("  eklenti   %d acik%s" % (sum(1 for v in ayar.get("enabledPlugins", {}).values() if v),
                                       ", hook'lar kapali" if ayar.get("disableAllHooks") else ""))
@@ -191,6 +277,9 @@ def sifirla():
     if yeni:
         yeni.pop("mcpServers", None)
         json_yaz(YENI_JSON, yeni)
+    for yol in (KAPI_AYAR, os.path.splitext(KAPI_AYAR)[0] + "_araclar.json"):
+        if os.path.exists(yol):
+            os.remove(yol)
     ayar = os.path.join(YENI, "settings.json")
     if os.path.exists(ayar):
         s = json_oku(ayar)
@@ -203,5 +292,6 @@ def sifirla():
 
 if __name__ == "__main__":
     komut = sys.argv[1] if len(sys.argv) > 1 else ""
-    {"hepsi": hepsi, "mcp": mcp_sec, "hafif": hafif, "durum": durum, "sifirla": sifirla}.get(
+    {"hepsi": hepsi, "mcp": mcp_sec, "onar": onar, "hafiza": hafiza,
+     "kapi": kapi_dene, "durum": durum, "sifirla": sifirla}.get(
         komut, lambda: print(__doc__))()
