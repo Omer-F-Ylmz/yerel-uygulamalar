@@ -10,7 +10,8 @@ $baslangic = Get-Date
 
 $oyunlar = @(
     @{ ad = 'TOKYO GHOUL [:re birth]'; desen = '*re*birth*'; sayfa = 'https://tokyo-ghoul-re-birth.en.uptodown.com/android/download' },
-    @{ ad = 'Tokyo Ghoul: Dark War'; desen = '*dark*war*'; sayfa = 'https://tokyo-ghoul-dark-war.en.uptodown.com/android/download';
+    # Uptodown'da Dark War indirilemiyor; Internet Archive'daki 1.1.6 dogrudan iner (tarayici gerekmez)
+    @{ ad = 'Tokyo Ghoul: Dark War'; desen = '*dark*war*'; sayfa = $null;
        yedek = 'https://archive.org/download/TokyoGhoulDarkWarV1.1.6Android36Youtube/Tokyo%20Ghoul%20Dark%20War_v1.1.6_android36_youtube.apk' }
 )
 
@@ -24,7 +25,7 @@ function Bul($desen) {
     return $null
 }
 
-$eksik = $oyunlar | Where-Object { -not (Bul $_.desen) }
+$eksik = $oyunlar | Where-Object { $_.sayfa -and -not (Bul $_.desen) }
 if ($eksik) {
     Write-Host ""
     Write-Host "Tarayicida $($eksik.Count) sayfa acilacak. Her birinde yesil 'Download' dugmesine bas." -ForegroundColor Yellow
