@@ -8,3 +8,8 @@ __pycache__/
 *.pyc
 .venv/
 *.log
+
+# Ben 10 / Flashpoint indirmeleri ve yerel ayarlar
+ben10/indir/
+ben10/fp_yolu.txt
+ben10/ilk_acilis_tamam
