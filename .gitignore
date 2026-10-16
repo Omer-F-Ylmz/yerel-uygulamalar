@@ -18,3 +18,7 @@ ben10/ilk_acilis_tamam*
 lua_cozulmus/
 out.txt
 /preferences.json
+
+# Tokyo Ghoul APK dosyalari (tg_gonder.bat parcalayip gonderir)
+tokyo_ghoul/*
+!tokyo_ghoul/BENI_OKU.txt

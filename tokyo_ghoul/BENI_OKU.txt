@@ -1,0 +1,6 @@
+Bu klasore iki oyunun APK (ya da XAPK) dosyalarini koy, sonra ana klasordeki tg_gonder.bat'i calistir.
+
+1) Tokyo Ghoul: Dark War   (paket adi: org.gamesamba.TokyoGhoul, son surum 1.2.x)
+2) TOKYO GHOUL [:re birth] (Ingilizce, son surum 2.2.4) ya da Japonca :re invoke
+
+Bu klasordeki dosyalar Git'e girmez; tg_gonder.bat onlari parcalara bolup gonderir.
