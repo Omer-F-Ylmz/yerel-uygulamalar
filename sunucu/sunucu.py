@@ -26,6 +26,7 @@ yon = Yonlendirici()
 durum = Durum()
 AYAR = {"port": 8881, "obb": None}
 OTURUM = "yerel-oturum"
+LOBI = {}  # "ilk": oyun girişinden sonra lobi yüklemesi sürüyor
 
 
 # ---------------------------------------------------------------- yardımcılar
@@ -84,7 +85,7 @@ def oyuncu_json(pid, o):
         "qualifily": {"qa": 0, "t": 0},
         "s_equipment_list": [],
         # 6 yuva şart: EquipDataManager.IsCanStrength equipInfoList[1..6] okur (PanMain.InitButtonTip)
-        "equip": [{"no": i + 1, "id": int("%d%d" % (on, pid)), "lv": 100, "blv": 18, "wlv": 5}
+        "equip": [{"no": i + 1, "id": int("%d%d" % (on, int(pid))), "lv": 100, "blv": 18, "wlv": 5}
                   for i, on in enumerate(EKIPMAN_ONEK)],
         "s_skill_list": [{"skill_id": s, "skill_level": o["beceri"]} for s in bilgi["beceriler"]],
         "other_skill_list": bilgi["diger_beceriler"],
@@ -267,6 +268,7 @@ def kaynak(yol, istek):
 def giris(alanlar, param, oturum, istek):
     if "uin" in alanlar:
         # Oyun sunucusu girişi: oturum kimliği ver, öğreticileri kapat.
+        LOBI["ilk"] = True
         return basarili({"session": OTURUM, "guide": 0})
     hesap = alanlar.get("id") or "Oyuncu"
     durum.hesap_ac(hesap)
@@ -322,7 +324,8 @@ op_yolu("/player_month_checkin", {}, lambda **_: basarili({"monthchckin": {
     "month_check_status": "0" * 31, "month_cumulative_prize_status": "00000",
     "last_checkin_ts": 0, "day": 0, "if_cancheck": 0}}))
 
-sabit_yol("/get_notice", {"notice_info": []})
+# Lobi ilk açılışta Window_PublicNotice'i açar ve her kaydın title/detail alanını metne ekler
+sabit_yol("/get_notice", {"notice_info": [{"title": "Yerel sunucu", "detail": "Hos geldin! Her sey acik ve sinirsiz."}]})
 
 op_yolu("/player_strength", {}, lambda **_: basarili({"strength": {
     "strength": kayit()["stamina"], "strength_cd": 0, "today_buy_times": 0, "free_get_status": 0,
@@ -333,14 +336,17 @@ sabit(16, 1601, lambda: {"elite": elite_json(kayit())})
 sabit(16, 1610, lambda: {"elite": elite_yildiz_json(kayit())})
 
 op_yolu("/player_mission", {
-    "get_growth_mission_day": lambda **_: basarili({"growth_mission_day": {}}),
+    # sayı olmalı: ActiveBagGiftData.setTaskMissionDay tonumber eder, isHaveFinishTask i > TaskDay karşılaştırır
+    "get_growth_mission_day": lambda **_: basarili({"growth_mission_day": 0}),
 }, lambda **_: basarili({"mission": {"mission": [], "is_gotpriaze": 0, "complete_cnts": 0}}))
 
 sabit_yol("/month_card", {"supreme_month_card": {"is_buy": 0, "is_receive": 0}})
 sabit_yol("/growth_fund", {"growth_fund": {"is_buy": 0, "count": 0, "accepted": []}})
 
 op_yolu("/cheer_leader", {}, lambda **_: basarili({"cheer_leader": {
-    "cheers": [{"id": int(a), "level": sv} for a, sv in kayit()["amigolar"].items()],
+    # index = kırılma kademesi 1-5 (CheerLeaderLevelUpLimit: her kademe 10 seviye); IsShowNotice index ister
+    "cheers": [{"id": int(a), "level": sv, "index": min(5, max(1, -(-sv // 10))), "exp": 0}
+               for a, sv in kayit()["amigolar"].items()],
     "select_cheers": [{"id": a} for a in kayit()["secili_amigolar"]]}}))
 
 sabit(24, 2401, {})
@@ -403,7 +409,22 @@ def rehber_kaydet(alanlar, baslangic=False, **_):
 
 
 op_yolu("/sync_guide_step", {"start_guide_step": lambda **a: rehber_kaydet(baslangic=True, **a)}, rehber_kaydet)
-sabit_yol("/time_pay_gift", {"gift_info": {"seconds": 0}})
+
+
+@yon.yol("/time_pay_gift")
+def sureli_hediye(**_):
+    """Lobi yüklemesinde son cevap bu olsun diye girişten sonraki ilk çağrı biraz bekletilir.
+
+    Lobi, her isteğin bayrağı true olunca bir sonraki CheckFinishRequest'te açılır. Son istek
+    PlayerBook_Info'nun işleyicisi bayrağı koyduktan sonra (OBB'deki yapılandırmada
+    data_player_book_point tablosu yok) hata verip CheckFinishRequest'e varamıyor; son cevap o olursa
+    lobi asılı kalır. FlashSale_TimeLimit işleyicisi ise CheckFinishRequest'i her zaman çağırır.
+    """
+    if LOBI.pop("ilk", False):
+        time.sleep(1.5)
+    return basarili({"gift_info": {"seconds": 0}})
+
+
 sabit_yol("/player_book", {"book_info": {"circle": 0, "fight_power": 0, "point_list": []}})
 
 # lobi açıldıktan sonra periyodik gelenler

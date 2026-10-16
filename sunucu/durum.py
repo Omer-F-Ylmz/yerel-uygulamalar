@@ -49,7 +49,7 @@ def yeni_kayit(hesap):
         "oyuncular": {str(o["id"]): full_oyuncu() for o in VERI["oyuncular"]},
         "secili": baslangic_takimi(),
         "canta": {str(e["id"]): 999 for e in VERI["esyalar"] if e["cantada"] and e["tur"] in (1, 2, 4)},
-        "amigolar": {str(a): 10 for a in VERI["amigolar"]},
+        "amigolar": {str(a): 50 for a in VERI["amigolar"]},  # 50: CheerLeaderLevelUp/TeamPlayerLevel tavanı
         "secili_amigolar": VERI["amigolar"][:4],
         "elite": {},
         "rehber": [],
