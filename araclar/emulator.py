@@ -3,6 +3,7 @@
 Kullanım:
   python emulator.py kur      -> OBB'yi yamalar, APK'yı kurar, yamalı OBB'yi kopyalar (bir kez)
   python emulator.py baglan   -> emülatörün 127.0.0.1:8881'ini bilgisayardaki sunucuya yönlendirir
+  python emulator.py teshis   -> oyunu yeniden başlatıp 45 sn'lik emülatör kaydını teshis.txt'ye yazar
 """
 import glob
 import os
@@ -112,11 +113,38 @@ def baglan():
     print("Emulator sunucuya baglandi (127.0.0.1:%d)." % PORT)
 
 
+def teshis():
+    import time
+    adb_yolu = adb_bul()
+    cihaz = cihaz_sec(adb_yolu)
+    a = lambda *x: adb(adb_yolu, "-s", cihaz, *x, kontrol=False)
+    a("reverse", "tcp:%d" % PORT, "tcp:%d" % PORT)
+    a("shell", "am", "force-stop", PAKET)
+    a("logcat", "-c")
+    print("Oyun baslatiliyor, 45 saniye bekleniyor...")
+    a("shell", "monkey", "-p", PAKET, "-c", "android.intent.category.LAUNCHER", "1")
+    time.sleep(45)
+    bilgi = [
+        "== cihaz: " + a("shell", "getprop", "ro.product.model") + " android " + a("shell", "getprop", "ro.build.version.release"),
+        "== abi: " + a("shell", "getprop", "ro.product.cpu.abilist"),
+        "== obb klasoru:\n" + a("shell", "ls", "-la", "/sdcard/Android/obb/%s/" % PAKET),
+        "== paket:\n" + a("shell", "dumpsys", "package", PAKET),
+        "== reverse:\n" + a("reverse", "--list"),
+        "== logcat:\n" + a("logcat", "-d", "-v", "time"),
+    ]
+    yol = os.path.join(KOK, "teshis.txt")
+    with open(yol, "w", encoding="utf-8", errors="replace") as f:
+        f.write("\n\n".join(bilgi))
+    print("Kayit yazildi:", yol)
+
+
 if __name__ == "__main__":
     komut = sys.argv[1] if len(sys.argv) > 1 else ""
     if komut == "kur":
         kur()
     elif komut == "baglan":
         baglan()
+    elif komut == "teshis":
+        teshis()
     else:
         hata(__doc__)
