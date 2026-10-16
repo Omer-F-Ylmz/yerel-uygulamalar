@@ -10,22 +10,22 @@ $baslangic = Get-Date
 
 $oyunlar = @(
     @{ ad = 'TOKYO GHOUL [:re birth]'; desen = '*re*birth*'; sayfa = 'https://tokyo-ghoul-re-birth.en.uptodown.com/android/download' },
-    # Uptodown'da Dark War indirilemiyor; Internet Archive'daki 1.1.6 dogrudan iner (tarayici gerekmez)
-    @{ ad = 'Tokyo Ghoul: Dark War'; desen = '*dark*war*'; sayfa = $null;
+    # Uptodown'da Dark War indirilemiyor; son surum 1.2.14 APKPure'da. Olmazsa Internet Archive'daki 1.1.6 iner.
+    @{ ad = 'Tokyo Ghoul: Dark War 1.2.14'; desen = '*dark*war*'; haric = '*1.1.6*'; sayfa = 'https://apkpure.net/tokyo-ghoul-dark-war/org.gamesamba.TokyoGhoul/download';
        yedek = 'https://archive.org/download/TokyoGhoulDarkWarV1.1.6Android36Youtube/Tokyo%20Ghoul%20Dark%20War_v1.1.6_android36_youtube.apk' }
 )
 
-function Bul($desen) {
+function Bul($desen, $haric = '-') {
     foreach ($yer in @($hedef, $indirilenler)) {
         $f = Get-ChildItem $yer -File -ErrorAction SilentlyContinue |
-             Where-Object { $_.Name -like $desen -and $_.Extension -in '.apk', '.xapk' } |
+             Where-Object { $_.Name -like $desen -and $_.Name -notlike $haric -and $_.Extension -in '.apk', '.xapk' } |
              Sort-Object LastWriteTime -Descending | Select-Object -First 1
         if ($f) { return $f }
     }
     return $null
 }
 
-$eksik = $oyunlar | Where-Object { $_.sayfa -and -not (Bul $_.desen) }
+$eksik = $oyunlar | Where-Object { $_.sayfa -and -not (Bul $_.desen $_.haric) }
 if ($eksik) {
     Write-Host ""
     Write-Host "Tarayicida $($eksik.Count) sayfa acilacak. Her birinde yesil 'Download' dugmesine bas." -ForegroundColor Yellow
@@ -36,7 +36,7 @@ if ($eksik) {
     $son = (Get-Date).AddMinutes(20)
     while ((Get-Date) -lt $son) {
         $kalan = $eksik | Where-Object {
-            $f = Bul $_.desen
+            $f = Bul $_.desen $_.haric
             -not $f -or ((Get-Date) - $f.LastWriteTime).TotalSeconds -lt 5   # hâlâ yazılıyor
         }
         $parcali = Get-ChildItem $indirilenler -File -ErrorAction SilentlyContinue |
@@ -50,7 +50,7 @@ if ($eksik) {
 }
 
 foreach ($o in $oyunlar) {
-    $f = Bul $o.desen
+    $f = Bul $o.desen $o.haric
     if (-not $f -and $o.yedek) {
         Write-Host "$($o.ad) bulunamadi; Internet Archive'daki eski surum indiriliyor..." -ForegroundColor Yellow
         $yol = Join-Path $hedef 'tokyo-ghoul-dark-war-1.1.6.apk'
