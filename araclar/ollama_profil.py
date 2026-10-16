@@ -41,20 +41,50 @@ def say(klasor):
     return len(os.listdir(klasor)) if os.path.isdir(klasor) else 0
 
 
+ATLA = {".git", "node_modules", "__pycache__"}
+
+
+def kopyala(kaynak, hedef, sayac, ziyaret=None):
+    """Bağlantıları (symlink/junction) gerçek yerine çözerek kopyalar; var olanın üzerine yazar.
+    shutil.copytree göreli bağlantıları kırık sanıp sessizce atladığı için kendi yürüyüşümüz."""
+    ziyaret = ziyaret if ziyaret is not None else set()
+    gercek = os.path.realpath(kaynak)
+    if gercek in ziyaret:  # döngüye giren bağlantı
+        return
+    ziyaret.add(gercek)
+    os.makedirs(hedef, exist_ok=True)
+    try:
+        girdiler = os.listdir(gercek)
+    except OSError:
+        sayac["atlanan"] += 1
+        return
+    for ad in girdiler:
+        if ad in ATLA:
+            continue
+        k, h = os.path.join(gercek, ad), os.path.join(hedef, ad)
+        cozulmus = os.path.realpath(k)
+        try:
+            if os.path.isdir(cozulmus):
+                kopyala(cozulmus, h, sayac, ziyaret)
+            elif os.path.isfile(cozulmus):
+                if os.path.islink(h) or (os.path.exists(h) and not os.path.isfile(h)):
+                    os.remove(h) if not os.path.isdir(h) else shutil.rmtree(h)
+                shutil.copy2(cozulmus, h)
+            else:
+                sayac["atlanan"] += 1  # gerçekten kırık bağlantı
+        except OSError:
+            sayac["atlanan"] += 1
+
+
 def klasorleri_aktar():
     for ad in KLASORLER:
         kaynak, hedef = os.path.join(ESKI, ad), os.path.join(YENI, ad)
         if not os.path.isdir(kaynak):
             continue
-        try:
-            # symlinks=False: bağlantının gösterdiği içerik kopyalanır (Windows'ta var olan bağlantı hatası olmaz)
-            shutil.copytree(kaynak, hedef, dirs_exist_ok=True, symlinks=False, ignore_dangling_symlinks=True,
-                            ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
-            atlanan = 0
-        except shutil.Error as hata:
-            atlanan = len(hata.args[0]) if hata.args and isinstance(hata.args[0], list) else 1
-        print("  %-9s %d oge aktarildi%s" % (ad, say(kaynak),
-                                             ("  (%d dosya kopyalanamadi, atlandi)" % atlanan) if atlanan else ""))
+        sayac = {"atlanan": 0}
+        kopyala(kaynak, hedef, sayac)
+        print("  %-9s %d oge aktarildi%s" % (ad, say(kaynak), ("  (%d dosya kopyalanamadi, atlandi)"
+                                                              % sayac["atlanan"]) if sayac["atlanan"] else ""))
 
 
 def eklenti_ayarlarini_aktar():
