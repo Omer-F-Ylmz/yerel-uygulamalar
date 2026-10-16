@@ -469,6 +469,10 @@ import magaza  # noqa: E402
 
 magaza.kur(yon, durum)
 
+import modlar  # noqa: E402
+
+modlar.kur(yon, durum)
+
 
 # ---------------------------------------------------------------- başlatma
 
