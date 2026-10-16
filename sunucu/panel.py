@@ -9,6 +9,8 @@ import os
 from cekirdek import Ham, json_yaz
 from durum import ESYA_VERI, OYUNCU_VERI, SINIR, VERI, full_oyuncu
 
+_CEVIRI_YOLU = os.path.join(os.path.dirname(os.path.abspath(__file__)), "veri", "ceviri_tr.json")
+CEVIRI = json.load(open(_CEVIRI_YOLU, encoding="utf-8")) if os.path.exists(_CEVIRI_YOLU) else {}
 SAYFA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "panel.html")
 SAYI_ALANLARI = ("gold", "gem", "star", "stamina", "vip", "rm_ticket")
 POZISYON = {1: "Pivot", 2: "Skorer", 3: "Oyun kurucu"}
@@ -27,11 +29,11 @@ def kur(yon, durum):
             "kaynak": {a: k[a] for a in SAYI_ALANLARI},
             "secili": k["secili"],
             "oyuncular": [
-                dict(id=o["id"], ad=o["ad"], pozisyon=POZISYON.get(o["pozisyon"], "?"),
+                dict(id=o["id"], ad=CEVIRI.get(o["ad"], o["ad"]), pozisyon=POZISYON.get(o["pozisyon"], "?"),
                      sahip=str(o["id"]) in k["oyuncular"], **k["oyuncular"].get(str(o["id"]), {}))
                 for o in VERI["oyuncular"]
             ],
-            "esyalar": [dict(id=e["id"], ad=e["ad"], tur=e["tur"], adet=k["canta"].get(str(e["id"]), 0))
+            "esyalar": [dict(id=e["id"], ad=CEVIRI.get(e["ad"], e["ad"]), tur=e["tur"], adet=k["canta"].get(str(e["id"]), 0))
                         for e in VERI["esyalar"] if e["cantada"]],
             "sinir": SINIR,
             "guc_carpani": k.get("guc_carpani", 2.5),
