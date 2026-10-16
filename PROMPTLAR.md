@@ -12,7 +12,11 @@ model her adımda ne yaptığını anlatacak, sen sonucu kontrol edip bir sonrak
    `devam et` yaz, değilse neyi beğenmediğini söyle.
 4. **İzin sorarsa oku.** Dosya silme, `git push`, büyük indirme gibi şeylere hemen "evet" deme.
 5. **Takılırsa:** en alttaki "Takıldığında" promptlarını kullan.
-6. **Model ne yaparsa yapsın `git push` yapmasın.** Sonucu beğenirsen bana "şu değişikliği yaptı" de,
+6. **Ultracode kapalı olsun.** Ultracode çok ajanlı çalışma modu; bedava modellerde bağlamı doldurup
+   "Autocompact is thrashing" hatasına yol açıyor. Ekranın sağ altında "ultracode" yazıyorsa kapat.
+7. **Model ve rapor:** Menüden en büyük bağlamlı modeli seç (1: nemotron-3-ultra). Proje klasöründeki
+   CLAUDE.md modele büyük dosyaları bütün okumamasını ve her işin sonunda RAPOR yazmasını söylüyor.
+8. **Model ne yaparsa yapsın `git push` yapmasın.** Sonucu beğenirsen bana "şu değişikliği yaptı" de,
    birlikte bakıp gönderelim. (Push'u yanlış dala yaparsa `guncelle.bat` karışır.)
 
 ---
@@ -184,6 +188,14 @@ Son değişikliğin bir şeyi bozdu. git diff ile ne değiştirdiğini göster, 
 ```
 Bunu kodda/kaynakta gördün mü, yoksa tahmin mi? Gördüysen dosya:satır ya da link ver.
 ```
+
+**Rapor yazmadan durdu:**
+```
+Ne yaptığını ve nerede kaldığını CLAUDE.md'deki RAPOR biçiminde yaz.
+```
+
+**"Autocompact is thrashing" yazdı:** Bir dosya bağlama sığmayacak kadar büyük. `/clear` yaz ve
+promptun sonuna şunu ekleyerek tekrar ver: `Büyük dosyaları bütün okuma, grep ile ara.`
 
 **"Prompt is too long" ya da çok yavaşladı:** `/compact` yaz; olmazsa `/clear` yazıp bulunduğun bölümün
 promptunu baştan ver.
