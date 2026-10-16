@@ -18,7 +18,7 @@ import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from cekirdek import Ham, Yonlendirici, basarili, hata, http_sunucu_kur  # noqa: E402
+from cekirdek import Ham, Yonlendirici, basarili, hata, http_sunucu_kur, param_coz  # noqa: E402
 from durum import CANTA_TURU, Durum, OYUNCU_VERI, ESYA_VERI, SINIR, VERI  # noqa: E402
 
 log = logging.getLogger("sunucu")
@@ -106,6 +106,9 @@ def canta_json(k):
     return canta
 
 
+STIL_PUANI = 30  # PointConfig id=1 (en fazla puan); fazlası PlayerStyleData'da eksi süre üretir
+
+
 def oyuncu_bilgisi_json(k):
     return {
         "uname": k["hesap"],
@@ -116,25 +119,39 @@ def oyuncu_bilgisi_json(k):
         "rm_ticket_cd": 0,
         "star": k["star"],
         "cd_liveshow": 0,
-        "point": 999,
+        "point": STIL_PUANI,
         "point_cd": 0,
         "point_last_update_ts": simdi(),
     }
 
 
+# GuideBaseInfo (1001-1033), Lua'nın sorduğu zayıf rehberler ve maç içi rehberler (MatchManager).
+# Hepsi "bitti" sayılır: GuideManager.isFinishGuildById true döner, hiçbir öğretici başlamaz.
+REHBERLER = (list(range(1001, 1034)) + [1803] + list(range(2001, 2025)) + [2050, 6666]
+             + list(range(11000001, 11000005)))
+
+
 def rehber_json(k):
-    return {"type": 0, "step": 0, "all": [{"type": t, "step": 0} for t in k["rehber"]], "start": []}
+    bitti = sorted(set(REHBERLER) | set(k["rehber"]))
+    return {"type": 0, "step": 0, "all": [{"type": t, "step": 0} for t in bitti],
+            "start": [{"type": t, "step": 0} for t in k.get("rehber_baslangic", [])]}
 
 
 def takim_gucu(k):
     return sum(oyuncu_json(s["id"], k["oyuncular"][str(s["id"])])["fight"] for s in k["secili"])
 
 
+# TeamPlayerIcon tablosundaki oyuncu dışı ikonlar; oyuncu ikonları sahip olunan oyunculardan gelir
+TAKIM_IKONLARI = [1, 2, 8, 11] + list(range(15, 37))
+
+
 def ballteam_json(k):
     t = k["takim"]
     return {
         "ballteam": {"name": t["ad"], "icon": t["ikon"], "level": t["seviye"], "exp": t["exp"],
-                     "icons": [], "prizelog": []},
+                     "icons": [{"icon": i} for i in TAKIM_IKONLARI + [int(p) for p in k["oyuncular"]]],
+                     # prizelog rakam dizisidir (PanMainDataManager.GetTeamPrizeStatus string.len yapar)
+                     "prizelog": ""},
         "fight": takim_gucu(k),
         "arena_max": 0,
     }
@@ -302,7 +319,7 @@ sabit_yol("/get_notice", {"notice_info": []})
 
 op_yolu("/player_strength", {}, lambda **_: basarili({"strength": {
     "strength": kayit()["stamina"], "strength_cd": 0, "today_buy_times": 0, "free_get_status": 0,
-    "styles_points": 999, "styles_last_update_ts": simdi(), "last_update_ts": simdi(), "cd": 0}}))
+    "styles_points": STIL_PUANI, "styles_last_update_ts": simdi(), "last_update_ts": simdi(), "cd": 0}}))
 
 sabit(2, 1, {"story": {"stage_list": [], "ts_l": 0, "ts_lc": 0, "cur_count": 0}})
 sabit(16, 1601, lambda: {"elite": elite_json(kayit())})
@@ -343,8 +360,16 @@ op_yolu("/seven", {}, lambda **_: basarili({"seven_count": 0, "can_sign": 0}))
 sabit(40, 4003, {"ars": {"sl": 0, "ss": 0, "sr": 0}})
 op_yolu("/reward_mission", {}, lambda **_: basarili({"reward_mission": {
     "max_acpt": 0, "buy_num": 0, "buy_gem": 0, "spec": [], "acpted": [], "acpt": []}}))
-sabit(21, 2103, {"ladder": {"st": 0, "c": 0, "cb": 0, "ts": 0, "r": 0, "rh": 0, "cd": 0, "tl": [],
-                            "el": [], "ts_n": 0, "ta": 0}})
+def ladder_json(k):
+    """RankBattleDataManager.InitDataInRankStage dl[1].plist (3 oyuncu), dc ve dl[1].fight okur."""
+    secili = [{"pos": s["pos"], "id": s["id"]} for s in k["secili"]]
+    return {"ladder": {"st": 0, "c": 0, "cb": 0, "ts": 0, "r": 0, "rh": 0, "cd": 0, "ts_n": 0, "ta": 0, "el": [],
+                       "tl": [{"index": 1, "status": 1, "plist": secili}],
+                       "dl": [{"plist": secili, "fight": takim_gucu(k)}],
+                       "dc": (k["secili_amigolar"] or [0])[0]}}
+
+
+sabit(21, 2103, lambda: ladder_json(kayit()))
 sabit(10, 1001, {"trial": {}, "trial_count": []})
 sabit(47, 4701, {"league": {}, "stage_list": []})
 sabit(51, 5101, {"restriction": {}, "pl": []})
@@ -357,6 +382,20 @@ op_yolu("/facebook_gift", {}, lambda **_: basarili({"info": {"fan_count": 0, "li
 sabit(58, 5811, {"ll": []})
 sabit(60, 6003, {"act_trial": {"trial_count": 0}})
 sabit(110, 11001, {"guide": 0})
+
+
+def rehber_kaydet(alanlar, baslangic=False, **_):
+    """GuideCom.lua: data={"datalist":[{"type":..,"step":..}]}; cevapta guide_step.all/start şart."""
+    turler = [int(d["type"]) for d in param_coz(alanlar.get("data", "")).get("datalist", []) if "type" in d]
+    with durum.kilit:
+        k = kayit()
+        liste = k.setdefault("rehber_baslangic", []) if baslangic else k["rehber"]
+        liste.extend(t for t in turler if t not in liste)
+        durum.kaydet()
+    return basarili({"guide_step": rehber_json(kayit())})
+
+
+op_yolu("/sync_guide_step", {"start_guide_step": lambda **a: rehber_kaydet(baslangic=True, **a)}, rehber_kaydet)
 sabit_yol("/time_pay_gift", {"gift_info": {"seconds": 0}})
 sabit_yol("/player_book", {"book_info": {"circle": 0, "fight_power": 0, "point_list": []}})
 
