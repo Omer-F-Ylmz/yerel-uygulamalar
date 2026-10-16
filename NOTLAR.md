@@ -6,7 +6,8 @@
 
 ## Teknik yapı
 - Unity (Mono) + uLua. C# kabuk `Assembly-CSharp.dll`, oyun mantığı Lua betiklerinde.
-- Lua betikleri `StreamingAssets/Lua/` altında, yani OBB içinde; şifreli olabilir (`ReadEncryLua`).
+- Lua betikleri OBB içinde `assets/Lua/` altında (2278 dosya). Şifre: her bayt XOR 0xFF.
+  Çözmek için: `python araclar/lua_coz.py <assets/Lua> <cikis>`
 - Açılışta CDN'den kaynak güncellemesi kontrolü var (`PanUpdateRescources`, `PanCheckPersistantResources`).
 
 ## Ağ
