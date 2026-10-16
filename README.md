@@ -14,7 +14,7 @@ Her şey açık ve sınırsız başlar; yaptığın her şey bilgisayarına kayd
 
 1. `guncelle.bat` → en güncel sunucu kodunu çeker.
 2. LDPlayer'ı aç, ana ekran gelsin.
-3. `kur.bat` → OBB'yi yamalar, oyunu emülatöre kurar, yamalı OBB'yi yerine kopyalar.
+3. `kur.bat` → oyunu emülatöre kurar, orijinal OBB'yi ve yerel sunucu yamalarını kopyalar.
 
 ## Oynamak (her seferinde)
 
@@ -46,6 +46,7 @@ Silersen her şey baştan (ama yine her şey açık ve sınırsız) başlar.
 | `kur.bat` "adb bulunamadı" diyor | LDPlayer kurulu mu? Değilse [platform-tools](https://developer.android.com/tools/releases/platform-tools)'u indir, `platform-tools` klasörünü bu klasöre koy. |
 | "Açık bir emülatör bulunamadı" | Emülatör açık ve ADB yerel bağlantısı açık olmalı (yukarıdaki ayar). |
 | Oyun açılışta "ağ" hatası verip bekliyor | `baslat.bat` penceresi açık mı? Emülatörü sonradan açtıysan `baslat.bat`'ı kapatıp yeniden çalıştır. |
+| Oyun açılış logosunda kalıyor | `baslat.bat` açıkken `teshis.bat`'ı çalıştır; emülatör kaydını toplayıp gönderir. |
 | Başka bir sorun | `baslat.bat` penceresindeki son satırların ekran görüntüsünü gönder. |
 
 ## Klasörler
