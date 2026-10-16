@@ -1,0 +1,10 @@
+# APK dosyaları büyük, Google Drive üzerinden taşınır
+*.apk
+*.xapk
+apk/*
+!apk/.gitkeep
+
+__pycache__/
+*.pyc
+.venv/
+*.log
