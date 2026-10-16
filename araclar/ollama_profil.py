@@ -47,17 +47,17 @@ ATLA = {".git", "node_modules", "__pycache__"}
 def kopyala(kaynak, hedef, sayac, ziyaret=None):
     """Bağlantıları (symlink/junction) gerçek yerine çözerek kopyalar; var olanın üzerine yazar.
     shutil.copytree göreli bağlantıları kırık sanıp sessizce atladığı için kendi yürüyüşümüz."""
-    ziyaret = ziyaret if ziyaret is not None else set()
+    ziyaret = ziyaret if ziyaret is not None else set()  # yalnızca şu anki yolun ataları (döngü kontrolü)
     gercek = os.path.realpath(kaynak)
-    if gercek in ziyaret:  # döngüye giren bağlantı
+    if gercek in ziyaret:  # kendi atasını gösteren bağlantı: sonsuz döngü olurdu
         return
-    ziyaret.add(gercek)
     os.makedirs(hedef, exist_ok=True)
     try:
         girdiler = os.listdir(gercek)
     except OSError:
         sayac["atlanan"] += 1
         return
+    ziyaret.add(gercek)
     for ad in girdiler:
         if ad in ATLA:
             continue
@@ -74,6 +74,7 @@ def kopyala(kaynak, hedef, sayac, ziyaret=None):
                 sayac["atlanan"] += 1  # gerçekten kırık bağlantı
         except OSError:
             sayac["atlanan"] += 1
+    ziyaret.discard(gercek)
 
 
 def klasorleri_aktar():
