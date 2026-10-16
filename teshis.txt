@@ -1,0 +1,615 @@
+== cihaz: SOV44 android 9
+
+== abi: x86_64,x86,arm64-v8a,armeabi-v7a,armeabi
+
+== obb klasoru:
+total 164904
+drwxrwx--x 2 u0_a60 sdcard_rw      4096 2026-10-16 09:37 .
+drwxrwx--x 3 root   sdcard_rw      4096 2026-10-16 09:37 ..
+-rw-rw---- 1 u0_a60 sdcard_rw 168853495 2026-10-16 09:37 main.31.com.seastar.gpplay.streetball.obb
+
+== paket:
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        180b2af com.seastar.gpplay.streetball/com.longtu.SuperStar.MainActivity filter 2bddf4f
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+          Category: "android.intent.category.LEANBACK_LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      android.intent.action.SCREEN_OFF:
+        c9796bc com.seastar.gpplay.streetball/com.longtu.SuperStar.Boot filter 7f53562
+          Action: "android.intent.action.SCREEN_ON"
+          Action: "android.intent.action.SCREEN_OFF"
+          Action: "android.intent.action.USER_PRESENT"
+      android.intent.action.SCREEN_ON:
+        c9796bc com.seastar.gpplay.streetball/com.longtu.SuperStar.Boot filter 7f53562
+          Action: "android.intent.action.SCREEN_ON"
+          Action: "android.intent.action.SCREEN_OFF"
+          Action: "android.intent.action.USER_PRESENT"
+      com.android.vending.INSTALL_REFERRER:
+        de0a645 com.seastar.gpplay.streetball/com.appsflyer.MultipleInstallBroadcastReceiver filter 577c6f3
+          Action: "com.android.vending.INSTALL_REFERRER"
+        9ae019a com.seastar.gpplay.streetball/com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver filter b70de29
+          Action: "com.android.vending.INSTALL_REFERRER"
+      com.google.android.c2dm.intent.RECEIVE:
+        aafcacb com.seastar.gpplay.streetball/com.google.android.gms.gcm.GcmReceiver filter 58fefb0
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+        a562a8 com.seastar.gpplay.streetball/com.google.firebase.iid.FirebaseInstanceIdReceiver filter f7545ae
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+          Action: "com.google.android.c2dm.intent.REGISTRATION"
+          Category: "com.seastar.gpplay.streetball"
+      android.intent.action.USER_PRESENT:
+        c9796bc com.seastar.gpplay.streetball/com.longtu.SuperStar.Boot filter 7f53562
+          Action: "android.intent.action.SCREEN_ON"
+          Action: "android.intent.action.SCREEN_OFF"
+          Action: "android.intent.action.USER_PRESENT"
+      com.google.android.c2dm.intent.REGISTRATION:
+        a562a8 com.seastar.gpplay.streetball/com.google.firebase.iid.FirebaseInstanceIdReceiver filter f7545ae
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+          Action: "com.google.android.c2dm.intent.REGISTRATION"
+          Category: "com.seastar.gpplay.streetball"
+
+Service Resolver Table:
+  Non-Data Actions:
+      com.google.firebase.INSTANCE_ID_EVENT:
+        6a61c1 com.seastar.gpplay.streetball/com.longtu.SuperStar.MyFirebaseInstanceIdService filter e15d1d6
+          Action: "com.google.firebase.INSTANCE_ID_EVENT"
+        35a9d66 com.seastar.gpplay.streetball/com.google.firebase.iid.FirebaseInstanceIdService filter 75e344
+          Action: "com.google.firebase.INSTANCE_ID_EVENT"
+          mPriority=-500, mOrder=0, mHasPartialTypes=false
+      com.google.firebase.MESSAGING_EVENT:
+        c6e48a7 com.seastar.gpplay.streetball/com.longtu.SuperStar.MainFireBaseMessagingService filter a58e1f1
+          Action: "com.google.firebase.MESSAGING_EVENT"
+        d420154 com.seastar.gpplay.streetball/com.google.firebase.messaging.FirebaseMessagingService filter 808ac2d
+          Action: "com.google.firebase.MESSAGING_EVENT"
+          mPriority=-500, mOrder=0, mHasPartialTypes=false
+      com.google.android.gms.iid.InstanceID:
+        c7a58fd com.seastar.gpplay.streetball/com.appsflyer.InstanceIDListener filter 6bdbc57
+          Action: "com.google.android.gms.iid.InstanceID"
+
+Permissions:
+  Permission [com.seastar.gpplay.streetball.permission.C2D_MESSAGE] (7e329f2):
+    sourcePackage=com.seastar.gpplay.streetball
+    uid=10060 gids=null type=0 prot=signature
+    perm=Permission{5acc843 com.seastar.gpplay.streetball.permission.C2D_MESSAGE}
+    packageSetting=PackageSetting{667dec0 com.seastar.gpplay.streetball/10060}
+
+Registered ContentProviders:
+  com.seastar.gpplay.streetball/com.google.firebase.provider.FirebaseInitProvider:
+    Provider{89887f9 com.seastar.gpplay.streetball/com.google.firebase.provider.FirebaseInitProvider}
+  com.seastar.gpplay.streetball/com.facebook.internal.FacebookInitProvider:
+    Provider{5f5f33e com.seastar.gpplay.streetball/com.facebook.internal.FacebookInitProvider}
+
+ContentProvider Authorities:
+  [com.seastar.gpplay.streetball.firebaseinitprovider]:
+    Provider{89887f9 com.seastar.gpplay.streetball/com.google.firebase.provider.FirebaseInitProvider}
+      applicationInfo=ApplicationInfo{9c9a59f com.seastar.gpplay.streetball}
+  [com.seastar.gpplay.streetball.FacebookInitProvider]:
+    Provider{5f5f33e com.seastar.gpplay.streetball/com.facebook.internal.FacebookInitProvider}
+      applicationInfo=ApplicationInfo{9c9a59f com.seastar.gpplay.streetball}
+
+Key Set Manager:
+  [com.seastar.gpplay.streetball]
+      Signing KeySets: 10
+
+Packages:
+  Package [com.seastar.gpplay.streetball] (667dec0):
+    userId=10060
+    pkg=Package{34c26ec com.seastar.gpplay.streetball}
+    codePath=/data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==
+    resourcePath=/data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==
+    legacyNativeLibraryDir=/data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==/lib
+    primaryCpuAbi=x86
+    secondaryCpuAbi=null
+    versionCode=31 minSdk=15 targetSdk=25
+    versionName=1.1.8
+    splits=[base]
+    apkSigningVersion=2
+    applicationInfo=ApplicationInfo{9c9a59f com.seastar.gpplay.streetball}
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ]
+    dataDir=/data/user/0/com.seastar.gpplay.streetball
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesLibraries:
+      org.apache.http.legacy
+    usesLibraryFiles:
+      /system/framework/org.apache.http.legacy.boot.jar
+    timeStamp=2026-10-16 09:37:33
+    firstInstallTime=2026-10-16 09:37:33
+    lastUpdateTime=2026-10-16 09:37:33
+    signatures=PackageSignatures{1d0aab5 version:2, signatures:[1eb9ce7c], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    declared permissions:
+      com.seastar.gpplay.streetball.permission.C2D_MESSAGE: prot=signature, INSTALLED
+    requested permissions:
+      com.bbk.account.permission.READ_ACCOUNTINFO
+      com.bbk.account.permission.WRITE_ACCOUNTINFO
+      android.permission.GET_ACCOUNTS
+      android.permission.MANAGE_ACCOUNTS
+      android.permission.AUTHENTICATE_ACCOUNTS
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.ACCESS_WIFI_STATE
+      android.permission.READ_PHONE_STATE
+      android.permission.INTERNET
+      android.permission.CHANGE_CONFIGURATION
+      android.permission.WRITE_EXTERNAL_STORAGE
+      android.permission.READ_EXTERNAL_STORAGE
+      android.permission.RESTART_PACKAGES
+      android.permission.KILL_BACKGROUND_PROCESSES
+      android.permission.REORDER_TASKS
+      android.permission.SYSTEM_ALERT_WINDOW
+      android.permission.GET_TASKS
+      android.permission.REAL_GET_TASKS
+      com.android.vending.BILLING
+      android.permission.WAKE_LOCK
+      com.seastar.gpplay.streetball.permission.C2D_MESSAGE
+      com.google.android.c2dm.permission.RECEIVE
+      android.permission.USE_CREDENTIALS
+    install permissions:
+      com.google.android.c2dm.permission.RECEIVE: granted=true
+      android.permission.RESTART_PACKAGES: granted=true
+      android.permission.USE_CREDENTIALS: granted=true
+      android.permission.MANAGE_ACCOUNTS: granted=true
+      com.seastar.gpplay.streetball.permission.C2D_MESSAGE: granted=true
+      android.permission.GET_TASKS: granted=true
+      android.permission.AUTHENTICATE_ACCOUNTS: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.REORDER_TASKS: granted=true
+      com.android.vending.BILLING: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.KILL_BACKGROUND_PROCESSES: granted=true
+      android.permission.ACCESS_WIFI_STATE: granted=true
+      android.permission.WAKE_LOCK: granted=true
+    User 0: ceDataInode=918016 installed=true hidden=false suspended=false stopped=true notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003]
+      runtime permissions:
+        android.permission.READ_EXTERNAL_STORAGE: granted=true
+        android.permission.READ_PHONE_STATE: granted=true
+        android.permission.WRITE_EXTERNAL_STORAGE: granted=true
+
+Package Changes:
+  Sequence number=13
+  User 0:
+    seq=11, package=com.seastar.gpplay.streetball
+    seq=12, package=com.google.android.gms
+
+
+Dexopt state:
+  [com.seastar.gpplay.streetball]
+    path: /data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==/base.apk
+      x86: [status=speed-profile] [reason=install]
+
+
+Compiler stats:
+  [com.seastar.gpplay.streetball]
+     base.apk - 437
+
+== reverse:
+host-10 tcp:8881 tcp:8881
+
+== logcat:
+--------- beginning of main
+10-16 09:44:25.329 W/libprocessgroup( 1590): kill(-4391, 9) failed: No such process
+10-16 09:44:25.329 I/libprocessgroup( 1590): Successfully killed process cgroup uid 10060 pid 4391 in 42ms
+--------- beginning of system
+10-16 09:44:25.336 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.338 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_KILL flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.355 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.362 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '4010' (No space left on device); fd=24
+10-16 09:44:25.364 D/BoundBrokerSvc( 4010): onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+10-16 09:44:25.364 D/BoundBrokerSvc( 4010): Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+10-16 09:44:25.369 E/EGL_emulation( 2300): tid 2523: eglSurfaceAttrib(1504): error 0x3009 (EGL_BAD_MATCH)
+10-16 09:44:25.369 W/OpenGLRenderer( 2300): Failed to set EGL_SWAP_BEHAVIOR on surface 0x7638708e2500, error=EGL_BAD_MATCH
+10-16 09:44:25.369 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.369 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 23 lines
+10-16 09:44:25.369 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.377 D/AppStartReceiver( 2300): action = com.ldmnq.APP_KILL, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:25.383 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2939' (No space left on device); fd=24
+10-16 09:44:25.410 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.413 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.android.ld.appstore -f 32 --es package com.ldmnq.launcher3 --es pos pc
+10-16 09:44:25.413 D/ldinit  ( 1455): result:
+10-16 09:44:25.419 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:25.421 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.430 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_FOREGROUND, extras = Bundle[{package=com.ldmnq.launcher3, pos=pc}]
+10-16 09:44:25.430 I/appproc ( 4571): app_process main with argv: /system/bin com.android.commands.monkey.Monkey -p com.seastar.gpplay.streetball -c android.intent.category.LAUNCHER 1 
+10-16 09:44:25.430 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.430 D/AndroidRuntime( 4571): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+10-16 09:44:25.433 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.ldmnq.launcher3 -f 32 --es package com.ldmnq.launcher3 --es pos pc
+10-16 09:44:25.433 D/ldinit  ( 1455): result:
+10-16 09:44:25.433 E/cutils-trace( 4571): Error opening trace file: No such file or directory (2)
+10-16 09:44:25.438 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.448 V/libnb   ( 4571): enter native_bridge2_isCompatibleWith 3
+10-16 09:44:25.455 I/libnb   ( 4571): Found /system/lib64/libhoudini.so version 3
+10-16 09:44:25.458 D/AppStartReceiver( 2300): action = com.ldmnq.APP_FOREGROUND, packageName = com.ldmnq.launcher3, pos = pc
+10-16 09:44:25.458 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.481 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.481 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 28 lines
+10-16 09:44:25.481 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.482 I/app_process( 4571): The ClassLoaderContext is a special shared library.
+10-16 09:44:25.482 W/app_process( 4571): Could not create mount namespace.
+10-16 09:44:25.482 D/nativebridge( 4571): PreInitializeNativeBridge name=unknown instruction_set=x86_64
+10-16 09:44:25.482 W/nativebridge( 4571): Failed to bind-mount /data/local/cfg-zheni/ as /proc/cpuinfo: No such file or directory
+10-16 09:44:25.482 W/nativebridge( 4571): Failed to bind-mount /system/lib64/x86_64/cpuinfo as /proc/cpuinfo: Operation not permitted
+10-16 09:44:25.482 D/nativebridge( 4571): call UnloadNativeBridge! state=2
+10-16 09:44:25.500 D/AndroidRuntime( 4571): Calling main entry com.android.commands.monkey.Monkey
+10-16 09:44:25.500 W/Monkey  ( 4571): args: [-p, com.seastar.gpplay.streetball, -c, android.intent.category.LAUNCHER, 1]
+10-16 09:44:25.500 W/Monkey  ( 4571):  arg: "-p"
+10-16 09:44:25.500 W/Monkey  ( 4571):  arg: "com.seastar.gpplay.streetball"
+10-16 09:44:25.500 W/Monkey  ( 4571):  arg: "-c"
+10-16 09:44:25.500 W/Monkey  ( 4571):  arg: "android.intent.category.LAUNCHER"
+10-16 09:44:25.500 W/Monkey  ( 4571):  arg: "1"
+10-16 09:44:25.500 W/Monkey  ( 4571): data="com.seastar.gpplay.streetball"
+10-16 09:44:25.500 W/Monkey  ( 4571): data="android.intent.category.LAUNCHER"
+10-16 09:44:25.517 W/BroadcastQueue( 1590): Skipping deliver [background] BroadcastRecord{e583c6a u-1 android.net.conn.CONNECTIVITY_CHANGE} to ReceiverList{1f6355b 4571 (unknown name)/2000/u-1 remote:4de810c}: process gone or crashing
+10-16 09:44:25.519 I/ActivityManager( 1590): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.seastar.gpplay.streetball/com.longtu.SuperStar.MainActivity} from uid 2000
+10-16 09:44:25.522 W/Binder  ( 1590): Outgoing transactions from this process must be FLAG_ONEWAY
+10-16 09:44:25.522 W/Binder  ( 1590): java.lang.Throwable
+10-16 09:44:25.522 W/Binder  ( 1590): 	at android.os.BinderProxy.transact(Binder.java:1114)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at android.app.IActivityController$Stub$Proxy.activityStarting(IActivityController.java:176)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityStarter.startActivity(ActivityStarter.java:745)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityStarter.startActivity(ActivityStarter.java:551)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityStarter.startActivityMayWait(ActivityStarter.java:1156)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityStarter.execute(ActivityStarter.java:490)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityManagerService.startActivityAsUser(ActivityManagerService.java:5211)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityManagerService.startActivityAsUser(ActivityManagerService.java:5112)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityManagerService.startActivity(ActivityManagerService.java:5103)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at android.app.IActivityManager$Stub.onTransact$startActivity$(IActivityManager.java:10088)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:122)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:3309)
+10-16 09:44:25.522 W/Binder  ( 1590): 	at android.os.Binder.execTransact(Binder.java:731)
+10-16 09:44:25.524 I/Monkey  ( 4571): Events injected: 1
+10-16 09:44:25.525 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2300' (No space left on device); fd=24
+10-16 09:44:25.525 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:45 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.542 V/SettingsProvider( 1590): Notifying for 0: content://settings/system/user_rotation
+10-16 09:44:25.542 V/SettingsProvider( 1590): Notifying for 0: content://settings/system/accelerometer_rotation
+10-16 09:44:25.542 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.542 D/ldinit  ( 1455): result:
+10-16 09:44:25.565 I/Monkey  ( 4571): ## Network stats: elapsed time=23ms (0ms mobile, 0ms wifi, 23ms not connected)
+10-16 09:44:25.565 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:25.566 D/libnativeloader( 1429): CrashArm64 config not exist or not readable: /system/vendor/firmware_mnt/zheni/CrashArm64
+10-16 09:44:25.566 I/Zygote  ( 1429): IsCopy  libcrashcatcher: 0
+10-16 09:44:25.568 I/app_process( 4571): System.exit called, status: 0
+10-16 09:44:25.568 I/AndroidRuntime( 4571): VM exiting with result code 0.
+10-16 09:44:25.569 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_FOREGROUND, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:25.569 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.570 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.570 D/ldinit  ( 1455): result:
+10-16 09:44:25.578 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.595 W/ActivityManager( 1590): Slow operation: 62ms so far, now at startProcess: done updating battery stats
+10-16 09:44:25.595 W/ActivityManager( 1590): Slow operation: 62ms so far, now at startProcess: building log message
+10-16 09:44:25.595 I/ActivityManager( 1590): Start proc 4598:com.seastar.gpplay.streetball/u0a60 for activity com.seastar.gpplay.streetball/com.longtu.SuperStar.MainActivity
+10-16 09:44:25.595 W/ActivityManager( 1590): Slow operation: 62ms so far, now at startProcess: starting to update pids map
+10-16 09:44:25.595 W/ActivityManager( 1590): Slow operation: 62ms so far, now at startProcess: done updating pids map
+10-16 09:44:25.606 W/nativebridge( 4598): Failed to bind-mount /data/local/cfg-zheni/ as /proc/cpuinfo: Not a directory
+10-16 09:44:25.608 I/Zygote  ( 4598): seccomp disabled by setenforce 0
+10-16 09:44:25.608 D/nativebridge( 4598): call UnloadNativeBridge! state=1
+10-16 09:44:25.610 E/play.streetbal( 4598): Not starting debugger since process cannot load the jdwp agent.
+10-16 09:44:25.612 D/AppStartReceiver( 2300): action = com.ldmnq.APP_FOREGROUND, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:25.613 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.618 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '4598' (No space left on device); fd=27
+10-16 09:44:25.642 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.645 I/play.streetbal( 4598): The ClassLoaderContext is a special shared library.
+10-16 09:44:25.647 D/libnativeloader( 4598): INJECT Failed to open gspd.json
+10-16 09:44:25.650 D/libnativeloader( 4598): CrashArm64 config not exist or not readable: /system/vendor/firmware_mnt/zheni/CrashArm64
+10-16 09:44:25.664 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_START -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.664 D/ldinit  ( 1455): result:
+10-16 09:44:25.667 D/FirebaseApp( 4598): com.google.firebase.auth.FirebaseAuth is not linked. Skipping initialization.
+10-16 09:44:25.670 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_START flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:25.670 D/FirebaseApp( 4598): com.google.firebase.crash.FirebaseCrash is not linked. Skipping initialization.
+10-16 09:44:25.672 I/FA      ( 4598): App measurement is starting up, version: 9683
+10-16 09:44:25.672 I/FA      ( 4598): To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+10-16 09:44:25.673 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_START, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:25.680 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.680 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_START -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.680 D/ldinit  ( 1455): result:
+10-16 09:44:25.683 I/FA      ( 4598): To enable faster debug mode event logging run:
+10-16 09:44:25.683 I/FA      ( 4598):   adb shell setprop firebase.analytics.debug-mode com.seastar.gpplay.streetball
+10-16 09:44:25.684 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.684 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 26 lines
+10-16 09:44:25.684 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.685 I/FirebaseInitProvider( 4598): FirebaseApp initialization successful
+10-16 09:44:25.688 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_START flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.698 D/NetworkSecurityConfig( 4598): No Network Security Config specified, using platform default
+10-16 09:44:25.702 D/AppStartReceiver( 2300): action = com.ldmnq.APP_START, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:25.702 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.722 D/OpenGLRenderer( 4598): Skia GL Pipeline
+10-16 09:44:25.730 E/PopupManager( 4598): No content view usable to display popups. Popups will not be displayed in response to this client's calls. Use setViewForPopups() to set your content view.
+10-16 09:44:25.733 W/Java7Support( 4598): Unable to load JDK7 types (annotations, java.nio.file.Path): no Java7 support added
+10-16 09:44:25.739 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2842' (No space left on device); fd=24
+10-16 09:44:25.741 W/System  ( 4598): A resource failed to call close. 
+10-16 09:44:25.748 I/AppsFlyer_4.6.5( 4598): setCustomerUserId = 2
+10-16 09:44:25.749 D/AppsFlyer_4.6.5( 4598): Build Number: 300
+10-16 09:44:25.749 D/AppsFlyer_4.6.5( 4598): Loading properties..
+10-16 09:44:25.749 D/AppsFlyer_4.6.5( 4598): Done loading properties: true
+10-16 09:44:25.808 I/ActivityManager( 1590): START u0 {cmp=com.seastar.gpplay.streetball/com.longtu.SuperStar.SecondActivity} from uid 10060
+10-16 09:44:25.816 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:45 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.816 D/JQLM    ( 4598): platStart
+10-16 09:44:25.816 I/AppsFlyer_4.6.5( 4598): onBecameForeground
+10-16 09:44:25.817 D/JQLM    ( 4598): platResume
+10-16 09:44:25.817 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.817 D/ldinit  ( 1455): result:
+10-16 09:44:25.817 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.822 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:25.832 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.832 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 34 lines
+10-16 09:44:25.832 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.837 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_FOREGROUND, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:25.837 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.838 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.838 D/ldinit  ( 1455): result:
+10-16 09:44:25.842 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.864 D/AppStartReceiver( 2300): action = com.ldmnq.APP_FOREGROUND, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:25.864 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.882 I/        ( 4598): fastpipe: Connect success
+10-16 09:44:25.883 I/        ( 4598): fastpipe: Connect success
+10-16 09:44:25.884 D/HostConnection( 4598): HostRPC::connect sucess: app=com.seastar.gpplay.streetball, pid=4598, tid=4668, this=0xd1788940
+10-16 09:44:25.884 D/HostConnection( 4598): queryAndSetGLESMaxVersion select gles-version: 3.1 hostGLVersion:46 process:com.seastar.gpplay.streetball
+10-16 09:44:25.885 I/ConfigStore( 4598): android::hardware::configstore::V1_0::ISurfaceFlingerConfigs::hasWideColorDisplay retrieved: 0
+10-16 09:44:25.885 I/ConfigStore( 4598): android::hardware::configstore::V1_0::ISurfaceFlingerConfigs::hasHDRDisplay retrieved: 0
+10-16 09:44:25.885 I/OpenGLRenderer( 4598): Initialized EGL, version 1.4
+10-16 09:44:25.885 D/OpenGLRenderer( 4598): Swap behavior 1
+10-16 09:44:25.886 D/Seastar ( 4598): billing Initialized
+10-16 09:44:25.888 D/EGL_emulation( 4598): eglCreateContext: 0xf2926110: maj 3 min 1 rcv 4
+10-16 09:44:25.889 W/SafeCertFlags( 4010): Flags cannot be read
+10-16 09:44:25.889 W/SafeCertFlags( 4010): java.lang.IllegalStateException: Must call PhenotypeContext.setContext() first
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m5.pp.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):258)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m5.ds.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):93)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m5.db.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):201)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at com.google.android.gms.common.GoogleCertificatesImpl.queryPackageSigned(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):7)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m5.ip.y(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):31)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m5.bv.onTransact(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):21)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at android.os.Binder.transact(Binder.java:667)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m26.cud.b(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):8)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m26.dkw.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):84)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m26.dlv.b(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):182)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m26.mae.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):143)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at m26.dwp.onTransact(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):61)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at android.os.Binder.transact(Binder.java:667)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at cwzl.onTransact(:com.google.android.gms@263964017@26.39.64 (100800-995886617):12)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at android.os.Binder.transact(Binder.java:667)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at cixv.onTransact(:com.google.android.gms@263964017@26.39.64 (100800-995886617):169)
+10-16 09:44:25.889 W/SafeCertFlags( 4010): 	at android.os.Binder.execTransact(Binder.java:731)
+10-16 09:44:25.891 I/GetServiceValidatorImpl( 4010): (REDACTED) onGetService() from Client SDK version [%s], Module version [%s], PGA version [%s], Account [%s], Calling package [%s], Game package [%s]
+10-16 09:44:25.891 I/GetGamesServiceReqFacto( 4010): (REDACTED) Parsing request with ignored arguments. signInOptionsBundle [%s], isRetryingSignIn [%s], skipWelcomePopup [%s], requireGooglePlus [%s]
+10-16 09:44:25.892 W/GetGamesServiceReqFacto( 4010): SDK variant was not specified.
+10-16 09:44:25.892 I/GetGamesServiceReqFacto( 4010): Replacing request for `games` scope with `games_lite`
+10-16 09:44:25.896 W/Finsky  ( 2842): [134] com.seastar.gpplay.streetball: No account found.
+10-16 09:44:25.896 I/Finsky  ( 2842): [134] Billing preferred account via installer for com.seastar.gpplay.streetball: [dCNOmK_nSY-12vHzasLXiswzlGT5UHA7jAGYkvmCuQs]
+10-16 09:44:25.897 W/SafeCertFlags( 4010): Flags cannot be read
+10-16 09:44:25.897 W/SafeCertFlags( 4010): java.lang.IllegalStateException: Must call PhenotypeContext.setContext() first
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m5.pp.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):258)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m5.ds.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):93)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m5.db.a(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):201)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at com.google.android.gms.common.GoogleCertificatesImpl.isPackageGoogleOrPlatformSigned(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):7)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m5.ip.y(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):64)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m5.bv.onTransact(:com.google.android.gms.dynamite_googlecertificates@263964017@26.39.64 (100800-0):21)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at android.os.Binder.transact(Binder.java:667)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.cud.b(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):8)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.dkw.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):57)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.dll.i(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):134)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.dll.d(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):1)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.fnf.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):3)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.ggm.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):13)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.gex.b(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):12)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.dgn.a(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):46)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at m26.dgc.run(:com.google.android.gms.optional_games@263964017@26.39.64 (100000-0):5)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+10-16 09:44:25.897 W/SafeCertFlags( 4010): 	at java.lang.Thread.run(Thread.java:764)
+10-16 09:44:25.897 I/SignInPerformer-4( 4010): (REDACTED) Handling request [%s], isFirstPartyCaller [%s]
+10-16 09:44:25.898 I/SignInPerformer-4( 4010): (REDACTED) java sdk version: [%s]	unity sdk version: [%s]	native sdk version: [%s]
+10-16 09:44:25.898 W/Finsky  ( 2842): [134] com.seastar.gpplay.streetball: No account found.
+10-16 09:44:25.898 I/Finsky  ( 2842): [134] Billing preferred account via installer for com.seastar.gpplay.streetball: [dCNOmK_nSY-12vHzasLXiswzlGT5UHA7jAGYkvmCuQs]
+10-16 09:44:25.898 W/ActivityThread( 4598): handleWindowVisibility: no activity for token android.os.BinderProxy@3feefe5
+10-16 09:44:25.902 E/eglCodecCommon( 4598): glUtilsParamSize: unknow param 0x000082da
+10-16 09:44:25.902 E/eglCodecCommon( 4598): glUtilsParamSize: unknow param 0x000082e5
+10-16 09:44:25.904 D/HostConnection( 4598): ExtendedRCEncoderContext GL_VERSION return OpenGL ES 3.1 v1
+10-16 09:44:25.905 E/eglCodecCommon( 4598): glUtilsParamSize: unknow param 0x00008c29
+10-16 09:44:25.905 E/eglCodecCommon( 4598): glUtilsParamSize: unknow param 0x000087fe
+10-16 09:44:25.905 D/skia    ( 4598): force disable skia program binary by wb!
+10-16 09:44:25.907 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.907 D/vndksupport( 4598): Loading /vendor/lib/hw/android.hardware.graphics.mapper@2.0-impl.so from current namespace instead of sphal namespace.
+10-16 09:44:25.907 D/vndksupport( 4598): Loading /vendor/lib/hw/gralloc.default.so from current namespace instead of sphal namespace.
+10-16 09:44:25.910 E/EGL_emulation( 4598): tid 4668: eglSurfaceAttrib(1504): error 0x3009 (EGL_BAD_MATCH)
+10-16 09:44:25.910 W/OpenGLRenderer( 4598): Failed to set EGL_SWAP_BEHAVIOR on surface 0xf2889380, error=EGL_BAD_MATCH
+10-16 09:44:25.911 W/SignInPerformer-4( 4010): No accounts present on the device. Triggering add account flow. [CONTEXT service_id=1 ]
+10-16 09:44:25.922 I/GetServiceValidatorImpl( 4010): (REDACTED) onGetService() from Client SDK version [%s], Module version [%s], PGA version [%s], Account [%s], Calling package [%s], Game package [%s]
+10-16 09:44:25.923 I/GetGamesServiceReqFacto( 4010): (REDACTED) Parsing request with ignored arguments. signInOptionsBundle [%s], isRetryingSignIn [%s], skipWelcomePopup [%s], requireGooglePlus [%s]
+10-16 09:44:25.923 I/GetGamesServiceReqFacto( 4010): Replacing request for `games` scope with `games_lite`
+10-16 09:44:25.924 I/SignInPerformer-4( 4010): (REDACTED) signIn(%s): suppression is not allowed. Triggering resolution.
+10-16 09:44:25.924 I/SignInPerformer-4( 4010): (REDACTED) Reporting resolvable error for [%s]
+10-16 09:44:25.926 W/com.facebook.appevents.internal.ActivityLifecycleTracker( 4598): Unexpected activity pause without a matching activity resume. Logging data may be incorrect. Make sure you call activateApp from your Application's onCreate method
+10-16 09:44:25.937 D/AdvertisingIdClient( 4010): AdvertisingIdClient already created.
+10-16 09:44:25.937 D/AdvertisingIdClient( 4010): AdvertisingIdClient is not bounded. Starting to bind it...
+10-16 09:44:25.939 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:45 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.939 I/SignInPerformer-5( 4010): (REDACTED) Handling request [%s], isFirstPartyCaller [%s]
+10-16 09:44:25.939 D/JQLM    ( 4598): platResume
+10-16 09:44:25.942 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.942 D/ldinit  ( 1455): result:
+10-16 09:44:25.942 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.943 I/SignInPerformer-5( 4010): Successfully brokered first-party unauthenticated GamesService [CONTEXT service_id=1 ]
+10-16 09:44:25.944 D/AdvertisingIdClient( 4010): AdvertisingIdClient is bounded
+10-16 09:44:25.944 I/GetGamesServiceV2Op( 4010): (REDACTED) Successfully brokered GamesService for request %s
+10-16 09:44:25.944 D/Seastar ( 4598): google login fail
+10-16 09:44:25.944 D/Seastar ( 4598): result: ConnectionResult{statusCode=SIGN_IN_REQUIRED, resolution=PendingIntent{e310e0: android.os.BinderProxy@d129f99}, message=null} 4
+10-16 09:44:25.944 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.951 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.955 I/AdvertisingIdClient( 4010): shouldSendLog 155937
+10-16 09:44:25.955 I/AdvertisingIdClient( 4010): GetInfoInternal elapse 17ms
+10-16 09:44:25.955 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:25.956 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_FOREGROUND, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:25.961 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.961 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 32 lines
+10-16 09:44:25.961 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:25.962 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.963 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:25.963 D/ldinit  ( 1455): result:
+10-16 09:44:25.967 I/AppsFlyer_4.6.5( 4598): sendTrackingWithEvent from activity: com.longtu.SuperStar.MainActivity
+10-16 09:44:25.967 I/AppsFlyer_4.6.5( 4598): Trying to fetch GAID..
+10-16 09:44:25.969 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:25.973 W/SurfaceFlinger( 1458): Attempting to set client state on removed layer: Splash Screen com.seastar.gpplay.streetball#0
+10-16 09:44:25.973 W/SurfaceFlinger( 1458): Attempting to destroy on removed layer: Splash Screen com.seastar.gpplay.streetball#0
+10-16 09:44:25.975 D/AppStartReceiver( 2300): action = com.ldmnq.APP_FOREGROUND, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:25.976 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:25.977 I/AppsFlyer_4.6.5( 4598): ******* sendTrackingWithEvent: Launch
+10-16 09:44:25.979 W/AppsFlyer_4.6.5( 4598): Exception while collecting facebook's attribution ID. 
+10-16 09:44:25.979 I/AppsFlyer_4.6.5( 4598): IMEI was not collected.
+10-16 09:44:25.979 I/AppsFlyer_4.6.5( 4598): Android ID was not collected.
+10-16 09:44:25.980 I/        ( 4598): fastpipe: Connect success
+10-16 09:44:25.981 D/HostConnection( 4598): HostRPC::connect sucess: app=com.seastar.gpplay.streetball, pid=4598, tid=4647, this=0xcb76dd40
+10-16 09:44:25.981 D/HostConnection( 4598): queryAndSetGLESMaxVersion select gles-version: 3.1 hostGLVersion:46 process:com.seastar.gpplay.streetball
+10-16 09:44:25.983 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2300' (No space left on device); fd=25
+10-16 09:44:25.983 W/OpenGLRenderer( 2300): Incorrectly called buildLayer on View: ShortcutAndWidgetContainer, destroying layer...
+10-16 09:44:25.987 D/EGL_emulation( 4598): eglCreateContext: 0xec00aa70: maj 3 min 1 rcv 4
+10-16 09:44:25.991 I/AppsFlyer_4.6.5( 4598): AppsFlyer: first launch date: 2026-10-16_093817+0300
+10-16 09:44:25.992 I/AppsFlyer_4.6.5( 4598): AppsFlyerLib.sendTrackingWithEvent
+10-16 09:44:25.992 I/AppsFlyer_4.6.5( 4598): url: https://t.appsflyer.com/api/v4/androidevent?buildnumber=4.6.5&app_id=com.seastar.gpplay.streetball
+10-16 09:44:25.992 I/AppsFlyer_4.6.5( 4598): data: {"country":"TR","af_timestamp":"1792133065977","appsflyerKey":"id****************LZDk","af_events_api":"1","isFirstCall":"true","operator":"Turkcell Iletisim Hizmetleri A.S.","network":"WIFI","timepassedsincelastlaunch":"205","af_v2":"9bf6e807ee8e5b58ccf20fd5032b82ee69fbbe42","uid":"1792132653613-3125075554391332395","isGaidWithGps":"true","lang_code":"tr","installDate":"2026-10-16_093733+0300","app_version_code":"31","firstLaunchDate":"2026-10-16_093817+0300","model":"SOV44","lang":"TÃ¼rkÃ§e","deviceFingerPrintId":"00000000-5a8f-996e-ffff-ffffc543382d","brand":"SONY","deviceType":"user","product":"SOV44","deviceData":{"cpu_abi":"x86_64","build_display_id":"PQ3A.190705.09211140 release-keys","arch":"","cpu_abi2":""},"date2":"2026-10-16_093733+0300","counter":"4","date1":"2026-10-16_093733+0300","advertiserId":"6d18e290-b928-4cb6-b839-b9bc041cb2ea","advertiserIdEnabled":"true","af_v":"a943f707554f9a789aa325a6c540a457c634990d","carrier":"Turkcell","af_preinstalled":"false","iaecounter":"0","sdk":"28","appUserId":"2","app_version_name":"1.1.8","device":"gracelte","platformextension":"android_unity"}
+10-16 09:44:25.995 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:25.997 D/HostConnection( 4598): ExtendedRCEncoderContext GL_VERSION return OpenGL ES 3.1 v1
+10-16 09:44:25.997 D/Unity   ( 4598): GL_EXT_robustness GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_OVR_multiview2 GL_EXT_multiview_texture_multisample GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_robustness GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 GL_EXT_texture_buffer GL_OES_texture_buffer GL_EXT_draw_buffers_indexed ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_wi
+10-16 09:44:25.997 D/Unity   ( 4598): th_commands ANDROID_EMU_vulkan_batched_descriptor_set_update ANDROID_EMU_vulkan_async_qsri GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr GL_EXT_copy_image GL_EXT_texture_buffer GL_EXT_draw_buffers_indexed GL_OES_texture_storage_multisample_2d_array GL_OES_sample_shading GL_OES_sample_variables GL_OES_shader_image_atomic GL_OES_shader_multisample_interpolation GL_OES_texture_stencil8 GL_EXT_texture_border_clamp GL_EXT_primitive_bounding_box GL_EXT_geometry_shader GL_EXT_geometry_point_size GL_EXT_tessellation_shader GL_EXT_tessellation_point_size GL_EXT_shader_io_blocks GL_EXT_texture_cube_map_array GL_KHR_debug GL_ANDROID_extension_pack_es31a GL_EXT_shader_non_constant_global_initializers GL_EXT_clip_cull_distance GL_EXT_blend_func_extended GL_NV_shader_noperspective_interpolation GL_EXT_texture_norm16 GL_EXT_shader_texture_lod GL_EXT_texture_filter_anisotropic GL_OES_standard_derivatives GL_EXT_blend_minmax GL_EXT_debug_marker GL_OES_surfaceless_context GL_EX
+10-16 09:44:25.997 D/Unity   ( 4598): T_texture_type_2_10_10_10_REV GL_EXT_read_format_bgra GL_EXT_sRGB GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_EXT_EGL_image_external_wrap_modes GL_EXT_sRGB_write_control 
+10-16 09:44:25.997 E/eglCodecCommon( 4598): glUtilsParamSize: unknow param 0x000084ff
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferAttachmentCompleteness: tex not color renderable. format: 0x1908 type 0x1406 maj min 3 1 floatext 1 hfloatext 1
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferAttachmentCompleteness: tex not color renderable. target=0x8d40 attachment=0x8ce0 tex_intformat=0x1908 tex_format=0x1908 tex_type=0x1406 gles=3.1 floatext=1 hfloatext=1
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferCompleteness: color attachment 0 not complete: 0x8cd6
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferAttachmentCompleteness: tex not color renderable. format: 0x1908 type 0x8d61 maj min 3 1 floatext 1 hfloatext 1
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferAttachmentCompleteness: tex not color renderable. target=0x8d40 attachment=0x8ce0 tex_intformat=0x1908 tex_format=0x1908 tex_type=0x8d61 gles=3.1 floatext=1 hfloatext=1
+10-16 09:44:25.998 D/eglCodecCommon( 4598): checkFramebufferCompleteness: color attachment 0 not complete: 0x8cd6
+10-16 09:44:26.006 I/LDShopManager( 3621): tryShowLDShopRechargePopup success, packageName = com.seastar.gpplay.streetball, canPopup = false
+10-16 09:44:26.007 W/libc    ( 4598): pthread_create sched_setscheduler(1, {94}) call failed: Operation not permitted
+10-16 09:44:26.007 D/AudioFlinger( 1456): Client defaulted notificationFrames to 682 for frameCount 2048
+10-16 09:44:26.008 W/AudioTrack( 4598): Use of stream types is deprecated for operations other than volume control
+10-16 09:44:26.008 W/AudioTrack( 4598): See the documentation of AudioTrack() for what to use instead with android.media.AudioAttributes to qualify your playback use case
+10-16 09:44:26.008 E/bt_btif ( 1718): register_notification_rsp: Avrcp device is not connected, handle: 0x0
+10-16 09:44:26.008 I/chatty  ( 1718): uid=1002(bluetooth) BluetoothAvrcpH identical 4 lines
+10-16 09:44:26.008 E/bt_btif ( 1718): register_notification_rsp: Avrcp device is not connected, handle: 0x0
+10-16 09:44:26.049 W/System  ( 4598): A resource failed to call close. 
+10-16 09:44:26.084 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:26.084 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 27 lines
+10-16 09:44:26.084 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:26.133 D/sensor_hal( 1451): sensor_device_default_flush handle=0
+10-16 09:44:26.218 I/AppsFlyer_4.6.5( 4598): Could not read connection response from: https://t.appsflyer.com/api/v4/androidevent?buildnumber=4.6.5&app_id=com.seastar.gpplay.streetball
+10-16 09:44:26.218 D/AppsFlyer_4.6.5( 4598): response code: 400
+10-16 09:44:26.388 I/sensors@1.0-ser( 1451): type=1400 audit(0.0:1041): avc: denied { ioctl } for path="/dev/fastpipe" dev="tmpfs" ino=3112 ioctlcmd=6865 scontext=u:r:hal_sensors_default:s0 tcontext=u:object_r:device:s0 tclass=chr_file permissive=1
+10-16 09:44:26.472 E/Unity   ( 4598): You are trying to load data from a www stream which had the following error when downloading.
+10-16 09:44:26.472 E/Unity   ( 4598): java.io.FileNotFoundException: JAR entry assets/Lua/System/Global.lua not found in /data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==/base.apk
+10-16 09:44:26.472 E/Unity   ( 4598):  
+10-16 09:44:26.472 E/Unity   ( 4598): (Filename:  Line: 253)
+10-16 09:44:26.472 E/Unity   ( 4598): 
+10-16 09:44:26.475 E/Unity   ( 4598): You are trying to load data from a www stream which had the following error when downloading.
+10-16 09:44:26.475 E/Unity   ( 4598): java.io.FileNotFoundException: JAR entry assets/Lua/System/Main.lua not found in /data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==/base.apk
+10-16 09:44:26.475 E/Unity   ( 4598):  
+10-16 09:44:26.475 E/Unity   ( 4598): (Filename:  Line: 253)
+10-16 09:44:26.475 E/Unity   ( 4598): 
+10-16 09:44:26.475 I/Unity   ( 4598): LuaScriptMgr Start-up Success
+10-16 09:44:26.475 I/Unity   ( 4598):  
+10-16 09:44:26.475 I/Unity   ( 4598): (Filename: ./artifacts/AndroidManagedGenerated/UnityEngineDebug.cpp Line: 56)
+10-16 09:44:26.475 I/Unity   ( 4598): 
+10-16 09:44:26.508 W/SensorService( 1590): sensor 00000000 already enabled in connection 0x763870444e00 (ignoring)
+10-16 09:44:26.508 D/sensor_hal( 1451): sensor_device_default_flush handle=0
+10-16 09:44:26.520 E/Unity   ( 4598): You are trying to load data from a www stream which had the following error when downloading.
+10-16 09:44:26.520 E/Unity   ( 4598): java.io.FileNotFoundException: JAR entry assets/Lua/Utils/AtlasReadAbUtils.lua not found in /data/app/com.seastar.gpplay.streetball-h_hxLvrEPTnyom40Y3uCPA==/base.apk
+10-16 09:44:26.520 E/Unity   ( 4598):  
+10-16 09:44:26.520 E/Unity   ( 4598): (Filename:  Line: 253)
+10-16 09:44:26.520 E/Unity   ( 4598): 
+10-16 09:44:26.522 I/Unity   ( 4598): UI/Prefab/Window/Window_StageChangeMask  _oblClone == null
+10-16 09:44:26.522 I/Unity   ( 4598):  
+10-16 09:44:26.522 I/Unity   ( 4598): (Filename: ./artifacts/AndroidManagedGenerated/UnityEngineDebug.cpp Line: 56)
+10-16 09:44:26.522 I/Unity   ( 4598): 
+10-16 09:44:27.525 I/com.ldmnq.launcher3( 2300): type=1400 audit(0.0:1042): avc: denied { open } for comm=4D6561737572656D656E7420576F72 path="/data/local/cfg-zheni/android7" dev="sdb2" ino=393326 scontext=u:r:untrusted_app:s0:c45,c256,c512,c768 tcontext=u:object_r:system_data_file:s0 tclass=file permissive=1
+10-16 09:44:27.530 I/FA      ( 2300): Application backgrounded at: timestamp_millis: 1792133065529
+10-16 09:44:30.758 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:30.758 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 30 lines
+10-16 09:44:30.758 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:31.312 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a android.intent.action.TASK.CLOSE --es package com.seastar.gpplay.streetball
+10-16 09:44:31.312 D/ldinit  ( 1455): result:
+10-16 09:44:31.312 I/ActivityManager( 1590): Force stopping com.seastar.gpplay.streetball appid=10060 user=0: from pid 2238
+10-16 09:44:31.312 I/ActivityManager( 1590): Killing 4598:com.seastar.gpplay.streetball/u0a60 (adj 0): stop com.seastar.gpplay.streetball
+10-16 09:44:31.313 W/libprocessgroup( 1590): kill(-4598, 9) failed: No such process
+10-16 09:44:31.313 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2842' (No space left on device); fd=25
+10-16 09:44:31.313 W/ActivityManager( 1590): Force removing ActivityRecord{6b5b536 u0 com.seastar.gpplay.streetball/com.longtu.SuperStar.MainActivity t6}: app died, no saved state
+10-16 09:44:31.315 I/cmd     ( 4720): type=1400 audit(0.0:1043): avc: denied { call } for scontext=u:r:ldinit:s0 tcontext=u:r:servicemanager:s0 tclass=binder permissive=1
+10-16 09:44:31.315 I/cmd     ( 4720): type=1400 audit(0.0:1044): avc: denied { call } for scontext=u:r:ldinit:s0 tcontext=u:r:system_server:s0 tclass=binder permissive=1
+10-16 09:44:31.315 I/cmd     ( 4720): type=1400 audit(0.0:1045): avc: denied { transfer } for scontext=u:r:ldinit:s0 tcontext=u:r:system_server:s0 tclass=binder permissive=1
+10-16 09:44:31.317 D/ldinit  ( 1455): Broadcasting: Intent { act=android.intent.action.TASK.CLOSE flg=0x400000 (has extras) }
+10-16 09:44:31.321 W/SurfaceFlinger( 1458): Attempting to destroy on removed layer: AppWindowToken{b91e5a4 token=Token{658cc37 ActivityRecord{6b5b536 u0 com.seastar.gpplay.streetball/com.longtu.SuperStar.MainActivity t6}}}#0
+10-16 09:44:31.321 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2300' (No space left on device); fd=27
+10-16 09:44:31.322 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:31.322 D/CarrierSvcBindHelper( 1898): No carrier app for: 0
+10-16 09:44:31.328 I/Zygote  ( 1429): Process 4598 exited due to signal (9)
+10-16 09:44:31.328 D/sensor_hal( 1451): cb_setDelay handle=0 delay-ns=200000000
+10-16 09:44:31.329 E/bt_btif ( 1718): register_notification_rsp: Avrcp device is not connected, handle: 0x0
+10-16 09:44:31.329 I/chatty  ( 1718): uid=1002(bluetooth) BluetoothAvrcpH identical 4 lines
+10-16 09:44:31.329 E/bt_btif ( 1718): register_notification_rsp: Avrcp device is not connected, handle: 0x0
+10-16 09:44:31.354 W/ActivityManager( 1590): setHasOverlayUi called on unknown pid: 4598
+10-16 09:44:31.355 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1020 android.content.ContextWrapper.sendBroadcast:449 com.android.coreservice.TabManager.notifyClosing:413 com.android.coreservice.TabManager.updateInner:200 com.android.coreservice.TabManager.onUpdate:235 
+10-16 09:44:31.355 W/ActivityManager( 1590): Request to remove task ignored for non-existent task 6
+10-16 09:44:31.355 I/CoreService( 2238): notifyClosing notify tab closed taskPackageName:com.seastar.gpplay.streetball
+10-16 09:44:31.355 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:45 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:31.356 W/libprocessgroup( 1590): kill(-4598, 9) failed: No such process
+10-16 09:44:31.356 I/libprocessgroup( 1590): Successfully killed process cgroup uid 10060 pid 4598 in 43ms
+10-16 09:44:31.362 I/Binder:1590_16( 1590): type=1400 audit(0.0:1046): avc: denied { call } for scontext=u:r:system_server:s0 tcontext=u:r:ldinit:s0 tclass=binder permissive=1
+10-16 09:44:31.363 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:31.363 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:31.364 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_KILL -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:31.364 D/ldinit  ( 1455): result:
+10-16 09:44:31.369 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_KILL flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:31.372 I/Binder:1458_3( 1458): type=1400 audit(0.0:1047): avc: denied { read write } for path="/dev/fastpipe" dev="tmpfs" ino=3112 scontext=u:r:untrusted_app:s0:c45,c256,c512,c768 tcontext=u:object_r:device:s0 tclass=chr_file permissive=1
+10-16 09:44:31.376 E/EGL_emulation( 2300): tid 2523: eglSurfaceAttrib(1504): error 0x3009 (EGL_BAD_MATCH)
+10-16 09:44:31.376 W/OpenGLRenderer( 2300): Failed to set EGL_SWAP_BEHAVIOR on surface 0x763871eaf200, error=EGL_BAD_MATCH
+10-16 09:44:31.384 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:54 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:31.384 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_KILL, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:31.385 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:31.385 W/ContextImpl( 2238): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1531 android.content.ContextWrapper.startService:664 android.content.ContextWrapper.startService:664 com.android.coreservice.CoreBroadcastReceiver.onReceive:70 android.app.ActivityThread.handleReceiver:3424 
+10-16 09:44:31.385 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_KILL -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:31.385 D/ldinit  ( 1455): result:
+10-16 09:44:31.390 D/LdAnalyticsSDK( 3621): responseCode = 200
+10-16 09:44:31.391 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_KILL flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:31.408 D/AppStartReceiver( 2300): action = com.ldmnq.APP_KILL, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:31.409 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:31.412 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.android.ld.appstore -f 32 --es package com.ldmnq.launcher3 --es pos pc
+10-16 09:44:31.412 D/ldinit  ( 1455): result:
+10-16 09:44:31.417 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:31.422 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_FOREGROUND, extras = Bundle[{package=com.ldmnq.launcher3, pos=pc}]
+10-16 09:44:31.422 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:31.423 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_FOREGROUND -p com.ldmnq.launcher3 -f 32 --es package com.ldmnq.launcher3 --es pos pc
+10-16 09:44:31.423 D/ldinit  ( 1455): result:
+10-16 09:44:31.430 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_FOREGROUND flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:31.436 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:31.436 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 26 lines
+10-16 09:44:31.436 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:31.443 D/AppStartReceiver( 2300): action = com.ldmnq.APP_FOREGROUND, packageName = com.ldmnq.launcher3, pos = pc
+10-16 09:44:31.444 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:31.891 W/OpenGLRenderer( 2300): Incorrectly called buildLayer on View: ShortcutAndWidgetContainer, destroying layer...
+10-16 09:44:32.312 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_KILL -p com.android.ld.appstore -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:32.312 D/ldinit  ( 1455): result:
+10-16 09:44:32.317 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_KILL flg=0x400020 pkg=com.android.ld.appstore (has extras) }
+10-16 09:44:32.318 I/AppStartReceiver( 3621): onReceive, action = com.ldmnq.APP_KILL, extras = Bundle[{package=com.seastar.gpplay.streetball, pos=pc}]
+10-16 09:44:32.318 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:32.319 D/ldinit  ( 1455): ld_exec_cmd am broadcast -a com.ldmnq.APP_KILL -p com.ldmnq.launcher3 -f 32 --es package com.seastar.gpplay.streetball --es pos pc
+10-16 09:44:32.319 D/ldinit  ( 1455): result:
+10-16 09:44:32.323 D/ldinit  ( 1455): Broadcasting: Intent { act=com.ldmnq.APP_KILL flg=0x400020 pkg=com.ldmnq.launcher3 (has extras) }
+10-16 09:44:32.323 D/AppStartReceiver( 2300): action = com.ldmnq.APP_KILL, packageName = com.seastar.gpplay.streetball, pos = pc
+10-16 09:44:32.323 D/ldinit  ( 1455): Broadcast completed: result=0
+10-16 09:44:34.078 I/ldinit  ( 1455): type=1400 audit(0.0:1048): avc: denied { read } for name="partitions" dev="proc" ino=4026532046 scontext=u:r:ldinit:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=1
+10-16 09:44:34.078 I/ldinit  ( 1455): type=1400 audit(0.0:1049): avc: denied { open } for path="/proc/partitions" dev="proc" ino=4026532046 scontext=u:r:ldinit:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=1
+10-16 09:44:34.078 I/ldinit  ( 1455): type=1400 audit(0.0:1050): avc: denied { getattr } for path="/proc/partitions" dev="proc" ino=4026532046 scontext=u:r:ldinit:s0 tcontext=u:object_r:proc:s0 tclass=file permissive=1
+10-16 09:44:34.333 D/audio_hw_hal( 1435): log_func, out_standby
+10-16 09:44:34.333 D/audio_hw_hal( 1435): raw_close_output_stream, dev=0xf5e18000, stream =0xf624c000
+10-16 09:44:34.333 D/audio_hw_hal( 1435): raw_close_output_stream, stream=0xf624c000,  success!
+10-16 09:44:41.373 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '4010' (No space left on device); fd=25
+10-16 09:44:41.373 W/SchedPolicy( 1590): add_tid_to_cgroup failed to write '2939' (No space left on device); fd=25
+10-16 09:44:41.373 D/BoundBrokerSvc( 4010): onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+10-16 09:44:42.568 I/storaged( 1476): type=1400 audit(0.0:1051): avc: denied { call } for scontext=u:r:storaged:s0 tcontext=u:r:init:s0 tclass=binder permissive=1
+10-16 09:44:42.570 E/storaged( 1476): getDiskStats failed with result NOT_SUPPORTED and size 0
+10-16 09:44:44.585 W/System  ( 1590): A resource failed to call close. 
+10-16 09:44:44.585 I/chatty  ( 1590): uid=1000(system) FinalizerDaemon identical 26 lines
+10-16 09:44:44.585 W/System  ( 1590): A resource failed to call close. 
+10-16 09:45:00.002 D/EmuHWC2 ( 1446): sent 18 syncs in 60s
+10-16 09:45:05.862 I/health@2.0-serv( 1447): type=1400 audit(0.0:1052): avc: denied { read } for scontext=u:r:init:s0 tcontext=u:r:init:s0 tclass=netlink_kobject_uevent_socket permissive=1
