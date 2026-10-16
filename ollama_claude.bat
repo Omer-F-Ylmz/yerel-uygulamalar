@@ -7,36 +7,34 @@ if not exist "%CLAUDE_CONFIG_DIR%\skills" mkdir "%CLAUDE_CONFIG_DIR%\skills"
 where ollama >nul 2>nul || (echo Ollama bulunamadi. https://ollama.com/download adresinden kur. & pause & exit /b 1)
 :menu
 echo ===== Ucretsiz model sec =====
-echo  -- Bulut: bilgisayarin bellegini HIC kullanmaz, baska islerle rahat calisir --
-echo  1. nemotron-3-ultra:cloud  (varsayilan - bedava olanlarin en gucludu)
-echo  2. gemma4:31b-cloud        (bedava oldugu kesin)
-echo  3. gpt-oss:120b-cloud      (yedek)
-echo  -- Yerel: sinirsiz ve internetsiz, ekran kartini kullanir --
-echo  4. qwen3.5:9b              (hafif, ~8-10 GB ekran karti, arka planda rahat)
-echo  5. qwen3.6:35b             (en guclu yerel ama agir, RAM'e de tasar)
-echo  6. gpt-oss:20b             (orta)
+echo  -- Yerel: tamamen bedava ve sinirsiz, internet gerekmez --
+echo  1. qwen3.5:9b         (varsayilan - 6.6 GB, kodda en iyi kucuk model)
+echo  2. gemma4:12b         (yedek - 7.7 GB)
+echo  -- Bulut: Ollama hesabinin bedava kotasiyla, kota bitince durur --
+echo  3. nemotron-3-ultra:cloud
+echo  4. gemma4:31b-cloud
+echo  5. gpt-oss:120b-cloud
 echo  -- Diger --
 echo  7. OpenRouter bedava modelleri (ucretsiz anahtar gerekir)
 echo  T. Bulut modelleri test et (hangisi bedava calisiyor?)
 echo.
 set "S="
 set /p S=Secim (bos birakip Enter = 1): 
-set "MODEL=nemotron-3-ultra:cloud"
-set "YEREL="
-if "%S%"=="2" set "MODEL=gemma4:31b-cloud"
-if "%S%"=="3" set "MODEL=gpt-oss:120b-cloud"
-if "%S%"=="4" (set "MODEL=qwen3.5:9b" & set "YEREL=1")
-if "%S%"=="5" (set "MODEL=qwen3.6:35b" & set "YEREL=1")
-if "%S%"=="6" (set "MODEL=gpt-oss:20b" & set "YEREL=1")
+set "MODEL=qwen3.5:9b"
+set "YEREL=1"
+if "%S%"=="2" set "MODEL=gemma4:12b"
+if "%S%"=="3" (set "MODEL=nemotron-3-ultra:cloud" & set "YEREL=")
+if "%S%"=="4" (set "MODEL=gemma4:31b-cloud" & set "YEREL=")
+if "%S%"=="5" (set "MODEL=gpt-oss:120b-cloud" & set "YEREL=")
 if "%S%"=="7" goto openrouter
 if /i "%S%"=="T" goto test
 rem Claude Code bu modelleri tanimiyor, baglami 200K saniyor; gercek pencereyi bildir
 set "CTX=262144"
 if "%MODEL%"=="gpt-oss:120b-cloud" set "CTX=131072"
-if defined YEREL set "CTX=65536"
+if defined YEREL set "CTX=131072"
 set "CLAUDE_CODE_MAX_CONTEXT_TOKENS=%CTX%"
 if defined YEREL (
-  if not defined OLLAMA_CONTEXT_LENGTH echo [Ipucu] Bellek ayarlari yapilmamis. Once ollama_ayar.bat'i bir kez calistir.
+  if not "%OLLAMA_CONTEXT_LENGTH%"=="131072" echo [Ipucu] Yerel model ayarlari yapilmamis. Once ollama_ayar.bat'i bir kez calistir.
   ollama list | find /i "%MODEL%" >nul || (echo %MODEL% indiriliyor, bir kez yapilir... & ollama pull %MODEL%)
 )
 echo.

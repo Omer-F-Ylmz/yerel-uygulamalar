@@ -33,7 +33,10 @@ KAPI_AYAR = os.path.join(YENI, "mcp_kapi.json")
 PROJE = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace("\\", "/")
 # Kapıya alınmayan eklentiler: kendi skill/hook'ları MCP araçlarını adıyla çağırıyor
 KAPI_DISI_EKLENTILER = {"claude-mem"}
-AJAN_ACIKLAMA_SINIRI = 160  # karakter; Claude Code bütün ajan açıklamalarını her istekte gönderiyor
+AJAN_ACIKLAMA_SINIRI = 160  # karakter
+# Claude Code bütün ajanların adını/açıklamasını her istekte gönderiyor (770 ajan ~39k token). Ollama
+# profilinde ajanlar bu kütüphanede durur; bir skill gerektiğinde arayıp okur.
+KUTUPHANE = os.path.join(YENI, "ajan_kutuphanesi")
 
 
 def json_oku(yol):
@@ -165,7 +168,7 @@ def hepsi():
     eklenti_ayarlarini_aktar()
     mcp_aktar(list(mcp_sunuculari()))
     eklenti_mcplerini_kapiya_al()
-    ajan_aciklamalarini_kisalt()
+    ajanlari_kutuphaneye_al()
     hookify_onar()
 
 
@@ -179,41 +182,82 @@ def _aciklama_kisalt(metin):
     return metin if len(metin) <= AJAN_ACIKLAMA_SINIRI else metin[:AJAN_ACIKLAMA_SINIRI - 1].rstrip() + "…"
 
 
-def ajan_aciklamalarini_kisalt():
-    """Ollama profilindeki ajan kopyalarının açıklamasını ilk cümleye indirir; ajanların hepsi kalır.
-    Normal profildeki asıllarına dokunmaz (her aktarımda yeniden kopyalanıyor)."""
-    kisalan, once, sonra = 0, 0, 0
-    for yol in glob.glob(os.path.join(YENI, "agents", "**", "*.md"), recursive=True):
-        try:
-            with open(yol, encoding="utf-8") as f:
-                satirlar = f.read().split("\n")
-        except (OSError, UnicodeDecodeError):
-            continue
-        if not satirlar or satirlar[0].strip() != "---" or "---" not in [x.strip() for x in satirlar[1:]]:
-            continue
-        son = 1 + [x.strip() for x in satirlar[1:]].index("---")
-        bas = next((i for i in range(1, son) if satirlar[i].startswith("description:")), None)
-        if bas is None:
-            continue
-        bit = bas + 1
+def _ajan_bilgisi(yol):
+    """Ajan dosyasının ön bilgisinden (ad, kısa açıklama); ön bilgi yoksa (dosya adı, "")."""
+    try:
+        with open(yol, encoding="utf-8") as f:
+            satirlar = f.read().split("\n")
+    except (OSError, UnicodeDecodeError):
+        return os.path.splitext(os.path.basename(yol))[0], ""
+    temiz = [x.strip() for x in satirlar]
+    if not temiz or temiz[0] != "---" or "---" not in temiz[1:]:
+        return os.path.splitext(os.path.basename(yol))[0], ""
+    son = 1 + temiz[1:].index("---")
+    ad, aciklama = os.path.splitext(os.path.basename(yol))[0], ""
+    i = 1
+    while i < son:
+        anahtar = re.match(r"(name|description)\s*:(.*)", satirlar[i])
+        bit = i + 1
         while bit < son and not re.match(r"[A-Za-z_][\w-]*\s*:", satirlar[bit]):
             bit += 1
-        ham = "\n".join(satirlar[bas:bit])[len("description:"):].strip()
-        if ham[:1] in "|>":
-            ham = ham[1:].lstrip("+-")
-        if len(ham) >= 2 and ham[0] == ham[-1] and ham[0] in "\"'":
-            ham = ham[1:-1]
-        kisa = _aciklama_kisalt(ham)
-        once, sonra = once + len(ham), sonra + len(kisa)
-        if len(kisa) >= len(ham):
-            continue
-        satirlar[bas:bit] = ["description: " + json.dumps(kisa, ensure_ascii=False)]
-        with open(yol, "w", encoding="utf-8") as f:
-            f.write("\n".join(satirlar))
-        kisalan += 1
-    if kisalan:
-        print("  %d ajanin aciklamasi kisaltildi (~%dk -> ~%dk token; ajanlarin hepsi duruyor)"
-              % (kisalan, once // 4000, sonra // 4000))
+        if anahtar:
+            ham = (anahtar.group(2) + "\n" + "\n".join(satirlar[i + 1:bit])).strip()
+            if ham[:1] in "|>":
+                ham = ham[1:].lstrip("+-")
+            if len(ham) >= 2 and ham[0] == ham[-1] and ham[0] in "\"'":
+                ham = ham[1:-1]
+            if anahtar.group(1) == "name":
+                ad = ham.strip() or ad
+            else:
+                aciklama = _aciklama_kisalt(ham)
+        i = bit
+    return ad, aciklama
+
+
+def ajanlari_kutuphaneye_al():
+    """Ollama profilindeki ajanları kütüphane klasörüne taşır ve onları bulan skill'i yazar.
+    Normal profildeki ajanlara dokunmaz; ajanların hiçbiri silinmez."""
+    kaynak = os.path.join(YENI, "agents")
+    if os.path.isdir(kaynak):
+        os.makedirs(KUTUPHANE, exist_ok=True)
+        for ad in os.listdir(kaynak):
+            hedef = os.path.join(KUTUPHANE, ad)
+            if os.path.isdir(hedef) and not os.path.islink(hedef):
+                shutil.rmtree(hedef)
+            elif os.path.lexists(hedef):
+                os.remove(hedef)
+            shutil.move(os.path.join(kaynak, ad), hedef)
+    dosyalar = sorted(glob.glob(os.path.join(KUTUPHANE, "**", "*.md"), recursive=True))
+    dosyalar = [d for d in dosyalar if os.path.basename(d) != "LISTE.md"]
+    if not dosyalar:
+        return
+    satirlar = ["# Ajan listesi: ad | aciklama | dosya", ""]
+    for yol in dosyalar:
+        ad, aciklama = _ajan_bilgisi(yol)
+        satirlar.append("%s | %s | %s" % (ad, aciklama, os.path.relpath(yol, KUTUPHANE).replace("\\", "/")))
+    with open(os.path.join(KUTUPHANE, "LISTE.md"), "w", encoding="utf-8") as f:
+        f.write("\n".join(satirlar) + "\n")
+    kok = KUTUPHANE.replace("\\", "/")
+    skill = os.path.join(YENI, "skills", "ajan-kutuphanesi", "SKILL.md")
+    os.makedirs(os.path.dirname(skill), exist_ok=True)
+    with open(skill, "w", encoding="utf-8") as f:
+        f.write("""---
+name: ajan-kutuphanesi
+description: %d uzman ajanin kutuphanesi. Bir is icin uzman ajan ya da rol (kod inceleme, guvenlik, test, oyun, tasarim...) gerektiginde once burada ara.
+---
+# Ajan kutuphanesi
+
+Bu profildeki %d uzman ajan, her istekte baglami doldurmasin diye ajan listesinde degil, su klasorde duruyor:
+`%s` (hicbiri silinmedi).
+
+1. `%s/LISTE.md` dosyasinda Grep ile ara (ornek: "review", "security", "unity", "test"). Her satir:
+   `ad | aciklama | dosya`. Dosyanin tamamini okuma; 900 satirdan uzun.
+2. Uygun ajanin dosyasini Read ile oku (yol LISTE.md'deki dosya sutunu, klasore gore). Dosyanin govdesi
+   o ajanin talimatidir.
+3. Talimati kendin uygula. Ayri calismasi gerekiyorsa Agent aracini general-purpose turuyle, bu talimati
+   prompt'un basina koyarak kullan.
+""" % (len(dosyalar), len(dosyalar), kok, kok))
+    print("  %d ajan kutuphaneye alindi (ajan-kutuphanesi skill'i ile bulunuyor; hicbiri silinmedi)" % len(dosyalar))
 
 
 def _eklenti_yollari():
@@ -335,7 +379,7 @@ def onar():
         os.remove(yedek)
     print("  %d MCP sunucusu kapidan bagli: hepsi acik, model yalnizca 2 arac goruyor" % len(toplam))
     eklenti_mcplerini_kapiya_al()
-    ajan_aciklamalarini_kisalt()
+    ajanlari_kutuphaneye_al()
     hookify_onar()
     print("\nTamam. MCP'lerin calistigini gormek icin menude 'MCP baglanti testi'ni sec.")
 
@@ -374,6 +418,10 @@ def durum():
         print("== %s (%s)" % (baslik, kok))
         for ad in KLASORLER:
             print("  %-9s %d" % (ad, say(os.path.join(kok, ad))))
+        kutuphane = os.path.join(kok, "ajan_kutuphanesi")
+        if os.path.isdir(kutuphane):
+            adet = len(glob.glob(os.path.join(kutuphane, "**", "*.md"), recursive=True)) - 1
+            print("  ajan kut. %d (gerektiginde ajan-kutuphanesi skill'i ile)" % adet)
         mcp = json_oku(jsn).get("mcpServers", {})
         if KAPI_AD in mcp:
             print("  mcp       %d (kapidan; model 2 arac goruyor)" % len(kapi_sunuculari()))
@@ -391,6 +439,7 @@ def sifirla():
     if yeni:
         yeni.pop("mcpServers", None)
         json_yaz(YENI_JSON, yeni)
+    shutil.rmtree(KUTUPHANE, ignore_errors=True)
     for yol in (KAPI_AYAR, os.path.splitext(KAPI_AYAR)[0] + "_araclar.json"):
         if os.path.exists(yol):
             os.remove(yol)
