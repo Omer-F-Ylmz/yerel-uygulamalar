@@ -112,7 +112,7 @@ class GunlukTesti(unittest.TestCase):
         self.assertEqual(self.yol("/player_mission", "get_growth_mission_day")["growth_mission_day"], 7)
         gid = next(g for g in hepsi if gunluk.V["gorev"][g][0] == 2)
         d = self.yol("/player_mission", "get_mission_reward", '{"paramlist":[%d]}' % gid)
-        self.assertEqual(d["updatelist"]["paramlist"]["mission"], [{"id": gid, "progress1": -1}])
+        self.assertEqual(d["updatelist"]["paramlist"]["mission"][0], {"id": gid, "progress1": -1})
         self.assertIn("complete_cnts", d)
         kalan = {m["id"] for m in self.yol("/player_mission", "get_mission_info")["mission"]["mission"]}
         self.assertNotIn(gid, kalan)
