@@ -52,8 +52,8 @@ def adb_bul():
 
 
 def adb(adb_yolu, *arg, kontrol=True):
-    sonuc = subprocess.run([adb_yolu, *arg], capture_output=True, text=True)
-    cikti = (sonuc.stdout + sonuc.stderr).strip()
+    sonuc = subprocess.run([adb_yolu, *arg], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    cikti = ((sonuc.stdout or "") + (sonuc.stderr or "")).strip()
     if kontrol and sonuc.returncode != 0:
         hata("adb %s basarisiz:\n%s" % (" ".join(arg), cikti))
     return cikti
