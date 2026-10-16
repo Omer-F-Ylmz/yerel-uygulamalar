@@ -199,3 +199,55 @@ promptun sonuna şunu ekleyerek tekrar ver: `Büyük dosyaları bütün okuma, g
 
 **"Prompt is too long" ya da çok yavaşladı:** `/compact` yaz; olmazsa `/clear` yazıp bulunduğun bölümün
 promptunu baştan ver.
+
+---
+
+## Toplu görev (sen yokken hepsini sırayla yapsın)
+
+Önce `/clear`, sağ altta **auto mode on** olsun (izin için beklemesin). Sonra bunu yapıştır:
+
+```
+Ben yokum, sana soru soramazsın. Aşağıdaki görevleri sırayla, tek başına yap. Takıldığın görevi raporda
+"TAKILDI: sebep" diye yazıp bir sonrakine geç; hiçbir yerde durup onay bekleme.
+
+KURALLAR
+- Her adımın sonunda bulduklarını proje kökündeki RAPOR_OLLAMA.md dosyasına EKLE. Bağlamın sıfırlanırsa
+  önce bu dosyayı oku ve kaldığın yerden devam et.
+- Her iddiaya kaynak yaz (dosya:satır ya da link). Kanıtın yoksa başına "TAHMİN:" yaz. Sayı uydurma.
+- Büyük dosyaları bütün okuma (CLAUDE.md'deki liste); grep, head ya da küçük Python betiği kullan.
+- OBB'yi değiştirme. git commit ve git push yapma. Alt ajan/Workflow kullanma.
+
+GÖREV A - Streetball maç yüklemesinin %0'da donması
+A1. apk klasöründeki "main.*.obb" (zip dosyası) içinden assets/Lua/ klasörünü lua_cozulmus/ klasörüne
+    çıkar, .lua dosyalarının her baytını 0xFF ile XOR'layarak çöz (bkz. araclar/lua_coz.py,
+    araclar/obb_yamala.py). lua_cozulmus/ satırını .gitignore'a ekle.
+A2. lua_cozulmus içinde MatchLoader.lua'yı bul; 32. satır civarındaki tutorial_data örneğinden şu
+    değerleri GERÇEKTEN oku: oyuncu başına skill_list uzunluğu, attr.fight ve attr.morale değerleri,
+    self_hp, enemy_hp, scene. Sonra sunucumuzun 7/705 cevabını üret (sunucu/testler/test_mac.py'deki gibi
+    mac.battlemsg çağıran küçük bir Python betiğiyle) ve aynı alanları yazdır. İkisini tablo yap.
+A3. 7/705 cevabı geldikten sonra yükleme çubuğunun nasıl ilerlediğini izle (MatchLoader.lua,
+    MatchManager.lua ve çağırdıkları). %0'dan çıkmak için tamamlanması gereken ilk adımı ve o adımın
+    cevaptan kullandığı alanları dosya:satır ile yaz. Bir id (beceri, oyuncu, sahne, rakip) yapılandırma
+    tablosunda yoksa kod hata mı verir, sessizce mi bekler? Kanıtla.
+A4. En olası 3 sebebi kanıtlarıyla sırala.
+A5. En olası sebebi sunucu/ tarafında düzelt. Emin değilsen düzeltmeyi mac.py'nin başında açılıp
+    kapatılabilen bir sabite bağla (varsayılan açık). Bunun için sunucu/testler/test_mac.py'ye test ekle.
+    python -m unittest discover -s sunucu/testler çalıştır; hepsi geçmeli.
+A6. Yükleme ekranındaki ipuçları Çince kalıyor. Sunucu/veri/ceviri_tr.json ile Ceviri.lua çevirisine
+    neden girmediklerini bul (hangi tablo, ne zaman yükleniyor). Sadece sebep ve çözüm planı yaz.
+
+GÖREV B - "Ben 10 Savaşa Hazır" (Flash oyunu) araştırması, kod yok
+Oyunun İngilizce adı, Flashpoint arşivinde olup olmadığı, Ruffle/Flashpoint/Flash projektörü ile
+çalıştırma seçenekleri (artı/eksi), sunucuya ihtiyaç duyup duymadığı. Kaynak linkleriyle yaz.
+
+GÖREV C - Tokyo Ghoul oyunları araştırması, kod yok
+"Tokyo Ghoul: Dark War" ve "Tokyo Ghoul :re invoke" için: açık mı kapandı mı (tarih ve kaynak), oyun
+motoru, APK güvenilir bir arşivde var mı, yerel sunucuyla çalıştırma zorluğu (kolay/orta/zor ve neden).
+
+BİTİŞ
+RAPOR_OLLAMA.md'nin en başına 10 satırı geçmeyen bir ÖZET yaz: hangi görev bitti, hangisi takıldı,
+hangi dosyaları değiştirdin, oyunda neyi denemem gerekiyor. Sonra CLAUDE.md'deki RAPOR biçimiyle bitir.
+```
+
+Dönünce: `RAPOR_OLLAMA.md` dosyasını aç, en baştaki ÖZET'i bana yapıştır. Değişiklikleri birlikte inceleyip
+gönderelim.
