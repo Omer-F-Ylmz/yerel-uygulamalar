@@ -102,8 +102,12 @@ def kur():
     # OBB orijinal kalmali: Unity dosya sonunun MD5'ini APK kimligiyle karsilastiriyor.
     hedef = "/sdcard/Android/obb/%s/" % PAKET
     a("shell", "mkdir -p '%s'" % hedef)
-    print("Orijinal OBB emulatore kopyalaniyor (bir dakika surebilir)...")
-    a("push", obb, hedef + obb_adi)
+    uzak_boyut = a("shell", "stat -c %%s '%s'" % (hedef + obb_adi), kontrol=False).strip()
+    if uzak_boyut == str(os.path.getsize(obb)):
+        print("Orijinal OBB zaten emulatorde, atlaniyor.")
+    else:
+        print("Orijinal OBB emulatore kopyalaniyor (bir dakika surebilir)...")
+        a("push", obb, hedef + obb_adi)
     print("Yerel sunucu yamalari kopyalaniyor...")
     with tempfile.TemporaryDirectory() as gecici:
         for ad, veri in lua_yamalari(obb, "127.0.0.1", PORT).items():

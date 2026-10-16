@@ -16,6 +16,8 @@ Oyun sunucusunun adresi sunucunun verdiği GatewayList.xml'den gelir.
 
 Kullanım: python obb_yamala.py <orijinal.obb> <cikis.obb> <ip> [port]
 """
+import json
+import os
 import sys
 import zipfile
 
@@ -66,7 +68,55 @@ CONF_EK = (
     "\tend\r\n"
     "\treturn satir\r\n"
     "end\r\n"
+    "-- Turkce ceviri: tum tablolar yuklendiginde Ceviri.lua sozlugu bir kez uygulanir\r\n"
+    "local function yerel_cevir(t, gorulen)\r\n"
+    "\tif gorulen[t] then return end\r\n"
+    "\tgorulen[t] = true\r\n"
+    "\tfor k, v in pairs(t) do\r\n"
+    "\t\tif type(v) == \"string\" then\r\n"
+    "\t\t\tlocal c = CEVIRI[v]\r\n"
+    "\t\t\tif c ~= nil then t[k] = c end\r\n"
+    "\t\telseif type(v) == \"table\" then\r\n"
+    "\t\t\tyerel_cevir(v, gorulen)\r\n"
+    "\t\tend\r\n"
+    "\tend\r\n"
+    "end\r\n"
+    "local yerel_yukle = LuaConfManager.updateLoad\r\n"
+    "function LuaConfManager.updateLoad()\r\n"
+    "\tlocal bitti = yerel_yukle()\r\n"
+    "\tif bitti == true and YEREL_CEVIRI_TAMAM ~= true then\r\n"
+    "\t\tYEREL_CEVIRI_TAMAM = true\r\n"
+    "\t\tif CEVIRI == nil then pcall(require, \"Ceviri\") end\r\n"
+    "\t\tif type(CEVIRI) == \"table\" then\r\n"
+    "\t\t\tlocal gorulen = {}\r\n"
+    "\t\t\tfor ad, t in pairs(_G) do\r\n"
+    "\t\t\t\tif type(ad) == \"string\" and type(t) == \"table\" and (string.sub(ad, -5) == \"_data\" or string.sub(ad, -8) == \"_keydata\") then\r\n"
+    "\t\t\t\t\tyerel_cevir(t, gorulen)\r\n"
+    "\t\t\t\tend\r\n"
+    "\t\t\tend\r\n"
+    "\t\tend\r\n"
+    "\tend\r\n"
+    "\treturn bitti\r\n"
+    "end\r\n"
 )
+
+
+def lua_metni(s):
+    """Lua 5.1 / LuaJIT için güvenli tırnaklı metin."""
+    ozel = {"\\": "\\\\", '"': '\\"', "\n": "\\n", "\r": "\\r", "\t": "\\t", "\0": "\\0"}
+    return '"' + "".join(ozel.get(c, c) for c in s) + '"'
+
+
+def ceviri_lua(sozluk):
+    satirlar = ["-- Turkce ceviri sozlugu (araclar/obb_yamala.py uretir)", "CEVIRI = {"]
+    for kaynak, hedef in sorted(sozluk.items()):
+        if isinstance(hedef, str) and hedef and hedef != kaynak:
+            satirlar.append("[%s]=%s," % (lua_metni(kaynak), lua_metni(hedef)))
+    satirlar.append("}")
+    return "\r\n".join(satirlar) + "\r\n"
+
+
+CEVIRI_JSON = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sunucu", "veri", "ceviri_tr.json")
 
 
 def xor(veri):
@@ -83,6 +133,9 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[XML_YOLU] = xor(metin.replace(XML_CAPA, XML_CAPA + XML_EK, 1).encode("utf-8"))
         cikti[CDN_YOLU] = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
         cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
+    if os.path.exists(CEVIRI_JSON):
+        with open(CEVIRI_JSON, encoding="utf-8") as f:
+            cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
     return {ad[len("assets/"):]: veri for ad, veri in cikti.items()}
 
 
@@ -115,7 +168,6 @@ def yamala(kaynak, hedef, ip, port):
 
 if __name__ == "__main__":
     # Kullanım: python obb_yamala.py <orijinal.obb> <cikis klasoru> [ip] [port]
-    import os
     if len(sys.argv) < 3:
         raise SystemExit(__doc__)
     ip = sys.argv[3] if len(sys.argv) > 3 else "127.0.0.1"
