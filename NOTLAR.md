@@ -29,3 +29,14 @@
 - Bu yüzden OBB orijinal bırakılır. Yamalı Lua'lar oyunun üzerine yazma klasörüne konur:
   `/sdcard/Android/data/com.seastar.gpplay.streetball/files!/assets/Lua/` (LuaScriptMgr.LoaderSuperStar
   önce buraya bakar, dosyalar yine XOR 0xFF şifreli olmalı). `deleteDownloadFile` bu klasöre dokunmaz.
+
+## Maç yükleme donması (%0/%1'de kalma) - sebebi ve çözümü
+- `MatchLoader.InitBattleTeamInfo` her oyuncuya `99999` numaralı "ortak beceri"yi ekliyor; OBB'deki
+  SkillInfo tablosunda (conf_qte.assetbundle, 699 beceri) bu beceri yok (canlı sunucunun güncel tablosunda
+  vardı). C# `PlayerSkillData` tabloda olmayan beceride null'a erişip çöküyor.
+- Çökme Lua -> C# (`initPlayerInfo`) -> Lua iç içe çağrının ortasında olduğundan hata mesajı çıkmıyor,
+  oyun tamamen donuyor. Genel kural: C#'tan çağrılan Lua'da ya da Lua'dan çağrılan C#'ta çıkan her hata
+  logcat'e düşmeden donmaya dönüşür; bu yüzden iz noktaları (999/2, kayit/mac_izi.txt) kullanıldı.
+- Çözüm (araclar/obb_yamala.py): tabloda olmayan beceriler listeden çıkarılır; PlayerAttribute'teki
+  iç içe çağrı xpcall ile sarıldı. Bütün Lua dosyaları yama klasörüne kopyalanıyor (baslat.bat).
+

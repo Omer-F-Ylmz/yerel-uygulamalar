@@ -177,6 +177,21 @@ def mac_izi(metin):
         if metin.count(capa) != 1:
             raise SystemExit("MatchLoader.lua beklenen satiri icermiyor: " + capa.strip())
         metin = metin.replace(capa, once + capa + sonra, 1)
+    # Donmanın asıl sebebi: kod her oyuncuya 99999 "ortak becerisi" ekliyor ama OBB'deki SkillInfo tablosunda
+    # bu beceri yok (canlı sunucunun güncel tablosunda vardı). C# tarafı tabloda olmayan beceride null'a
+    # erişip çöküyor; çökme Lua->C#->Lua iç içe çağrının ortasında olduğundan hata yerine donma görünüyor.
+    # Tabloda olmayan beceriler listeden çıkarılır (ileride başka eksik çıkarsa da donmaz, iz bırakır).
+    capa = "\t\t\ttable.insert(_player['skill_list'], commonSkill)\r\n"
+    if metin.count(capa) != 1:
+        raise SystemExit("MatchLoader.lua beklenen satiri icermiyor: " + capa.strip())
+    metin = metin.replace(capa, (
+        "\t\t\tif LuaConfManager.getSkillInfo(commonSkill.skill_id) ~= nil then table.insert(_player['skill_list'], commonSkill) end\r\n"
+        "\t\t\tlocal yerel_temiz = {}\r\n"
+        "\t\t\tfor _, yerel_s in ipairs(_player['skill_list']) do\r\n"
+        "\t\t\t\tif LuaConfManager.getSkillInfo(yerel_s.skill_id) ~= nil then table.insert(yerel_temiz, yerel_s)\r\n"
+        "\t\t\t\telse YEREL_IZ(\"beceri tabloda yok, atlandi: \" .. tostring(yerel_s.skill_id)) end\r\n"
+        "\t\t\tend\r\n"
+        "\t\t\t_player['skill_list'] = yerel_temiz\r\n"), 1)
     # Oyuncu yüklemesi bitti izi: initPlayerInfo satırının sonuna
     bas = metin.index("\t\t\tMatchManager.luaInstance:initPlayerInfo(_isSelf")
     son = metin.index("\r\n", bas)
@@ -190,10 +205,20 @@ NITELIK_IZLERI = [
      "\tYEREL_IZ(\"nitelik basladi id=\" .. tostring(playerId))\r\n"),
     ("function initCommonAttr(playerId, playerAttributeCalc)\r\n", "",
      "\tYEREL_IZ(\"ortak nitelik id=\" .. tostring(playerId))\r\n"),
+    ("\tplayerAttributeCalc:setBaseValue(Enum_Attr_Mastery, 1) --\u4f53\u529b\u5145\u6c9b\u9636\u6bb5\u4f24\u5bb3\u7cfb\u6570\r\n", "",
+     "\tYEREL_IZ(\"ortak nitelik bitti\")\r\n"),
 ]
+# C#'tan çağrılan Lua'da çıkan hata, iç içe çağrı yüzünden oyunu dondurur; burada yakalanıp iz olarak gönderilir
+NITELIK_SON = (
+    "\r\nlocal yerel_asil_nitelik = initDataWithLuaTable\r\n"
+    "function initDataWithLuaTable(playerId, attrTable, playerAttributeCalc)\r\n"
+    "\tlocal ok, hata = xpcall(function() yerel_asil_nitelik(playerId, attrTable, playerAttributeCalc) end, debug.traceback)\r\n"
+    "\tif not ok then YEREL_IZ(\"NITELIK HATA \" .. tostring(hata)) end\r\n"
+    "end\r\n"
+)
 
 
-def izli(metin, izler, yukleme_izi):
+def izli(metin, izler, yukleme_izi, son=""):
     """Lua dosyasına YEREL_IZ tanımı ve iz noktaları ekler; çapa yoksa hata verir."""
     ilk = metin.index("\r\n") + 2
     metin = metin[:ilk] + MAC_IZ_TANIM + "YEREL_IZ(\"%s\")\r\n" % yukleme_izi + metin[ilk:]
@@ -201,7 +226,7 @@ def izli(metin, izler, yukleme_izi):
         if metin.count(capa) != 1:
             raise SystemExit("Lua dosyasi beklenen satiri icermiyor: " + capa.strip())
         metin = metin.replace(capa, once + capa + sonra, 1)
-    return metin
+    return metin + son
 
 
 def lua_metni(s):
@@ -238,7 +263,7 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
         cikti[MAC_YOLU] = xor(mac_izi(xor(giris.read(MAC_YOLU)).decode("utf-8")).encode("utf-8"))
         cikti[NITELIK_YOLU] = xor(izli(xor(giris.read(NITELIK_YOLU)).decode("utf-8"), NITELIK_IZLERI,
-                                       "PlayerAttribute dosyasi yuklendi").encode("utf-8"))
+                                       "PlayerAttribute dosyasi yuklendi", NITELIK_SON).encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
