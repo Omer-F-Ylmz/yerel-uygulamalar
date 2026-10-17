@@ -114,4 +114,11 @@
 - Zararsız BETIK HATA: Skill_Gift_DangTouYiJi luaRemoveFx(nil) - oyunun kendi hatası, pcall yutuyor.
 - Ulti seçici (ULTI_EK): 1 kendi, 2 Rukawa 10071, 3 Kagami 10020; `_G.YEREL_SON_ULTI[playerId]` son seçimi tutar,
   bir önceki hariç eşit olasılıkla seçilir (art arda aynı ulti çıkmaz). Geçici beceri yoksa o an addSkillTemp.
+- Ulti seçim arayüzü (v6): Aomine/Kise ulti düğmesi (ZiWoYiZhi / WanMeiWuQue effect_PressSkillBtn yaması) kendi
+  betiğini başlatmaz; Efsane betiğindeki YEREL_EFSANE_ULTI_SEC 6 oyuncunun başına konuşma balonuyla etiket koyar
+  (kendi: Kendi, takım arkadaşları: Rukawa/Kagami, rakip: LeBron, rakibin arkadaşları: Akashi/Vazgec) ve
+  PlayerSkillManager.luaInstance:showPlayerSelect(p, MatchManager.luaInstance.allPlayers, "...ultiSecildi") ile
+  oyunun kendi "oyuncu seç" düğmelerini açar (oyun duraklar). Geri çağrı ultiSecildi(caster, seçilen): düğmeleri
+  kapatır, getUniId haritasından seçeneği bulur, gerekirse addSkillTemp ve luaStartActionScript. Zincir ultilerinin
+  (10071/10020/10065/10012) kendi düğme işleyicileri Efsane oyuncusunda devre dışı.
 

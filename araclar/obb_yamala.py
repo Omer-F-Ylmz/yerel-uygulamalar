@@ -287,10 +287,19 @@ EFSANE_LUA = (
     'local YEREL_YUKSELIS = %(yukselis)d\r\n'
     'local YEREL_YUKSELIS_AOMINE = %(yukselis_aomine)d\r\n'
     'local YEREL_AOMINE = 1011\r\n'
-    'local YEREL_EK_ULTILER = {10071, 10020}  -- Rukawa "突击暴扣", Kagami "流星灌篮" (ulti zinciri icin gecici beceri)\r\n'
+    'local YEREL_EK_ULTILER = {10071, 10020, 10065, 10012}  -- Rukawa, Kagami, LeBron, Akashi ultileri (gecici beceri)\r\n'
+    '-- Ulti secim arayuzu: ulti dugmesine basinca 6 oyuncunun basina etiket + oyunun kendi "oyuncu sec" dugmesi.\r\n'
+    'local YEREL_ULTI_SECENEKLER = {\r\n'
+    '\t{ad = "Kendi"},\r\n'
+    '\t{ad = "Rukawa", betik = "Skill_QTE/Skill_Active_TuRuBaoKou", id = 10071},\r\n'
+    '\t{ad = "Kagami", betik = "Skill_QTE/Skill_Active_LiuXingGuanLan", id = 10020},\r\n'
+    '\t{ad = "LeBron", betik = "Skill_QTE/Skill_Active_JunLinTianXia", id = 10065},\r\n'
+    '\t{ad = "Akashi", betik = "Skill_QTE/Skill_Active_TianDiZhiYan", id = 10012},\r\n'
+    '\t{ad = "Vazgec"},\r\n'
+    '}\r\n'
     'local YEREL_UYANIS = 1133\r\n'
     '-- Maliyeti sifirlanan beceriler: blok/calma + ultiler (kendi + zincir): bekleme 0, enerji 0, dayaniklilik 0.\r\n'
-    'local SIFIR_MALIYET = {30089, 30063, 30005, 20136, 10026, 10090, 10048, 10071, 10020}\r\n'
+    'local SIFIR_MALIYET = {30089, 30063, 30005, 20136, 10026, 10090, 10048, 10071, 10020, 10065, 10012}\r\n'
     '\r\n'
     'function getAvailableState()\r\n'
     '\treturn {0, 24, 45, 52}  -- GameStart, Goal, TurnStart, PlayerEnergyChanged\r\n'
@@ -375,8 +384,66 @@ EFSANE_LUA = (
     '\t\tp_player:luaDoCure(takim.TeamHpMax * 0.2)\r\n'
     '\tend\r\n'
     'end\r\n'
+    '\r\n'
+    'local function iz(m)\r\n'
+    '\tpcall(function() Luahttp.PostC2S("", 999, 2, \'{"m":"\' .. m .. \'"}\') end)\r\n'
+    'end\r\n'
+    '\r\n'
+    '-- Sahadaki 6 oyuncu: kendi, takim arkadaslari, rakip ve rakibin arkadaslari -> secenek siralamasi\r\n'
+    'local function secim_oyunculari(p)\r\n'
+    '\tlocal rakip = p:luaGetOpponentPlayer()\r\n'
+    '\tlocal liste = {p, p:luaGetTeamMateA(), p:luaGetTeamMateB()}\r\n'
+    '\tif rakip ~= nil then\r\n'
+    '\t\tliste[4] = rakip\r\n'
+    '\t\tliste[5] = rakip:luaGetTeamMateA()\r\n'
+    '\t\tliste[6] = rakip:luaGetTeamMateB()\r\n'
+    '\tend\r\n'
+    '\treturn liste\r\n'
+    'end\r\n'
+    '\r\n'
+    '-- Ulti dugmesinden (ZiWoYiZhi / WanMeiWuQue effect_PressSkillBtn yamasi) cagrilir.\r\n'
+    '_G.YEREL_EFSANE_ULTI_SEC = function(p, kendi_id, kendi_betik)\r\n'
+    '\tlocal tamam, hata = pcall(function()\r\n'
+    '\t\t_G.YEREL_ULTI_HARITA = {kendi_id = kendi_id, kendi_betik = kendi_betik}\r\n'
+    '\t\tlocal liste = secim_oyunculari(p)\r\n'
+    '\t\tfor i, secenek in ipairs(YEREL_ULTI_SECENEKLER) do\r\n'
+    '\t\t\tlocal oyuncu = liste[i]\r\n'
+    '\t\t\tif oyuncu ~= nil then\r\n'
+    '\t\t\t\t_G.YEREL_ULTI_HARITA[oyuncu:getUniId()] = secenek\r\n'
+    '\t\t\t\tpcall(function() oyuncu:luaShowTalk(secenek.ad) end)\r\n'
+    '\t\t\tend\r\n'
+    '\t\tend\r\n'
+    '\t\tPlayerSkillManager.luaInstance:showPlayerSelect(p, MatchManager.luaInstance.allPlayers, "Skill_QTE/Skill_Yerel_Efsane.ultiSecildi")\r\n'
+    '\tend)\r\n'
+    '\tif not tamam then\r\n'
+    '\t\tiz("HATA ulti secim: " .. tostring(hata))\r\n'
+    '\t\tp:luaStartActionScript(kendi_betik, kendi_id)\r\n'
+    '\tend\r\n'
+    'end\r\n'
+    '\r\n'
+    '-- Secim arayuzu geri cagrisi: (ulti basan, secilen oyuncu)\r\n'
+    'function ultiSecildi(caster, secilen)\r\n'
+    '\tlocal tamam, hata = pcall(function()\r\n'
+    '\t\tlocal hepsi = MatchManager.luaInstance.allPlayers\r\n'
+    '\t\tfor i = 0, hepsi.Count - 1 do\r\n'
+    '\t\t\tpcall(function() hepsi[i]:hideBtnPlayerSelect() end)\r\n'
+    '\t\tend\r\n'
+    '\t\tlocal harita = _G.YEREL_ULTI_HARITA or {}\r\n'
+    '\t\tlocal secenek = nil\r\n'
+    '\t\tif secilen ~= nil then secenek = harita[secilen:getUniId()] end\r\n'
+    '\t\tiz("ULTI secildi: " .. tostring(secenek and secenek.ad))\r\n'
+    '\t\tif secenek == nil or secenek.ad == "Vazgec" then return end\r\n'
+    '\t\tif secenek.betik == nil then\r\n'
+    '\t\t\tcaster:luaStartActionScript(harita.kendi_betik, harita.kendi_id)\r\n'
+    '\t\t\treturn\r\n'
+    '\t\tend\r\n'
+    '\t\tif caster:luaHasSkill(secenek.id) == false then caster:addSkillTemp(secenek.id) end\r\n'
+    '\t\tcaster:luaStartActionScript(secenek.betik, secenek.id)\r\n'
+    '\tend)\r\n'
+    '\tif not tamam then iz("HATA ulti baslat: " .. tostring(hata)) end\r\n'
+    'end\r\n'
 ) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS,
-       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE, "surum": "v5"}
+       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE, "surum": "v6"}
 
 # player_formula.lua: fonksiyon başlığından hemen sonra eklenen satırlar
 FORMUL_IZLERI = (
@@ -418,35 +485,25 @@ MV3_EK = ("\tif blocktarget ~= nil and p_player:luaHasBuff(%d) and p_player:luaI
 # başlarken Efsane oyuncusu 1/3 Rukawa "突击暴扣", 1/3 Kagami "流星灌篮" ultisine geçer (Kise'nin 模仿术 betiğiyle
 # aynı yol: luaStartActionScript mevcut aksiyonu bırakıp diğer betiği başlatır). Geçici beceriler GameStart'ta eklenir.
 ULTI_YOLLARI = ("assets/Lua/Skill_QTE/Skill_Active_ZiWoYiZhi.lua", "assets/Lua/Skill_QTE/Skill_Active_WanMeiWuQue.lua")
-ULTI_CAPA = "function start(p_player,p_skillId)\r\n"
+ULTI_CAPA = "function effect_PressSkillBtn(p_player,p_skillId)\r\n"
 ULTI_EK = (
     "\tif p_player:luaHasBuff(%(b)d) then\r\n"
-    "\t\t-- Efsane: 1 kendi ultisi, 2 Rukawa, 3 Kagami; bir onceki secim haric rastgele (ust uste ayni ulti olmaz).\r\n"
-    "\t\tlocal yerel_sec = {{nil, 0}, {\"Skill_QTE/Skill_Active_TuRuBaoKou\", 10071}, {\"Skill_QTE/Skill_Active_LiuXingGuanLan\", 10020}}\r\n"
-    "\t\tif _G.YEREL_SON_ULTI == nil then _G.YEREL_SON_ULTI = {} end\r\n"
-    "\t\tlocal yerel_son = _G.YEREL_SON_ULTI[p_player.playerId]\r\n"
-    "\t\tlocal yerel_adaylar = {}\r\n"
-    "\t\tfor yerel_i = 1, 3 do\r\n"
-    "\t\t\tif yerel_i ~= yerel_son then table.insert(yerel_adaylar, yerel_i) end\r\n"
+    "\t\t-- Efsane: ulti dugmesi secim arayuzunu acar (Kendi / Rukawa / Kagami / LeBron / Akashi / Vazgec).\r\n"
+    "\t\tif p_player:luaIsSkillAvailable(p_skillId) and MatchManager.luaInstance.ball.Holder == p_player then\r\n"
+    "\t\t\tif _G.YEREL_EFSANE_ULTI_SEC ~= nil then\r\n"
+    "\t\t\t\t_G.YEREL_EFSANE_ULTI_SEC(p_player, p_skillId, \"%%(betik)s\")\r\n"
+    "\t\t\telse\r\n"
+    "\t\t\t\tp_player:luaStartActionScript(\"%%(betik)s\", p_skillId)\r\n"
+    "\t\t\tend\r\n"
     "\t\tend\r\n"
-    "\t\tlocal yerel_secim = yerel_adaylar[RandomManager.luaInstance:luaRangeInt(1, #yerel_adaylar + 1)]\r\n"
-    "\t\t_G.YEREL_SON_ULTI[p_player.playerId] = yerel_secim\r\n"
-    "\t\tlocal yerel_adlar = {\"kendi\", \"Rukawa\", \"Kagami\"}\r\n"
-    "\t\tpcall(function() p_player:luaShowTalk(\"Ulti: \" .. yerel_adlar[yerel_secim]) end)\r\n"
-    "\t\tpcall(function() Luahttp.PostC2S(\"\", 999, 2, '{\"m\":\"ULTI \" .. p_player.playerId .. \" \" .. yerel_adlar[yerel_secim] .. \" (onceki \" .. tostring(yerel_son) .. \")\"}') end)\r\n"
-    "\t\tif yerel_secim ~= 1 then\r\n"
-    "\t\t\tlocal yerel_b = yerel_sec[yerel_secim]\r\n"
-    "\t\t\tif p_player:luaHasSkill(yerel_b[2]) == false then p_player:addSkillTemp(yerel_b[2]) end\r\n"
-    "\t\t\tp_player:luaStartActionScript(yerel_b[1], yerel_b[2])\r\n"
-    "\t\t\treturn\r\n"
-    "\t\tend\r\n"
+    "\t\treturn\r\n"
     "\tend\r\n" % {"b": EFSANE_BUFF})
 
-
-# Zincirlenen ultiler (Rukawa 10071, Kagami 10020) Efsane oyuncusuna geçici beceri olarak ekli; bu betiklerin kendi
-# effect_PressSkillBtn'leri de ulti düğmesine cevap verip asıl ulti betiğini bastırıyordu (listede sonuncu olan Kagami
-# hep kazanıyordu, kayıt 15:19-15:22: ULTI izi yok). Efsane oyuncusunda düğmeye tepki vermesinler; seçici başlatır.
-ZINCIR_YOLLARI = ("assets/Lua/Skill_QTE/Skill_Active_TuRuBaoKou.lua", "assets/Lua/Skill_QTE/Skill_Active_LiuXingGuanLan.lua")
+# Zincirlenen ultiler (Rukawa 10071, Kagami 10020, LeBron 10065, Akashi 10012) Efsane oyuncusuna geçici beceri olarak
+# ekli; bu betiklerin kendi effect_PressSkillBtn'leri de ulti düğmesine cevap verip asıl ulti betiğini bastırıyordu
+# (kayıt 15:19-15:22: ULTI izi yok, hep sonuncu Kagami). Efsane oyuncusunda düğmeye tepki vermesinler; seçici başlatır.
+ZINCIR_YOLLARI = ("assets/Lua/Skill_QTE/Skill_Active_TuRuBaoKou.lua", "assets/Lua/Skill_QTE/Skill_Active_LiuXingGuanLan.lua",
+                  "assets/Lua/Skill_QTE/Skill_Active_JunLinTianXia.lua", "assets/Lua/Skill_QTE/Skill_Active_TianDiZhiYan.lua")
 ZINCIR_CAPA = "function effect_PressSkillBtn(p_player,p_skillId)\r\n"
 ZINCIR_EK = "\tif p_player:luaHasBuff(%d) then return end\r\n" % EFSANE_BUFF
 
@@ -459,8 +516,9 @@ def zincir_yamala(metin, yol):
 
 def ulti_yamala(metin, yol):
     if metin.count(ULTI_CAPA) != 1:
-        raise SystemExit("%s beklenen start satirini icermiyor" % yol)
-    return metin.replace(ULTI_CAPA, ULTI_CAPA + ULTI_EK, 1)
+        raise SystemExit("%s beklenen effect_PressSkillBtn satirini icermiyor" % yol)
+    betik = yol[len("assets/Lua/"):-len(".lua")]  # "Skill_QTE/Skill_Active_ZiWoYiZhi"
+    return metin.replace(ULTI_CAPA, ULTI_CAPA + ULTI_EK % {"betik": betik}, 1)
 
 
 def mv3_yamala(metin):
