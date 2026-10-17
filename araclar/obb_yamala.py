@@ -289,7 +289,8 @@ EFSANE_LUA = (
     'local YEREL_AOMINE = 1011\r\n'
     'local YEREL_EK_ULTILER = {10071, 10020}  -- Rukawa "突击暴扣", Kagami "流星灌篮" (ulti zinciri icin gecici beceri)\r\n'
     'local YEREL_UYANIS = 1133\r\n'
-    'local SIFIR_CD = {30089, 30063, 30005, 20136}\r\n'
+    '-- Maliyeti sifirlanan beceriler: blok/calma + ultiler (kendi + zincir): bekleme 0, enerji 0, dayaniklilik 0.\r\n'
+    'local SIFIR_MALIYET = {30089, 30063, 30005, 20136, 10026, 10090, 10048, 10071, 10020}\r\n'
     '\r\n'
     'function getAvailableState()\r\n'
     '\treturn {0, 24, 45, 52}  -- GameStart, Goal, TurnStart, PlayerEnergyChanged\r\n'
@@ -306,6 +307,19 @@ EFSANE_LUA = (
     '\tend\r\n'
     '\tif p:luaHasSkill(20038) and p:luaHasSkill(20001) == false then\r\n'
     '\t\tp:addSkillTemp(20001)\r\n'
+    '\tend\r\n'
+    'end\r\n'
+    '\r\n'
+    '-- addCoolDownCalc/addEnergyCalc carpani 0 yapar; setCoolDownRestTime(0) mac basindaki ilk beklemeyi de siler.\r\n'
+    'local function maliyet_sifirla(p)\r\n'
+    '\tfor _, id in ipairs(SIFIR_MALIYET) do\r\n'
+    '\t\tif p:luaHasSkill(id) then\r\n'
+    '\t\t\tp:luaChangeSkillCoolDown(id, 0, 0)\r\n'
+    '\t\t\tp:luaChangeSkillEnergyCost(id, 0, 0)\r\n'
+    '\t\t\tp:luaChangeSkillAtkPressure(id, 0, 0)\r\n'
+    '\t\t\tlocal d = p:luaFindSkillData(id)\r\n'
+    '\t\t\tif d ~= nil then d:setCoolDownRestTime(0) end\r\n'
+    '\t\tend\r\n'
     '\tend\r\n'
     'end\r\n'
     '\r\n'
@@ -326,16 +340,12 @@ EFSANE_LUA = (
     '\tif p_player:luaHasBuff(YEREL_UYANIS) == false then\r\n'
     '\t\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_UYANIS)\r\n'
     '\tend\r\n'
-    '\tfor _, id in ipairs(SIFIR_CD) do\r\n'
-    '\t\tif p_player:luaHasSkill(id) then\r\n'
-    '\t\t\tp_player:luaChangeSkillCoolDown(id, 0, 0)\r\n'
-    '\t\tend\r\n'
-    '\tend\r\n'
-    '\tdayaniklilik_kilitle(p_player)\r\n'
-    '\tzone_koru(p_player)\r\n'
     '\tfor _, id in ipairs(YEREL_EK_ULTILER) do\r\n'
     '\t\tif p_player:luaHasSkill(id) == false then p_player:addSkillTemp(id) end\r\n'
     '\tend\r\n'
+    '\tmaliyet_sifirla(p_player)\r\n'
+    '\tdayaniklilik_kilitle(p_player)\r\n'
+    '\tzone_koru(p_player)\r\n'
     'end\r\n'
     '\r\n'
     '-- Her tur: saldiri ve savunma x1.5 (yigilir), Zone tazelenir.\r\n'
@@ -347,6 +357,7 @@ EFSANE_LUA = (
     '\tend\r\n'
     '\tzone_koru(p_player)\r\n'
     '\tdayaniklilik_kilitle(p_player)\r\n'
+    '\tmaliyet_sifirla(p_player)\r\n'
     'end\r\n'
     '\r\n'
     '-- C# effect cagrisi: (oyuncu, olay parametreleri..., beceriId); beceri id en sonda gelir.\r\n'
@@ -467,7 +478,24 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
 # veriyor; hata C# tarafındaki adımı (maç başlatma, dalga geçişi...) yarıda bırakıyor ve maç takılıyor.
 # Bu ek, modülün her fonksiyonunu pcall ile sarar: hata veren beceri atlanır, bir kez sunucuya bildirilir.
 KORUNAN_KLASORLER = ("Lua/Skill_QTE/", "Lua/Skill/", "Lua/Battle/")
-KORUMA_BAS = "local yerel_G = _G\r\n"
+# Betikler modül düzeyinde durum tutar (ör. TuJinBaoKou'daki rate) ve Kise'nin kopyalama becerisi rakibin betiğini
+# Kise'ye çalıştırır: betik, sahibinde olup kopyalayanda olmayan bir beceriyi luaFindSkillData ile ister, nil döner,
+# luaDoShotSkill(…, nil, …) C# içinde patlar ve loglanmayan donma olur (14:45:08 "Can NOT find skillData 1012/30073").
+# yerel_bul: beceri yoksa oyuncunun kendi hücum becerisinin verisini kullanır.
+KORUMA_BAS = (
+    "local yerel_G = _G\r\n"
+    "local function yerel_bul(p, id)\r\n"
+    "\tlocal d = p:luaFindSkillData(id)\r\n"
+    "\tif d == nil then\r\n"
+    "\t\tfor _, c in yerel_G.ipairs({2, 1, 3, 5}) do\r\n"
+    "\t\t\tlocal bilgi = p:luaGetSkillByClass(c)\r\n"
+    "\t\t\tif bilgi ~= nil then d = p:luaFindSkillData(bilgi.skillId) end\r\n"
+    "\t\t\tif d ~= nil then break end\r\n"
+    "\t\tend\r\n"
+    "\tend\r\n"
+    "\treturn d\r\n"
+    "end\r\n"
+)
 KORUMA_SON = (
     "\r\n-- yerel sunucu: betik hatasi maci kilitlemesin (bir kez bildirilir, islev atlanir)\r\n"
     "do\r\n"
@@ -498,6 +526,7 @@ def betik_koruma(metin):
     if "module(" not in metin:
         return metin
     bom = "\ufeff" if metin.startswith("\ufeff") else ""
+    metin = metin.replace("player:luaFindSkillData(", "yerel_bul(player, ")
     return bom + KORUMA_BAS + metin[len(bom):].rstrip("\r\n") + "\r\n" + KORUMA_SON
 
 

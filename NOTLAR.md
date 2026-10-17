@@ -103,4 +103,13 @@
   oyuncusu 1/3 Rukawa 10071 (Skill_Active_TuRuBaoKou), 1/3 Kagami 10020 (Skill_Active_LiuXingGuanLan) betiğine
   luaStartActionScript ile geçer (quitLuaFancyMove + startLuaFancyMove: mevcut aksiyonu bırakır). Geçici
   beceriler GameStart'ta addSkillTemp ile eklenir (Kise'nin 模仿术 betiğiyle aynı yöntem).
+- Donma (14:45:08, "Can NOT find skillData in Player: 1012 by SkillID: 30073"): Kise'nin Taklit becerisi rakip
+  Mac'in TuJinBaoKou betiğini Kise'ye çalıştırdı; betikteki modül düzeyi `rate` daha önce Mac çalıştırdığı için
+  0.35 kalmıştı, şaşırtma dalı Kise'de olmayan 30073'ü `luaFindSkillData` ile istedi, nil `luaDoShotSkill`'e gitti,
+  C# içinde loglanmayan donma. Çözüm (betik_koruma): korumalı betiklerde `player:luaFindSkillData(` ->
+  `yerel_bul(player, `; beceri yoksa oyuncunun kendi sınıf 2/1/3/5 becerisinin verisi döner (218 dosya).
+- Ulti maliyetleri: Efsane betiği maç başında ve her tur 10026/10090/10048/10071/10020 ile blok/çalma
+  becerilerinde luaChangeSkillCoolDown(0,0), luaChangeSkillEnergyCost(0,0), luaChangeSkillAtkPressure(0,0) ve
+  setCoolDownRestTime(0) uygular (ilk bekleme dahil sıfır).
+- Zararsız BETIK HATA: Skill_Gift_DangTouYiJi luaRemoveFx(nil) - oyunun kendi hatası, pcall yutuyor.
 
