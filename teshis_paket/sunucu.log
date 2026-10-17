@@ -1,0 +1,82 @@
+05:24:16 Sunucu hazır: port 8881  |  Panel: http://localhost:8881/panel
+05:24:18 GET /panel
+05:24:19 GET /panel/api/durum
+05:24:19 BILINMEYEN /favicon.ico alanlar={}
+05:24:37 GET /GameConfig/seastar_mix/GatewayList.xml
+05:24:37 GET /GameConfig/seastar_mix/VersionConfig.xml
+05:24:37 GET /GameConfig/seastar_mix/ServerNotice.xml
+05:24:37 GET /GamePack/1.1.8/ANDROID/ResourceZip_ANDROID.txt
+05:28:33 /login param={}
+05:28:33 giriş: hesap=thugylody
+05:28:33 /login param={}
+05:28:34 GET /res/ANDROID/md5Check_ANDROID.txt
+05:28:34 GET /res/ANDROID/ResourceZip_ANDROID.txt
+05:28:34 GET /res/ANDROID/Conf/en/conf_time.txt
+05:28:34 GET /res/ANDROID/revision.txt
+05:28:34 GET /res/ANDROID/time_ANDROID.txt
+05:28:34 kaynak bulunamadı: revision.txt
+05:28:50 /ball_team param=0
+05:28:50 /get_user_info param={}
+05:28:50 /player_month_checkin param=0
+05:28:50 /get_server_time param={}
+05:28:50 /player_strength param=0
+05:28:50 /get_notice param={}
+05:28:51 /player_mission param=0
+05:28:51 client 16/1601 param={}
+05:28:51 client 2/1 param={}
+05:28:51 /month_card param=0
+05:28:51 client 16/1610 param={}
+05:28:53 /trailer param=0
+05:28:53 client 24/2401 param={}
+05:28:53 /two_week param=0
+05:28:53 /cheer_leader param=0
+05:28:53 /gem_shop param={"paramlist":0}
+05:28:53 /gem_shop param={"paramlist":0}
+05:28:53 /activity param=0
+05:28:53 /gem_shop param=0
+05:28:53 client 34/3401 param={}
+05:28:53 client 45/4501 param={}
+05:28:53 /player_mission param=0
+05:28:53 /player_mission param=0
+05:28:53 /seven param=0
+05:28:53 /gem_shop param={"paramlist":0}
+05:28:53 /online_package param=0
+05:28:53 client 35/3501 param={}
+05:28:53 client 40/4003 param={}
+05:28:53 /reward_mission param={"paramlist":0}
+05:28:53 client 21/2103 param={}
+05:28:53 client 10/1001 param={}
+05:28:53 client 47/4701 param={}
+05:28:53 /activity param=0
+05:28:53 client 51/5101 param={}
+05:28:53 /activity_mission param=0
+05:28:53 /growth_fund param=0
+05:28:53 client 54/5433 param={}
+05:28:53 client 58/5811 param={}
+05:28:53 client 52/5203 param={}
+05:28:53 /facebook_gift param={}
+05:28:53 /icon param=0
+05:28:53 client 57/5701 param={}
+05:28:53 client 60/6003 param={}
+05:28:53 client 110/11001 param={"paramlist":["Seastar","1.1.8"]}
+05:28:53 /time_pay_gift param=0
+05:28:53 /player_book param=[]
+05:28:55 client 33/3301 param={}
+05:28:55 client 17/1711 param={}
+05:28:55 /activity param=0
+05:28:55 /gem_shop param=0
+05:29:02 /time_pay_gift param=0
+05:29:03 client 16/1601 param={}
+05:29:06 client 16/1602 param={"stage":0,"battle":16000101,"star":0}
+05:29:06 client 999/2 param={"m":"705 gonderiliyor id=16000101"}
+05:29:06 IZ: 705 gonderiliyor id=16000101
+05:29:06 client 7/705 param={"paramlist":[16000101]}
+05:29:06 maç başladı: id=16000101 tür=6 dalga=1
+05:29:06 client 999/2 param={"m":"705 cevabi geldi sonuc=0"}
+05:29:06 IZ: 705 cevabi geldi sonuc=0
+05:29:06 client 999/2 param={"m":"initBattleInfo"}
+05:29:06 client 999/2 param={"m":"kendi takim"}
+05:29:06 client 999/2 param={"m":"oyuncu true dalga=0 id=1014 beceri=18"}
+05:29:06 IZ: initBattleInfo
+05:29:06 IZ: kendi takim
+05:29:06 IZ: oyuncu true dalga=0 id=1014 beceri=18

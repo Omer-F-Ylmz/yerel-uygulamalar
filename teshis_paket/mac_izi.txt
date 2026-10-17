@@ -1,0 +1,5 @@
+2026-10-17 05:29:06 705 gonderiliyor id=16000101
+2026-10-17 05:29:06 705 cevabi geldi sonuc=0
+2026-10-17 05:29:06 initBattleInfo
+2026-10-17 05:29:06 kendi takim
+2026-10-17 05:29:06 oyuncu true dalga=0 id=1014 beceri=18
