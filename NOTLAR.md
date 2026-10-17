@@ -87,3 +87,8 @@
 - Veri: SkillInfo'ya 90001 (conf_yamala.EK_BECERILER, düzen conf_duzenleri.json) ve BuffInformation'a 90001
   eklendi; Lua tarafı LuaConfManager yamasıyla (YEREL_EK_SkillInfo/BuffInformation). MatchLoader yaması tabloda
   olmayan becerileri attığı için Lua tarafı şart.
+- Ek (her tur güçlenme ve kalıcı Zone): TurnStart (durum 45) olayında 90002 "Efsane Yükselişi" buff'ı eklenir
+  (yığın 99; etkiler 127 saldırı x1.5 ve 130 savunma x1.5, her tur bir kat daha). Zone (buff tipi 4) Aomine için
+  her maç başında ve her tur yeniden eklenir (20037 varsa 1037, yoksa 1036; 20038 varsa geçici beceri 20001),
+  böylece süresi hiç dolmaz. Betik 10026/10090 becerisi olmayan oyuncuda Zone'a dokunmaz.
+

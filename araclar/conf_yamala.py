@@ -36,6 +36,7 @@ VARSAYILAN_CIKTI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 
 
 EFSANE_BUFF = 90001
+EFSANE_YUKSELIS = 90002
 
 
 def _buff(bid, ad, aciklama, tur=0, sn=0, yigin=1, iyi=1, tip=0, soz="0", fx1="0", fx2="0"):
@@ -95,6 +96,9 @@ EK_BUFFLAR = [
     _buff(3006, "Boyun Eğmeyen İrade", "Dayanıklılık yeniler ve hasar azaltma verir, 2 tur", tur=2, soz="伤害减免"),
     # Yerel "Efsane Modu" işareti (Skill_Yerel_Efsane): player_formula bu buff'a bakar.
     _buff(EFSANE_BUFF, "Efsane Modu", "Bloklanamaz, bloğu ve top çalması kesin, dayanıklılığı tükenmez"),
+    # Her tur bir kat daha eklenir (yığın 99): saldırı x1.5 ve savunma x1.5.
+    _buff(EFSANE_YUKSELIS, "Efsane Yükselişi", "Her tur saldırı ve savunma 1.5 kat artar, üst üste biner",
+          yigin=99, soz="全属性上升"),
 ]
 
 # ---------------------------------------------------------------- yerel beceri: Efsane Modu
@@ -105,7 +109,7 @@ EFSANE_BECERI = 90001
 EK_BECERILER = [{
     "skillId": EFSANE_BECERI, "skillName": "Efsane Modu",
     "skillDescription": "Şutları bloklanamaz; arkadan gelen blokları ve top çalmaları kesin başarılı olur; "
-                        "dayanıklılığı hiç tükenmez.",
+                        "dayanıklılığı hiç tükenmez; her tur saldırı ve savunma 1.5 kat artar; Zone hiç kapanmaz.",
     "portraitDescription": "", "skillScript": "Skill_QTE/Skill_Yerel_Efsane", "skillType": 3,
     "skillCoolDown": 0, "energyCost": 0, "actionType": [0], "isNoBall": 0, "skillIcon": "ShuaiQi",
     "damageParameter": 1.0, "initCount": 0, "maxCount": 0, "initCoolDown": 0, "skillClass": 0,
@@ -128,6 +132,8 @@ EK_BUFF_ETKILERI = [
     _etki(1172, 126, 100), _etki(1172, 127, 0, 1.35),
     _etki(2036, 127, 0, 1.75),
     _etki(2097, 335),
+    _etki(EFSANE_YUKSELIS, 127, 0, 1.5),  # saldırı (AttackMorale) katsayısı
+    _etki(EFSANE_YUKSELIS, 130, 0, 1.5),  # savunma (Defend) katsayısı
 ]
 
 
