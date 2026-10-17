@@ -2,7 +2,7 @@
 #   powershell -File dosya_parcala.ps1 <kaynak klasör> <hedef klasör>
 param([string]$kaynak, [string]$hedef)
 $ErrorActionPreference = 'Stop'
-$dosyalar = Get-ChildItem $kaynak -File | Where-Object { $_.Extension -in '.apk', '.xapk', '.apks', '.obb', '.zip' }
+$dosyalar = Get-ChildItem $kaynak -File | Where-Object { $_.Extension -in '.apk', '.xapk', '.apks', '.obb', '.zip', '.rar', '.7z' }
 if (-not $dosyalar) { Write-Host "$kaynak klasorunde .apk/.xapk/.obb bulunamadi." -ForegroundColor Red; exit 1 }
 New-Item -ItemType Directory -Force $hedef | Out-Null
 Get-ChildItem $hedef | Remove-Item -Recurse
