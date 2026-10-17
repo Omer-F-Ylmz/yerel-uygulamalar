@@ -261,6 +261,91 @@ def xor(veri):
     return bytes(b ^ 0xFF for b in veri)
 
 
+# ---------------------------------------------------------------- Efsane Modu (Aomine, Kise)
+# Yeni pasif beceri (conf_yamala.EK_BECERILER, id 90001) ve player_formula.lua yaması. Oyun formülleri Lua'da:
+# getBlockRate / getMultiBlockResult / getTriggerBlockRate (blok) ve getStealSuccessResult (top çalma).
+# Dayanıklılık ("体力") C# attackPressure: 70'i geçince oyuncu yorulur; attackPressureChangeCoe/Abs alanları
+# Lua'ya açık, 0 yapılınca sıradan hareketler ve beceriler dayanıklılık tüketmez.
+FORMUL_YOLU = "assets/Lua/player_formula.lua"
+EFSANE_YOLU = "Lua/Skill_QTE/Skill_Yerel_Efsane.lua"
+EFSANE_BUFF = conf_yamala.EFSANE_BUFF
+# Skill_Passive_MV3 (Wade'in arkadan bloğu) 1133 "MY HOUSE" buff'ı varken her dış şutta tetiklenir.
+EFSANE_LUA = (
+    'module("Skill_QTE/Skill_Yerel_Efsane", package.seeall)\r\n'
+    '\r\n'
+    'require "functions"\r\n'
+    'require "player_formula"\r\n'
+    'require "PlayerAttribute"\r\n'
+    '\r\n'
+    '-- Yerel sunucu: Efsane Modu. Isaret buff %(buff)d player_formula yamasinda okunur.\r\n'
+    'local YEREL_BUFF = %(buff)d\r\n'
+    'local YEREL_UYANIS = 1133\r\n'
+    'local SIFIR_CD = {30089, 30063, 30005, 20136}\r\n'
+    '\r\n'
+    'function getAvailableState()\r\n'
+    '\treturn {0, 52}  -- GameStart, PlayerEnergyChanged\r\n'
+    'end\r\n'
+    '\r\n'
+    'local function dayaniklilik_kilitle(p)\r\n'
+    '\tp.attackPressureChangeCoe = 0\r\n'
+    '\tp.attackPressureChangeAbs = 0\r\n'
+    '\tp.attackPressureChangeExtraCoe = 0\r\n'
+    '\tp.attackPressureChangeExtraAbs = 0\r\n'
+    '\tif p.attackPressure > 0 then\r\n'
+    '\t\tp:luaAddAttackPressure(-p.attackPressure)\r\n'
+    '\tend\r\n'
+    'end\r\n'
+    '\r\n'
+    'function effect_GameStart(p_player, p_skillId)\r\n'
+    '\tif p_player:luaHasBuff(YEREL_BUFF) == false then\r\n'
+    '\t\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_BUFF)\r\n'
+    '\tend\r\n'
+    '\tif p_player:luaHasBuff(YEREL_UYANIS) == false then\r\n'
+    '\t\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_UYANIS)\r\n'
+    '\tend\r\n'
+    '\tfor _, id in ipairs(SIFIR_CD) do\r\n'
+    '\t\tif p_player:luaHasSkill(id) then\r\n'
+    '\t\t\tp_player:luaChangeSkillCoolDown(id, 0, 0)\r\n'
+    '\t\tend\r\n'
+    '\tend\r\n'
+    '\tdayaniklilik_kilitle(p_player)\r\n'
+    'end\r\n'
+    '\r\n'
+    'function effect_PlayerEnergyChanged(p_player, p_skillId, degisen, fark)\r\n'
+    '\tif degisen == p_player then\r\n'
+    '\t\tdayaniklilik_kilitle(p_player)\r\n'
+    '\tend\r\n'
+    'end\r\n'
+) % {"buff": EFSANE_BUFF}
+
+# player_formula.lua: fonksiyon başlığından hemen sonra eklenen satırlar
+FORMUL_IZLERI = (
+    ("function getBlockRate(p_blocker, p_shooter, shotType)\r\n",
+     "\tif p_shooter:luaHasBuff(%d) then return 0 end\r\n" % EFSANE_BUFF),
+    ("function getMultiBlockResult(p_blockerList, p_shooter, shotType)\r\n",
+     "\tif p_shooter:luaHasBuff(%d) then return p_shooter end\r\n"
+     "\tfor yerel_i = 0, p_blockerList.Count - 1 do\r\n"
+     "\t\tif p_blockerList[yerel_i]:luaHasBuff(%d) then return p_blockerList[yerel_i] end\r\n"
+     "\tend\r\n" % (EFSANE_BUFF, EFSANE_BUFF)),
+    ("function getTriggerBlockRate(p_blockerList, p_shooter)\r\n",
+     "\tif p_shooter:luaHasBuff(%d) then return p_shooter end\r\n"
+     "\tfor yerel_i = 0, p_blockerList.Count - 1 do\r\n"
+     "\t\tif p_blockerList[yerel_i]:luaHasBuff(%d) then return p_blockerList[yerel_i] end\r\n"
+     "\tend\r\n" % (EFSANE_BUFF, EFSANE_BUFF)),
+    ("function getStealSuccessResult(player, target, paramOne)\r\n",
+     "\tif player:luaHasBuff(%d) then return true end\r\n" % EFSANE_BUFF),
+)
+
+
+def formul_yamala(metin):
+    """player_formula.lua: Efsane Modu kontrolleri. Çapa yoksa hata verir (OBB sürümü değişmiş demektir)."""
+    for capa, ek in FORMUL_IZLERI:
+        if metin.count(capa) != 1:
+            raise SystemExit("player_formula.lua beklenen satiri icermiyor: %r" % capa.strip())
+        metin = metin.replace(capa, capa + ek, 1)
+    return metin
+
+
 def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
     """{'Lua/...lua': şifreli bayt} sözlüğü döner; OBB'ye dokunmaz."""
     cikti = {}
@@ -274,6 +359,8 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[MAC_YOLU] = xor(mac_izi(xor(giris.read(MAC_YOLU)).decode("utf-8")).encode("utf-8"))
         cikti[NITELIK_YOLU] = xor(izli(xor(giris.read(NITELIK_YOLU)).decode("utf-8"), NITELIK_IZLERI,
                                        "PlayerAttribute dosyasi yuklendi", NITELIK_SON).encode("utf-8"))
+        cikti[FORMUL_YOLU] = xor(formul_yamala(xor(giris.read(FORMUL_YOLU)).decode("utf-8")).encode("utf-8"))
+        cikti["assets/" + EFSANE_YOLU] = xor(EFSANE_LUA.encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))

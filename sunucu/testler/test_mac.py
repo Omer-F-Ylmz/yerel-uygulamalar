@@ -168,6 +168,31 @@ class MacTesti(unittest.TestCase):
             self.assertEqual((p["level"], p["break_level"], p["color"]), (1, 1, 1))
             self.assertLessEqual(len(p["skill_list"]), 6)
 
+    def test_efsane_becerileri(self):
+        k = self.durum.veri
+        k["mac_modu"] = "normal"
+        k["efsane"] = True
+        for pid in mac.EFSANE_OYUNCULAR:
+            k["oyuncular"].setdefault(str(pid), dict(k["oyuncular"][next(iter(k["oyuncular"]))]))
+        k["secili"] = [{"id": 1011, "pos": 1}, {"id": 1012, "pos": 2}, {"id": 1014, "pos": 3}]
+        biz, _ = mac.kendi_takim(k)
+        idler = {p["id"]: {b["skill_id"] for b in p["skill_list"]} for p in biz}
+        self.assertTrue({90001, 30089, 20136} <= idler[1011])
+        self.assertIn(30005, idler[1011])
+        self.assertNotIn(30063, idler[1011])  # aynı betik 30005 olarak zaten var
+        self.assertTrue({90001, 30089, 20136, 30063} <= idler[1012])
+        self.assertFalse({90001, 30089, 20136, 30063} & idler[1014])
+        for p in biz:  # tekrar yok
+            liste = [b["skill_id"] for b in p["skill_list"]]
+            self.assertEqual(len(liste), len(set(liste)))
+        k["efsane"] = False
+        biz, _ = mac.kendi_takim(k)
+        self.assertFalse({90001, 30089, 20136, 30063} & {b["skill_id"] for b in biz[0]["skill_list"]})
+        k["efsane"] = True
+        k["mac_modu"] = "sade"  # sade ve teşhis maçlarına karışmaz
+        biz, _ = mac.kendi_takim(k)
+        self.assertNotIn(90001, {b["skill_id"] for b in biz[0]["skill_list"]})
+
     def test_formul_ornek(self):
         # 1050, seviye 1, yıldız 1, renk 0, antrenman 0: yalnızca PlayerStarUpValue[1050][1]
         o = {"level": 1, "break_level": 1, "color": 0, "train": 0}

@@ -38,6 +38,7 @@ def kur(yon, durum):
             "sinir": SINIR,
             "guc_carpani": k.get("guc_carpani", 2.5),
             "mac_modu": k.get("mac_modu") or ("sade" if k.get("sade_mac") else "normal"),
+            "efsane": bool(k.get("efsane", True)),
         }
 
     def islem(veri):
@@ -55,6 +56,8 @@ def kur(yon, durum):
                     k.pop("sade_mac", None)
                 if "guc_carpani" in veri:
                     k["guc_carpani"] = max(0.1, min(20.0, float(veri["guc_carpani"])))
+                if "efsane" in veri:
+                    k["efsane"] = bool(veri["efsane"])
                 if veri.get("takim_adi"):
                     k["takim"]["ad"] = str(veri["takim_adi"])[:20]
             elif ad == "hepsini_fulle":

@@ -72,3 +72,18 @@
   `araclar/conf_duzen_cikar.py` ile çıkarılıp `araclar/conf_duzenleri.json` dosyasına kaydedildi; her düzen OBB'deki
   JSON ikiziyle (conf_json_qte.assetbundle) doğrulanır, uymayan tablo olduğu gibi bırakılır.
 - Çevrilmeden kalan tek alan `data_droplist.name` (iç ad, ekranda görünmez).
+
+## Efsane Modu (Aomine 1011, Kise 1012) - panelden açılıp kapanır, varsayılan açık
+- Sunucu (mac.py EFSANE_*) iki oyuncunun maç beceri listesine ekler: 90001 Efsane Modu (yerel pasif),
+  30089 Wade "最佳3号" (arkadan blok), 20136 CP3 "灵敏" (rakip hücuma başlarken kendiliğinden çalma),
+  30063 "急速抢断" (tuşla çalma; Aomine'de aynı betik 30005 olarak zaten var). Sade/teşhis maçına karışmaz.
+- 90001 betiği (obb_yamala.EFSANE_LUA -> Lua/Skill_QTE/Skill_Yerel_Efsane.lua): maç başında isaret buff'ı 90001
+  ve 1133 "MY HOUSE" (MV3 her dış şutta tetiklenir) ekler, bu becerilerin bekleme süresini
+  luaChangeSkillCoolDown(id, 0, 0) ile sıfırlar, attackPressureChangeCoe/Abs/Extra* alanlarını 0 yapar ve
+  PlayerEnergyChanged (durum 52) olayında birikmiş baskıyı siler: dayanıklılık (体力, attackPressure >= 70 yorgun)
+  hiç tükenmez. Beceri durum kimlikleri PlayerSkillManager.Condition sırası (GameStart 0 ... PlayerEnergyChanged 52).
+- player_formula.lua yaması: getBlockRate -> şutör 90001 taşıyorsa 0; getMultiBlockResult/getTriggerBlockRate ->
+  şutör 90001 ise şutör kazanır, bloklayan 90001 ise o kazanır; getStealSuccessResult -> 90001 ise kesin başarı.
+- Veri: SkillInfo'ya 90001 (conf_yamala.EK_BECERILER, düzen conf_duzenleri.json) ve BuffInformation'a 90001
+  eklendi; Lua tarafı LuaConfManager yamasıyla (YEREL_EK_SkillInfo/BuffInformation). MatchLoader yaması tabloda
+  olmayan becerileri attığı için Lua tarafı şart.

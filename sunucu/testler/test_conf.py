@@ -51,7 +51,7 @@ class ConfYamaTesti(unittest.TestCase):
         self.assertEqual(idler, [1000] + [r["buffId"] for r in cy.EK_BUFFLAR])
 
     def test_eksik_bufflar_tam(self):
-        beklenen = set(range(1147, 1177)) | {2036, 2097, 2098, 2099, 2100, 3006}
+        beklenen = set(range(1147, 1177)) | {2036, 2097, 2098, 2099, 2100, 3006, cy.EFSANE_BUFF}
         self.assertEqual({r["buffId"] for r in cy.EK_BUFFLAR}, beklenen)
         self.assertTrue({r["buffId"] for r in cy.EK_BUFF_ETKILERI} <= beklenen)
         for r in cy.EK_BUFFLAR:  # C# specialEffectOne.Length > 1 ise efekt arar: boş yerine "0"
@@ -90,9 +90,11 @@ class ConfYamaTesti(unittest.TestCase):
 
     def test_lua_eki(self):
         ek = cy.buff_lua_eki()
-        self.assertIn("YEREL_EK_BUFFLAR", ek)
+        self.assertIn("YEREL_EK_BuffInformation", ek)
         self.assertIn("function BuffInformationReader.OnJsonCall(data)", ek)
         self.assertEqual(ek.count("buffId="), len(cy.EK_BUFFLAR))
+        self.assertEqual(ek.count("skillId="), len(cy.EK_BECERILER))
+        self.assertIn("function SkillInfoReader.OnJsonCall(data)", ek)
         self.assertIn('buffName="İmparatorun Heybeti"', ek)
 
     def test_uretilen_paket_varsa_dogru(self):
@@ -104,6 +106,14 @@ class ConfYamaTesti(unittest.TestCase):
         idler = {r["buffId"] for r in s["buff"]}
         self.assertTrue({r["buffId"] for r in cy.EK_BUFFLAR} <= idler)
         self.assertGreater(len(s["etki"]), len(cy.EK_BUFF_ETKILERI))
+        self.assertIn(cy.EFSANE_BECERI, s["beceri"])
+
+    def test_beceri_kaydi_duzenle_uyumlu(self):
+        alanlar = cy.duzenleri_yukle()["SkillInfo"]
+        for r in cy.EK_BECERILER:
+            self.assertEqual(list(r.keys()), [a for a, _ in alanlar])
+            raw = mono_basligi("SkillInfo") + cy._i32(1) + cy.kayit_bayt(r, alanlar)
+            self.assertIsNone(cy.duzen_dogrula(raw, [r], alanlar))
 
     def test_duzen_dogrula_ve_cevir(self):
         alanlar = [["kimlik", "i"], ["ad", "s"], ["oran", "d"], ["kucuk", "f"], ["acik", "b"], ["liste", "ai"],

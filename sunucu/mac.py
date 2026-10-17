@@ -134,9 +134,38 @@ def attr_json(degerler, enerji, enerji_hiz):
     return attr
 
 
-def beceri_listesi(pid, o):
+# Efsane Modu (panelden açılıp kapanır, varsayılan açık): Aomine (1011) ve Kise (1012) maça ek becerilerle çıkar.
+#   90001 Efsane Modu   : yerel pasif (Skill_Yerel_Efsane): şutları bloklanamaz, blok ve top çalması kesin,
+#                         dayanıklılık tükenmez, aşağıdaki becerilerin bekleme süresi 0.
+#   30089 Wade "最佳3号" : dış şutta arkadan gelip blok (1133 uyanış buff'ı ile her şutta tetiklenir).
+#   20136 CP3 "灵敏"     : rakip hücuma başlarken kendiliğinden top çalma denemesi (herkese).
+#   30063 "急速抢断"     : tuşla top çalma; Aomine'de aynı betik 30005 olarak zaten var, ona eklenmez.
+EFSANE_OYUNCULAR = (1011, 1012)
+EFSANE_BECERILER = (90001, 30089, 20136, 30063)
+EFSANE_ES_BECERI = {30063: 30005}
+
+
+def efsane_acik(k):
+    return bool(k.get("efsane", True))
+
+
+def efsane_ekle(pid, liste):
+    """Efsane oyuncusuysa ek becerileri listeye katar (tekrarsız)."""
+    if pid not in EFSANE_OYUNCULAR:
+        return liste
+    var = {b["skill_id"] for b in liste}
+    for sid in EFSANE_BECERILER:
+        if sid in var or EFSANE_ES_BECERI.get(sid) in var:
+            continue
+        liste.append({"skill_id": sid, "skill_level": 1})
+        var.add(sid)
+    return liste
+
+
+def beceri_listesi(pid, o, efsane=False):
     """Yıldız atlamada açılmış tür 1/3 beceriler (starUpBaseInfo, starSec <= break_level); oyuncunun kendi
-    becerileri (PlayerSkillInfo) kayıttaki beceri seviyesiyle, diğerleri tablo seviyesiyle."""
+    becerileri (PlayerSkillInfo) kayıttaki beceri seviyesiyle, diğerleri tablo seviyesiyle.
+    efsane=True ise Efsane Modu becerileri eklenir."""
     yildiz = int(o.get("break_level", 1))
     kendi = set(OYUNCU_VERI[pid]["beceriler"]) if pid in OYUNCU_VERI else set()
     kayitli = o.get("beceri", 1)
@@ -147,7 +176,8 @@ def beceri_listesi(pid, o):
         if sid in kendi:
             sv = int(kayitli.get(str(sid), sv)) if isinstance(kayitli, dict) else int(kayitli)
         seviyeler[sid] = max(seviyeler.get(sid, 0), sv)
-    return [{"skill_id": s, "skill_level": sv} for s, sv in seviyeler.items()]
+    liste = [{"skill_id": s, "skill_level": sv} for s, sv in seviyeler.items()]
+    return efsane_ekle(pid, liste) if efsane else liste
 
 
 MAC_MODLARI = ("normal", "sade", "teshis")
@@ -188,7 +218,8 @@ def kendi_takim(k):
         oyuncular.append({
             "id": pid, "enemy_id": 0, "level": int(nitelik_o.get("level", 1)),
             "break_level": int(nitelik_o.get("break_level", 1)), "color": int(nitelik_o.get("color", 1)),
-            "pos": i + 1, "skill_list": beceri_listesi(pid, beceri_o), "attr": attr_json(deger, enerji[0], enerji[1]),
+            "pos": i + 1, "skill_list": beceri_listesi(pid, beceri_o, efsane_acik(k) and mod == "normal"),
+            "attr": attr_json(deger, enerji[0], enerji[1]),
         })
     a = None if mod == "sade" else amigo_bilgisi(k)
     amigo = {"id": a[0], "level": a[1], "gears": a[2]} if a else dict(BOS_AMIGO)

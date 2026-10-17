@@ -133,7 +133,8 @@ function ciz() {
     `<label title="Maç yüklemesi takılırsa: Sade = başlangıç düzeyi oyuncular; Teşhis = her oyuncu farklı bir şüpheliyi taşır">Maç modu<select id="k-mod">` +
       [['normal','Normal'],['sade','Sade (başlangıç düzeyi)'],['teshis','Teşhis (sorunu bulmak için)']]
         .map(([d, ad]) => `<option value="${d}" ${D.mac_modu === d ? 'selected' : ''}>${ad}</option>`).join('') +
-    `</select></label>`;
+    `</select></label>` +
+    `<label title="Aomine ve Kise: şutları bloklanamaz, Wade gibi arkadan blok, CP3 gibi top çalma, dayanıklılık tükenmez">Efsane modu (Aomine, Kise)<input id="k-efsane" type="checkbox" ${D.efsane ? 'checked' : ''}></label>`;
 
   const sahip = D.oyuncular.filter(o => o.sahip);
   document.getElementById('kadro').innerHTML = [1,2,3].map((p, i) => {
@@ -173,7 +174,7 @@ function esyalariCiz() {
 function kaynakKaydet() {
   const v = {islem:'kaynak', takim_seviye: +document.getElementById('k-seviye').value,
              takim_adi: document.getElementById('k-ad').value, guc_carpani: +document.getElementById('k-guc').value,
-             mac_modu: document.getElementById('k-mod').value};
+             mac_modu: document.getElementById('k-mod').value, efsane: document.getElementById('k-efsane').checked};
   for (const a of Object.keys(ADLAR)) v[a] = +document.getElementById('k-' + a).value;
   islem(v, 'Kaynaklar kaydedildi');
 }

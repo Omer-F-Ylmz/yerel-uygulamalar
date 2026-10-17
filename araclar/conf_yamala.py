@@ -35,6 +35,9 @@ VARSAYILAN_CIKTI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 #   126 = isabet + p1 puan, 127 = saldırı x p2, 136 = tüm nitelikler x p2, 335 = topu tutamaz.
 
 
+EFSANE_BUFF = 90001
+
+
 def _buff(bid, ad, aciklama, tur=0, sn=0, yigin=1, iyi=1, tip=0, soz="0", fx1="0", fx2="0"):
     return {"buffId": bid, "effectType": 0, "buffIconID": 0, "buffType": [tip], "specialEffectWord": soz,
             "specialEffectOne": fx1, "specialEffectTwo": fx2, "buffName": ad, "buffDescription": aciklama,
@@ -90,7 +93,26 @@ EK_BUFFLAR = [
     _buff(2099, "As Düellosu - hücum", "Eşleşen oyuncu düellosu (işaret)"),
     _buff(2100, "As Düellosu - savunma", "Eşleşen oyuncu düellosu (işaret)", iyi=0),
     _buff(3006, "Boyun Eğmeyen İrade", "Dayanıklılık yeniler ve hasar azaltma verir, 2 tur", tur=2, soz="伤害减免"),
+    # Yerel "Efsane Modu" işareti (Skill_Yerel_Efsane): player_formula bu buff'a bakar.
+    _buff(EFSANE_BUFF, "Efsane Modu", "Bloklanamaz, bloğu ve top çalması kesin, dayanıklılığı tükenmez"),
 ]
+
+# ---------------------------------------------------------------- yerel beceri: Efsane Modu
+# Pasif beceri; betik araclar/obb_yamala.py içinde (Skill_QTE/Skill_Yerel_Efsane.lua). Oyuncuya sunucu
+# (sunucu/mac.py EFSANE_*) maç beceri listesiyle verir. Maç başında isaret buff'ını ekler, dayanıklılık
+# tüketimini kapatır, blok/çalma bekleme sürelerini sıfırlar.
+EFSANE_BECERI = 90001
+EK_BECERILER = [{
+    "skillId": EFSANE_BECERI, "skillName": "Efsane Modu",
+    "skillDescription": "Şutları bloklanamaz; arkadan gelen blokları ve top çalmaları kesin başarılı olur; "
+                        "dayanıklılığı hiç tükenmez.",
+    "portraitDescription": "", "skillScript": "Skill_QTE/Skill_Yerel_Efsane", "skillType": 3,
+    "skillCoolDown": 0, "energyCost": 0, "actionType": [0], "isNoBall": 0, "skillIcon": "ShuaiQi",
+    "damageParameter": 1.0, "initCount": 0, "maxCount": 0, "initCoolDown": 0, "skillClass": 0,
+    "superSkillType": [1], "targetType": 0, "skillPriority": 0, "cooperation": 0, "weightAdd": 1,
+    "isWeightAskScript": 0, "isDizzyLimit": 1, "isPKLimit": 0, "isChaosLimit": 0, "atkPressureUse": 0,
+    "atkPressureGoal": 0, "skillIconColor": 3, "skillDisplayType": 5,
+}]
 
 EK_BUFF_ETKILERI = [
     _etki(1149, 127, 0, 1.10),
@@ -119,27 +141,33 @@ def _lua_deger(v):
     return str(v)
 
 
+# Lua tarafında da tamamlanacak tablolar: (tablo adı, anahtar alan, kayıtlar)
+LUA_EK_TABLOLAR = (("BuffInformation", "buffId", EK_BUFFLAR), ("SkillInfo", "skillId", EK_BECERILER))
+
+
 def buff_lua_eki():
-    """LuaConfManager.lua sonuna eklenecek parça: Lua tarafındaki BuffInformation tablosunu tamamlar.
-    (Betikler LuaConfManager.getBuffInformation(id).isGoodBuff gibi alanlara bakıyor.)"""
-    satirlar = ["\r\n-- yerel sunucu yamasi: betiklerin kullandigi, tabloda olmayan buff tanimlari\r\n",
-                "YEREL_EK_BUFFLAR = {\r\n"]
-    for b in EK_BUFFLAR:
-        alanlar = ",".join("%s=%s" % (k, _lua_deger(v)) for k, v in b.items())
-        satirlar.append("\t{" + alanlar + "},\r\n")
-    satirlar.append("}\r\n")
-    satirlar.append(
-        "local yerel_buff_onjson = BuffInformationReader.OnJsonCall\r\n"
-        "function BuffInformationReader.OnJsonCall(data)\r\n"
-        "\tyerel_buff_onjson(data)\r\n"
-        "\tif BuffInformation_keydata == nil then BuffInformation_keydata = {} end\r\n"
-        "\tif BuffInformation_data == nil then BuffInformation_data = {} end\r\n"
-        "\tfor _, b in ipairs(YEREL_EK_BUFFLAR) do\r\n"
-        "\t\tif BuffInformation_keydata[\"key_\" .. b.buffId] == nil then\r\n"
-        "\t\t\tBuffInformation_keydata[\"key_\" .. b.buffId] = b\r\n"
-        "\t\t\ttable.insert(BuffInformation_data, b)\r\n"
-        "\t\tend\r\n"
-        "\tend\r\nend\r\n")
+    """LuaConfManager.lua sonuna eklenecek parça: Lua tarafındaki BuffInformation ve SkillInfo tablolarını
+    tamamlar. (Betikler LuaConfManager.getBuffInformation(id).isGoodBuff, MatchLoader yaması
+    LuaConfManager.getSkillInfo(id) gibi alanlara bakıyor.)"""
+    satirlar = ["\r\n-- yerel sunucu yamasi: betiklerin kullandigi, tabloda olmayan buff/beceri tanimlari\r\n"]
+    for tablo, anahtar, kayitlar in LUA_EK_TABLOLAR:
+        satirlar.append("YEREL_EK_%s = {\r\n" % tablo)
+        for b in kayitlar:
+            alanlar = ",".join("%s=%s" % (k, _lua_deger(v)) for k, v in b.items())
+            satirlar.append("\t{" + alanlar + "},\r\n")
+        satirlar.append("}\r\n")
+        satirlar.append(
+            "local yerel_%(t)s_onjson = %(t)sReader.OnJsonCall\r\n"
+            "function %(t)sReader.OnJsonCall(data)\r\n"
+            "\tyerel_%(t)s_onjson(data)\r\n"
+            "\tif %(t)s_keydata == nil then %(t)s_keydata = {} end\r\n"
+            "\tif %(t)s_data == nil then %(t)s_data = {} end\r\n"
+            "\tfor _, b in ipairs(YEREL_EK_%(t)s) do\r\n"
+            "\t\tif %(t)s_keydata[\"key_\" .. b.%(a)s] == nil then\r\n"
+            "\t\t\t%(t)s_keydata[\"key_\" .. b.%(a)s] = b\r\n"
+            "\t\t\ttable.insert(%(t)s_data, b)\r\n"
+            "\t\tend\r\n"
+            "\tend\r\nend\r\n" % {"t": tablo, "a": anahtar})
     return "".join(satirlar)
 
 
@@ -226,6 +254,11 @@ def buff_etki_oku(raw):
     if o != len(raw):
         raise ValueError("BuffEffect beklenmedik uzunluk: %d != %d" % (o, len(raw)))
     return kayitlar
+
+
+def kayit_bayt(kayit, alanlar):
+    """conf_duzenleri.json düzeniyle ([(ad, tür)]) bir kaydı serileştirir."""
+    return b"".join(_yaz_alan(kayit[ad], tur) for ad, tur in alanlar)
 
 
 def tablo_ekle(raw, ekler, bayt_fn):
@@ -588,10 +621,25 @@ def conf_yamala(paket, ikizler=None, sozluk=None, rapor=None):
         var = {r["buffId"] for r in buff_etki_oku(raw)}
         return tablo_ekle(raw, [r for r in EK_BUFF_ETKILERI if r["buffId"] not in var], buff_etki_bayt)
 
+    def beceri(raw):
+        raw = cevir("SkillInfo", raw)
+        alanlar = duzenler.get("SkillInfo")
+        if not alanlar:
+            raise ValueError("SkillInfo duzeni yok (conf_duzenleri.json)")
+        _, o = mono_adi(raw)
+        n, o = _oku_i32(raw, o)
+        var = set()
+        for _ in range(n):
+            kayit, o = _kayit_oku(raw, o, [a for a, _ in alanlar], [t for _, t in alanlar])
+            var.add(kayit["skillId"])
+        return tablo_ekle(raw, [r for r in EK_BECERILER if r["skillId"] not in var],
+                          lambda r: kayit_bayt(r, alanlar))
+
     degistir = {ad: (lambda raw, ad=ad: cevir(ad, raw)) for ad in ikizler}
     degistir["BuffInformation"] = bilgi
     degistir["BuffEffect"] = etki
-    yeni_sf = sf_yamala(sf, degistir, zorunlu=("BuffInformation", "BuffEffect"))
+    degistir["SkillInfo"] = beceri
+    yeni_sf = sf_yamala(sf, degistir, zorunlu=("BuffInformation", "BuffEffect", "SkillInfo"))
     return paketi_kapat(ust, ad, yeni_sf)
 
 
@@ -612,6 +660,18 @@ def dogrula(paket):
             sonuc["buff"] = buff_bilgi_oku(raw)
         elif ad == "BuffEffect":
             sonuc["etki"] = buff_etki_oku(raw)
+        elif ad == "SkillInfo":
+            alanlar = duzenleri_yukle().get("SkillInfo")
+            if alanlar:
+                _, o = mono_adi(raw)
+                n, o = _oku_i32(raw, o)
+                idler = []
+                for _ in range(n):
+                    kayit, o = _kayit_oku(raw, o, [a for a, _ in alanlar], [t for _, t in alanlar])
+                    idler.append(kayit["skillId"])
+                if o != len(raw):
+                    raise ValueError("SkillInfo beklenmedik uzunluk")
+                sonuc["beceri"] = idler
     return sonuc
 
 
@@ -645,8 +705,10 @@ def main(argv):
     with open(cikti, "wb") as f:
         f.write(yamali)
     print("yazildi: %s (%d bayt, md5 %s)" % (cikti, len(yamali), hashlib.md5(yamali).hexdigest()))
-    print("buff: %d kayit (+%d), etki: %d kayit (+%d)" % (
-        len(s["buff"]), len(EK_BUFFLAR), len(s["etki"]), len(EK_BUFF_ETKILERI)))
+    if EFSANE_BECERI not in s.get("beceri", []):
+        raise SystemExit("dogrulama basarisiz: SkillInfo'da %d yok" % EFSANE_BECERI)
+    print("buff: %d kayit (+%d), etki: %d kayit (+%d), beceri: %d kayit (+%d)" % (
+        len(s["buff"]), len(EK_BUFFLAR), len(s["etki"]), len(EK_BUFF_ETKILERI), len(s["beceri"]), len(EK_BECERILER)))
     return 0
 
 
