@@ -91,4 +91,11 @@
   (yığın 99; etkiler 127 saldırı x1.5 ve 130 savunma x1.5, her tur bir kat daha). Zone (buff tipi 4) Aomine için
   her maç başında ve her tur yeniden eklenir (20037 varsa 1037, yoksa 1036; 20038 varsa geçici beceri 20001),
   böylece süresi hiç dolmaz. Betik 10026/10090 becerisi olmayan oyuncuda Zone'a dokunmaz.
+- Savunma: şut anında C# blok savaşına savunanları kendiliğinden sokar (initWhenShotPrivate -> blockPlayers =
+  getDefendSourcePlayers); yama Efsane savunmacısını kazandırır, MV3 de her rakip şutunda arkadan gelir
+  (Skill_Passive_MV3.isCastAvailable yaması). Çalma: top sürerken battleStealBall -> getBeStealRate; Efsane
+  savunmacı varsa 1 döner. Sayı atınca effect_Goal -> luaDoCure(TeamHpMax*0.2).
+- C# effect çağrısı argüman sırası: (oyuncu, olay parametreleri..., beceriId) — beceri id EN SONDA.
+- İzler (YEREL_IZ) varsayılan kapalı (IZ_ACIK=False): her iz eşzamanlı HTTP isteği, maçta saniyede onlarca
+  nitelik izi takılmaya yol açıyordu; yalnız "HATA" içerenler gönderilir.
 

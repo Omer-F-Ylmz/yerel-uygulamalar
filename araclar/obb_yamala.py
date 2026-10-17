@@ -145,10 +145,15 @@ CONF_EK = (
 
 MAC_YOLU = "assets/Lua/MatchLoader.lua"
 # Maç yüklemesine iz noktaları: her adım logcat'e (print) ve sunucuya (999/2, kayit/mac_izi.txt) yazılır.
+# Her iz eşzamanlı bir HTTP isteği (Luahttp.PostC2S) -> maç sırasında saniyede onlarca "nitelik" izi oyunu
+# takılttığından izler varsayılan kapalı; yalnız HATA içerenler gider. Yükleme sorununu incelemek için True yap.
+IZ_ACIK = False
 MAC_IZ_TANIM = (
-    "\r\nlocal function YEREL_IZ(s)\r\n"
+    "\r\nYEREL_IZ_ACIK = %s\r\n" % ("true" if IZ_ACIK else "false") +
+    "local function YEREL_IZ(s)\r\n"
     "\ts = string.gsub(tostring(s), \"[\\r\\n\\t]\", \" \")\r\n"
     "\ts = string.gsub(s, \"[^%w%s%.:=/%-%(%)%[%]_,]\", \"\")\r\n"
+    "\tif not YEREL_IZ_ACIK and not string.find(s, \"HATA\", 1, true) then return end\r\n"
     "\tprint(\"YEREL_IZ \" .. s)\r\n"
     "\tpcall(function() Luahttp.PostC2S(\"\", 999, 2, '{\"m\":\"' .. string.sub(s, 1, 600) .. '\"}') end)\r\n"
     "end\r\n"
@@ -284,7 +289,7 @@ EFSANE_LUA = (
     'local SIFIR_CD = {30089, 30063, 30005, 20136}\r\n'
     '\r\n'
     'function getAvailableState()\r\n'
-    '\treturn {0, 45, 52}  -- GameStart, TurnStart, PlayerEnergyChanged\r\n'
+    '\treturn {0, 24, 45, 52}  -- GameStart, Goal, TurnStart, PlayerEnergyChanged\r\n'
     'end\r\n'
     '\r\n'
     '-- Zone (buff tipi 4: 1036, 20037 varsa 1037) hic kapanmasin: her tur yeniden eklenir, suresi sifirlanir.\r\n'
@@ -334,9 +339,18 @@ EFSANE_LUA = (
     '\tdayaniklilik_kilitle(p_player)\r\n'
     'end\r\n'
     '\r\n'
-    'function effect_PlayerEnergyChanged(p_player, p_skillId, degisen, fark)\r\n'
+    '-- C# effect cagrisi: (oyuncu, olay parametreleri..., beceriId); beceri id en sonda gelir.\r\n'
+    'function effect_PlayerEnergyChanged(p_player, degisen, fark, p_skillId)\r\n'
     '\tif degisen == p_player then\r\n'
     '\t\tdayaniklilik_kilitle(p_player)\r\n'
+    '\tend\r\n'
+    'end\r\n'
+    '\r\n'
+    '-- Sayi atinca takim caninin %%20\'si dolar (Skill_Gift_BuQuYiZhi ile ayni yol: luaDoCure).\r\n'
+    'function effect_Goal(p_player, p_goalInfo, p_skillId)\r\n'
+    '\tlocal takim = p_player.selfTeam\r\n'
+    '\tif takim ~= nil and takim.TeamHpMax ~= nil then\r\n'
+    '\t\tp_player:luaDoCure(takim.TeamHpMax * 0.2)\r\n'
     '\tend\r\n'
     'end\r\n'
 ) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS}
@@ -357,7 +371,30 @@ FORMUL_IZLERI = (
      "\tend\r\n" % (EFSANE_BUFF, EFSANE_BUFF)),
     ("function getStealSuccessResult(player, target, paramOne)\r\n",
      "\tif player:luaHasBuff(%d) then return true end\r\n" % EFSANE_BUFF),
+    # Top sürerken kendiliğinden çalınma (C# battleStealBall): savunanlardan biri Efsane ise kesin.
+    ("function getBeStealRate(p_carryer)\r\n",
+     "\tlocal yerel_sav = p_carryer:luaGetDefendSources()\r\n"
+     "\tif yerel_sav ~= nil then\r\n"
+     "\t\tfor yerel_i = 0, yerel_sav.Count - 1 do\r\n"
+     "\t\t\tif yerel_sav[yerel_i]:luaHasBuff(%d) then return 1 end\r\n"
+     "\t\tend\r\n"
+     "\tend\r\n" % EFSANE_BUFF),
 )
+
+
+# Skill_Passive_MV3 (Wade'in arkadan bloğu): normalde yalnız eşleşmediği oyuncunun şutunda ve belli durumlarda
+# tetiklenir. Efsane oyuncusu savunmadayken her rakip şutunda tetiklensin (blok sonucu player_formula'da kesin).
+MV3_YOLU = "assets/Lua/Skill_QTE/Skill_Passive_MV3.lua"
+MV3_CAPA = "function isCastAvailable(p_player, blocktarget)\r\n"
+MV3_EK = ("\tif blocktarget ~= nil and p_player:luaHasBuff(%d) and p_player:luaIsSkillAvailable(30089) then\r\n"
+          "\t\treturn true\r\n"
+          "\tend\r\n" % EFSANE_BUFF)
+
+
+def mv3_yamala(metin):
+    if metin.count(MV3_CAPA) != 1:
+        raise SystemExit("Skill_Passive_MV3.lua beklenen satiri icermiyor")
+    return metin.replace(MV3_CAPA, MV3_CAPA + MV3_EK, 1)
 
 
 def formul_yamala(metin):
@@ -384,6 +421,7 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
                                        "PlayerAttribute dosyasi yuklendi", NITELIK_SON).encode("utf-8"))
         cikti[FORMUL_YOLU] = xor(formul_yamala(xor(giris.read(FORMUL_YOLU)).decode("utf-8")).encode("utf-8"))
         cikti["assets/" + EFSANE_YOLU] = xor(EFSANE_LUA.encode("utf-8"))
+        cikti[MV3_YOLU] = xor(betik_koruma(mv3_yamala(xor(giris.read(MV3_YOLU)).decode("utf-8"))).encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
