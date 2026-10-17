@@ -346,6 +346,7 @@ EFSANE_LUA = (
     '\tmaliyet_sifirla(p_player)\r\n'
     '\tdayaniklilik_kilitle(p_player)\r\n'
     '\tzone_koru(p_player)\r\n'
+    '\tpcall(function() Luahttp.PostC2S("", 999, 2, \'{"m":"EFSANE %(surum)s basladi id=\' .. p_player.playerId .. \'"}\') end)\r\n'
     'end\r\n'
     '\r\n'
     '-- Her tur: saldiri ve savunma x1.5 (yigilir), Zone tazelenir.\r\n'
@@ -375,7 +376,7 @@ EFSANE_LUA = (
     '\tend\r\n'
     'end\r\n'
 ) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS,
-       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE}
+       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE, "surum": "v4"}
 
 # player_formula.lua: fonksiyon başlığından hemen sonra eklenen satırlar
 FORMUL_IZLERI = (
@@ -430,6 +431,9 @@ ULTI_EK = (
     "\t\tend\r\n"
     "\t\tlocal yerel_secim = yerel_adaylar[RandomManager.luaInstance:luaRangeInt(1, #yerel_adaylar + 1)]\r\n"
     "\t\t_G.YEREL_SON_ULTI[p_player.playerId] = yerel_secim\r\n"
+    "\t\tlocal yerel_adlar = {\"kendi\", \"Rukawa\", \"Kagami\"}\r\n"
+    "\t\tpcall(function() p_player:luaShowTalk(\"Ulti: \" .. yerel_adlar[yerel_secim]) end)\r\n"
+    "\t\tpcall(function() Luahttp.PostC2S(\"\", 999, 2, '{\"m\":\"ULTI \" .. p_player.playerId .. \" \" .. yerel_adlar[yerel_secim] .. \" (onceki \" .. tostring(yerel_son) .. \")\"}') end)\r\n"
     "\t\tif yerel_secim ~= 1 then\r\n"
     "\t\t\tlocal yerel_b = yerel_sec[yerel_secim]\r\n"
     "\t\t\tif p_player:luaHasSkill(yerel_b[2]) == false then p_player:addSkillTemp(yerel_b[2]) end\r\n"
