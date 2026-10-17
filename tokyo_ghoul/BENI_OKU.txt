@@ -4,3 +4,19 @@ Bu klasore iki oyunun APK (ya da XAPK) dosyalarini koy, sonra ana klasordeki tg_
 2) TOKYO GHOUL [:re birth] (Ingilizce, son surum 2.2.4) ya da Japonca :re invoke
 
 Bu klasordeki dosyalar Git'e girmez; tg_gonder.bat onlari parcalara bolup gonderir.
+
+----------------------------------------------------------------
+ARASTIRMA SONUCU (2026-10-17): calisan / oynanabilir surum var mi?
+----------------------------------------------------------------
+Dark War (GameSamba) ve :re invoke / :re birth (Bandai Namco, 26 Kasim 2019'da kapandi) icin internette
+ozel sunucu, sunucu emulatoru, offline yama ya da "tam veri" surumu BULUNAMADI:
+- Ingilizce, Japonca ve Cince arama; Reddit, GitHub, YouTube, PlatinMods/BlackMod/iOSGods mod forumlari.
+- Mod APK'lar (1.2.14 mod menu, sinirsiz para vb.) eski ve sunucuya baglanir; forumlarin kendisi
+  "GAME SERVER SHUT DOWN" notu dusmus. Hicbiri offline oynatmaz.
+- Her iki oyunda karakter, bolum, istatistik ve ekonomi verisi sunucudan geliyordu (APK icinde yok);
+  Streetball'daki gibi yerel sunucu yazmak icin veri yok. Tek yol tum oyun verisini sifirdan uydurmak.
+
+Bugun gercekten oynanabilen Tokyo Ghoul oyunlari:
+- Tokyo Ghoul: Break the Chains (FunCat/Komoe, Android+iOS, ucretsiz, 2023'ten beri canli, gacha kart).
+- TOKYO GHOUL:re [CALL to EXIST] (Steam/PS4, 14 Kasim 2019, Steam'de 32.99 USD, tek oyunculu kampanya +
+  online PvP/co-op). Steam app id 756530.
