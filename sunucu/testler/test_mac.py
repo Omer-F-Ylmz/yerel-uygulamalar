@@ -140,6 +140,18 @@ class MacTesti(unittest.TestCase):
                 msg = mac.battlemsg(k, bid, m[0], m[1], m[3], m[2], m[4])
                 self.battlemsg_dogrula(msg, len(m[3]))
 
+    def test_sade_mac(self):
+        k = self.durum.veri
+        k["sade_mac"] = True
+        m = mac.MV["mac"][16000101]
+        msg = mac.battlemsg(k, 16000101, m[0], m[1], m[3], m[2], m[4])
+        self.battlemsg_dogrula(msg, len(m[3]))
+        dalga = msg["battle_player_self"][0]
+        self.assertEqual(dalga["cheer"], [mac.BOS_AMIGO])
+        for p in dalga["team"]:
+            self.assertEqual((p["level"], p["break_level"], p["color"]), (1, 1, 1))
+            self.assertLessEqual(len(p["skill_list"]), 6)
+
     def test_formul_ornek(self):
         # 1050, seviye 1, yıldız 1, renk 0, antrenman 0: yalnızca PlayerStarUpValue[1050][1]
         o = {"level": 1, "break_level": 1, "color": 0, "train": 0}

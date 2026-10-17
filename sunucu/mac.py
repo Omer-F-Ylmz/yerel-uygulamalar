@@ -160,11 +160,16 @@ def kendi_takim(k):
             break
         if int(pid) in MV["oyuncu"] and int(pid) not in idler:
             idler.append(int(pid))
-    ek = amigo_niteligi(k) if AMIGO_NITELIK_EKLE else None
-    carpan = float(k.get("guc_carpani", GUC_CARPANI) or 1.0)
+    # Sade maç (panelden açılır): eğitim maçındaki gibi başlangıç düzeyi oyuncu, amigo yok. Maç yüklemesi
+    # takılırsa sorunun gelişmiş oyuncu verisinden mi geldiğini ayırmak için.
+    sade = bool(k.get("sade_mac"))
+    ek = amigo_niteligi(k) if AMIGO_NITELIK_EKLE and not sade else None
+    carpan = 1.0 if sade else float(k.get("guc_carpani", GUC_CARPANI) or 1.0)
     oyuncular = []
     for i, pid in enumerate(idler):
         o = k["oyuncular"][str(pid)]
+        if sade:
+            o = dict(o, level=1, break_level=1, color=1, train=0, beceri=1)
         deger = [int(math.ceil(x * carpan)) for x in nitelik_hesapla(pid, o, ek)]
         enerji = MV["oyuncu"][pid]["e"]
         oyuncular.append({
@@ -172,7 +177,7 @@ def kendi_takim(k):
             "color": int(o.get("color", 1)), "pos": i + 1, "skill_list": beceri_listesi(pid, o),
             "attr": attr_json(deger, enerji[0], enerji[1]),
         })
-    a = amigo_bilgisi(k)
+    a = None if sade else amigo_bilgisi(k)
     amigo = {"id": a[0], "level": a[1], "gears": a[2]} if a else dict(BOS_AMIGO)
     return oyuncular, amigo
 

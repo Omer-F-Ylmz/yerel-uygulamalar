@@ -22,3 +22,6 @@ out.txt
 # Tokyo Ghoul APK dosyalari (tg_gonder.bat parcalayip gonderir)
 tokyo_ghoul/*
 !tokyo_ghoul/BENI_OKU.txt
+
+# Oyun kaydi ve sunucu gunlukleri (kayit_gonder.bat gerekenleri teshis_paket/ ile gonderir)
+sunucu/kayit/

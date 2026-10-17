@@ -133,6 +133,53 @@ CONF_EK = (
 )
 
 
+MAC_YOLU = "assets/Lua/MatchLoader.lua"
+# Maç yüklemesine iz noktaları: her adım logcat'e (print) ve sunucuya (999/2, kayit/mac_izi.txt) yazılır.
+MAC_IZ_TANIM = (
+    "\r\nlocal function YEREL_IZ(s)\r\n"
+    "\ts = string.gsub(tostring(s), \"[\\r\\n\\t]\", \" \")\r\n"
+    "\ts = string.gsub(s, \"[^%w%s%.:=/%-%(%)%[%]_,]\", \"\")\r\n"
+    "\tprint(\"YEREL_IZ \" .. s)\r\n"
+    "\tpcall(function() Luahttp.PostC2S(\"\", 999, 2, '{\"m\":\"' .. string.sub(s, 1, 600) .. '\"}') end)\r\n"
+    "end\r\n"
+)
+MAC_IZLERI = [  # (çapa, önüne eklenecek, arkasına eklenecek)
+    ("function battleBeginBattleId(battleId)\r\n", "", "\tYEREL_IZ(\"705 gonderiliyor id=\" .. tostring(battleId))\r\n"),
+    ("if(protocolsub == EnumProtocolSub.BattleBegin or protocolsub == EnumProtocolSub.BattleBeginEx) then\r\n", "",
+     "\t\tYEREL_IZ(\"705 cevabi geldi sonuc=\" .. tostring(result))\r\n"),
+    ("MatchManager.luaInstance:initBattleInfo(dataobj", "YEREL_IZ(\"initBattleInfo\") ", ""),
+    ("\t\t\tMatchManager.luaInstance:initPlayerInfo(_isSelf",
+     "\t\t\tYEREL_IZ(\"oyuncu \" .. tostring(_isSelf) .. \" dalga=\" .. waveIndex .. \" id=\" .. tostring(_player['id']) .. \" beceri=\" .. tostring(#_player['skill_list']))\r\n", ""),
+    ("TeamManager.RedTeam:setCheerLeaderInfo", "YEREL_IZ(\"amigo \" .. tostring(cheer['id'])) ", ""),
+    ('InitBattleTeamInfo(dataobj["data"]["battlemsg"]["battle_player_self"], true);', "YEREL_IZ(\"kendi takim\") ", ""),
+    ('InitBattleTeamInfo(dataobj["data"]["battlemsg"]["battle_player_enemy"], false);', "YEREL_IZ(\"rakip takim\") ", ""),
+    ("MatchManager.luaInstance:initPlayerTeam(isHomeTeam)", "YEREL_IZ(\"initPlayerTeam\") ", ""),
+    ("MatchManager.luaInstance:initSceneId(sceneId)", "YEREL_IZ(\"sahne \" .. tostring(sceneId)) ", ""),
+    ("MatchManager.luaInstance:battleBeginOver(true)", "YEREL_IZ(\"battleBeginOver basliyor\") ",
+     " YEREL_IZ(\"battleBeginOver bitti - bundan sonrasi oyunun kendi yuklemesi\")"),
+]
+MAC_IZ_SON = (
+    "\r\nlocal yerel_asil_onreceive = OnReceive\r\n"
+    "function OnReceive(...)\r\n"
+    "\tlocal a = {...}\r\n"
+    "\tlocal n = select(\"#\", ...)\r\n"
+    "\tlocal ok, hata = xpcall(function() return yerel_asil_onreceive(unpack(a, 1, n)) end, debug.traceback)\r\n"
+    "\tif not ok then YEREL_IZ(\"HATA \" .. tostring(hata)) error(hata, 0) end\r\n"
+    "end\r\n"
+)
+
+
+def mac_izi(metin):
+    """MatchLoader.lua'ya iz noktaları ekler; çapa bulunamazsa hata verir (oyun sürümü farklı demektir)."""
+    ilk = metin.index("\r\n") + 2
+    metin = metin[:ilk] + MAC_IZ_TANIM + metin[ilk:]
+    for capa, once, sonra in MAC_IZLERI:
+        if metin.count(capa) != 1:
+            raise SystemExit("MatchLoader.lua beklenen satiri icermiyor: " + capa.strip())
+        metin = metin.replace(capa, once + capa + sonra, 1)
+    return metin + MAC_IZ_SON
+
+
 def lua_metni(s):
     """Lua 5.1 / LuaJIT için güvenli tırnaklı metin."""
     ozel = {"\\": "\\\\", '"': '\\"', "\n": "\\n", "\r": "\\r", "\t": "\\t", "\0": "\\0"}
@@ -165,6 +212,7 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[XML_YOLU] = xor(metin.replace(XML_CAPA, XML_CAPA + XML_EK, 1).encode("utf-8"))
         cikti[CDN_YOLU] = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
         cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
+        cikti[MAC_YOLU] = xor(mac_izi(xor(giris.read(MAC_YOLU)).decode("utf-8")).encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))

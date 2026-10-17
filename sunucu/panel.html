@@ -129,7 +129,8 @@ function ciz() {
     Object.keys(ADLAR).map(a => `<label>${ADLAR[a]}<input id="k-${a}" type="number" value="${k[a]}"></label>`).join('') +
     `<label>Takım seviyesi<input id="k-seviye" type="number" min="1" max="${D.sinir.takim_seviye}" value="${D.takim.seviye}"></label>` +
     `<label>Takım adı<input id="k-ad" value="${kacis(D.takim.ad)}"></label>` +
-    `<label>Maç gücü çarpanı (1 = normal)<input id="k-guc" type="number" step="0.5" min="0.1" max="20" value="${D.guc_carpani}"></label>`;
+    `<label>Maç gücü çarpanı (1 = normal)<input id="k-guc" type="number" step="0.5" min="0.1" max="20" value="${D.guc_carpani}"></label>` +
+    `<label title="Maç yüklemesi takılırsa dene: oyuncular başlangıç düzeyinde, amigo yok">Sade maç (teşhis)<input id="k-sade" type="checkbox" ${D.sade_mac ? 'checked' : ''}></label>`;
 
   const sahip = D.oyuncular.filter(o => o.sahip);
   document.getElementById('kadro').innerHTML = [1,2,3].map((p, i) => {
@@ -168,7 +169,8 @@ function esyalariCiz() {
 
 function kaynakKaydet() {
   const v = {islem:'kaynak', takim_seviye: +document.getElementById('k-seviye').value,
-             takim_adi: document.getElementById('k-ad').value, guc_carpani: +document.getElementById('k-guc').value};
+             takim_adi: document.getElementById('k-ad').value, guc_carpani: +document.getElementById('k-guc').value,
+             sade_mac: document.getElementById('k-sade').checked};
   for (const a of Object.keys(ADLAR)) v[a] = +document.getElementById('k-' + a).value;
   islem(v, 'Kaynaklar kaydedildi');
 }

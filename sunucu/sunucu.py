@@ -447,6 +447,20 @@ def istemci_hatasi(param, **_):
     return hata("HintBallTeamError")
 
 
+KAYIT_KLASORU = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kayit")
+
+
+@yon.proto(999, 2)
+def istemci_izi(param, **_):
+    """MatchLoader yamasındaki iz noktaları: maç yüklemesinin hangi adıma kadar geldiğini kaydeder."""
+    metin = str((param or {}).get("m", ""))
+    log.info("IZ: %s", metin)
+    os.makedirs(KAYIT_KLASORU, exist_ok=True)
+    with open(os.path.join(KAYIT_KLASORU, "mac_izi.txt"), "a", encoding="utf-8") as f:
+        f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + metin + "\n")
+    return basarili({})
+
+
 # ---------------------------------------------------------------- maçlar
 
 import mac  # noqa: E402
@@ -493,6 +507,11 @@ def main():
     AYAR["port"] = arg.port
     AYAR["obb"] = arg.obb or obb_bul()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
+    # Her açılışta yeni günlük: kayit_gonder.bat bunu teşhis için gönderir
+    os.makedirs(KAYIT_KLASORU, exist_ok=True)
+    dosya = logging.FileHandler(os.path.join(KAYIT_KLASORU, "sunucu.log"), mode="w", encoding="utf-8")
+    dosya.setFormatter(logging.Formatter("%(asctime)s %(message)s", "%H:%M:%S"))
+    logging.getLogger().addHandler(dosya)
     if not AYAR["obb"]:
         log.warning("Orijinal OBB bulunamadı; yapılandırma dosyaları servis edilemeyecek.")
     import panel

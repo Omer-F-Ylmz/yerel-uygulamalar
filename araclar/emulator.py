@@ -83,9 +83,6 @@ def dosya_bul(desen, haric=None):
 
 
 def kur():
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from obb_yamala import lua_yamalari
-
     apk = os.path.join(KOK, "apk", PAKET + ".apk")
     if not os.path.exists(apk):
         apk = dosya_bul("*1.1.8*.apk") or dosya_bul(PAKET + "*.apk", haric="1.1.7")
@@ -108,6 +105,14 @@ def kur():
     else:
         print("Orijinal OBB emulatore kopyalaniyor (bir dakika surebilir)...")
         a("push", obb, hedef + obb_adi)
+    yamalari_gonder(a, obb)
+    print("\nKurulum tamam. Artik baslat.bat ile sunucuyu acip oyunu baslatabilirsin.")
+
+
+def yamalari_gonder(a, obb):
+    """Yerel sunucu Lua yamalarını emülatördeki öncelikli klasöre kopyalar (OBB'ye dokunmaz)."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from obb_yamala import lua_yamalari
     print("Yerel sunucu yamalari kopyalaniyor...")
     with tempfile.TemporaryDirectory() as gecici:
         for ad, veri in lua_yamalari(obb, "127.0.0.1", PORT).items():
@@ -118,7 +123,6 @@ def kur():
             a("shell", "mkdir -p '%s'" % uzak.rsplit("/", 1)[0])
             a("push", yerel, uzak)
             print("  ", ad)
-    print("\nKurulum tamam. Artik baslat.bat ile sunucuyu acip oyunu baslatabilirsin.")
 
 
 def baglan():
@@ -126,6 +130,12 @@ def baglan():
     cihaz = cihaz_sec(adb_yolu)
     adb(adb_yolu, "-s", cihaz, "reverse", "tcp:%d" % PORT, "tcp:%d" % PORT)
     print("Emulator sunucuya baglandi (127.0.0.1:%d)." % PORT)
+    # Güncellemeyle gelen yeni yamalar her açılışta emülatöre gitsin (kur.bat'i tekrar çalıştırmaya gerek yok)
+    obb = dosya_bul("main.*.obb", haric="yamali")
+    if obb:
+        yamalari_gonder(lambda *x, kontrol=True: adb(adb_yolu, "-s", cihaz, *x, kontrol=kontrol), obb)
+    else:
+        print("apk klasorunde OBB yok; yamalar guncellenmedi.")
 
 
 def anlik_kayit():
