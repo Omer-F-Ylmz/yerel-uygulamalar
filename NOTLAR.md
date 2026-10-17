@@ -40,3 +40,14 @@
 - Çözüm (araclar/obb_yamala.py): tabloda olmayan beceriler listeden çıkarılır; PlayerAttribute'teki
   iç içe çağrı xpcall ile sarıldı. Bütün Lua dosyaları yama klasörüne kopyalanıyor (baslat.bat).
 
+
+## Maç yüklendi ama başlamıyor (başlangıç ekranında kalma) - sebebi ve çözümü
+- Yükleme bitince C# `enterStart()` sahadaki her oyuncu için beceri betiklerini (`Skill_QTE/...`) çağırır.
+  OBB'deki BuffInformation tablosu betiklerden eski: betiklerin kullandığı 36 buff id'si (1147-1176, 2036,
+  2097-2100, 3006) tabloda yok. Örnek: `Skill_Passive_DiWangDeWeiShi:22: attempt to index local 'buff1'`.
+  Hata `enterStart`'ı `setState(Gaming)`'e gelmeden kesiyor, maç hiç başlamıyor.
+- Çözüm (araclar/obb_yamala.py, `betik_koruma`): Skill_QTE/, Skill/, Battle/ altındaki her modülün bütün
+  fonksiyonları pcall ile sarılır. Hata veren beceri atlanır (nil döner), hata bir kez 999/2 ile sunucuya
+  "BETIK HATA modül.fonksiyon: mesaj" olarak bildirilir (kayit/mac_izi.txt). 16 betik XOR dışında
+  şifreli (Skill_Active_HanDi vb.), onlar olduğu gibi bırakılır.
+- Yan etki: eksik buff'ları kullanan beceriler maçta etkisiz kalır; buff tablosunu tamamlamak sıradaki iş.

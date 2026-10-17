@@ -270,13 +270,63 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
     return {ad[len("assets/"):]: veri for ad, veri in cikti.items()}
 
 
+# Beceri ve maç betikleri C#'tan doğrudan çağrılır (enterStart -> skillEffect -> effect_GameStart vb.). OBB'deki
+# veri tabloları Lua betiklerinden eski olduğundan bazı betikler tabloda olmayan buff/işlev id'leriyle hata
+# veriyor; hata C# tarafındaki adımı (maç başlatma, dalga geçişi...) yarıda bırakıyor ve maç takılıyor.
+# Bu ek, modülün her fonksiyonunu pcall ile sarar: hata veren beceri atlanır, bir kez sunucuya bildirilir.
+KORUNAN_KLASORLER = ("Lua/Skill_QTE/", "Lua/Skill/", "Lua/Battle/")
+KORUMA_BAS = "local yerel_G = _G\r\n"
+KORUMA_SON = (
+    "\r\n-- yerel sunucu: betik hatasi maci kilitlemesin (bir kez bildirilir, islev atlanir)\r\n"
+    "do\r\n"
+    "\tlocal yerel_mod = yerel_G.rawget(yerel_G.getfenv(1), \"_M\")\r\n"
+    "\tif yerel_G.type(yerel_mod) == \"table\" and yerel_mod ~= yerel_G then\r\n"
+    "\t\tlocal yerel_bildirilen = {}\r\n"
+    "\t\tfor yerel_ad, yerel_f in yerel_G.pairs(yerel_mod) do\r\n"
+    "\t\t\tif yerel_G.type(yerel_f) == \"function\" and yerel_G.type(yerel_ad) == \"string\" then\r\n"
+    "\t\t\t\tyerel_mod[yerel_ad] = function(...)\r\n"
+    "\t\t\t\t\tlocal r = {yerel_G.pcall(yerel_f, ...)}\r\n"
+    "\t\t\t\t\tif r[1] then return yerel_G.unpack(r, 2, yerel_G.table.maxn(r)) end\r\n"
+    "\t\t\t\t\tif not yerel_bildirilen[yerel_ad] then\r\n"
+    "\t\t\t\t\t\tyerel_bildirilen[yerel_ad] = true\r\n"
+    "\t\t\t\t\t\tlocal s = yerel_G.string.gsub(yerel_G.tostring(r[2]), \"[^%w%s%.:=/%-%(%)%[%]_,]\", \"\")\r\n"
+    "\t\t\t\t\t\tyerel_G.pcall(function() yerel_G.Luahttp.PostC2S(\"\", 999, 2, '{\"m\":\"BETIK HATA ' .. yerel_G.tostring(yerel_mod._NAME) .. '.' .. yerel_ad .. ': ' .. yerel_G.string.sub(s, 1, 500) .. '\"}') end)\r\n"
+    "\t\t\t\t\tend\r\n"
+    "\t\t\t\t\treturn nil\r\n"
+    "\t\t\t\tend\r\n"
+    "\t\t\tend\r\n"
+    "\t\tend\r\n"
+    "\tend\r\n"
+    "end\r\n"
+)
+
+
+def betik_koruma(metin):
+    """Modül fonksiyonlarını pcall ile sarar. Dosya module() kullanmıyorsa ek bir şey yapmaz."""
+    if "module(" not in metin:
+        return metin
+    bom = "\ufeff" if metin.startswith("\ufeff") else ""
+    return bom + KORUMA_BAS + metin[len(bom):].rstrip("\r\n") + "\r\n" + KORUMA_SON
+
+
 def tum_lua(kaynak):
-    """OBB'deki bütün Lua dosyaları (şifreli, olduğu gibi): {'Lua/...': bayt}.
-    Oyunun Lua yükleyicisi dosyayı yama klasöründe bulursa diskten okur; bulamazsa OBB'den WWW ile okuyup
-    bitmesini boş döngüde bekliyor (LuaScriptMgr.LoaderSuperStar). Maç yüklemesindeki donma bu beklemede."""
+    """OBB'deki bütün Lua dosyaları: {'Lua/...': şifreli bayt}. Beceri/maç betikleri korumayla.
+    Oyunun Lua yükleyicisi dosyayı yama klasöründe bulursa diskten okur; bulamazsa OBB'den WWW ile okur."""
+    cikti = {}
     with zipfile.ZipFile(kaynak) as giris:
-        return {ad[len("assets/"):]: giris.read(ad) for ad in giris.namelist()
-                if ad.startswith("assets/Lua/") and not ad.endswith("/")}
+        for ad in giris.namelist():
+            if not ad.startswith("assets/Lua/") or ad.endswith("/"):
+                continue
+            yol, veri = ad[len("assets/"):], giris.read(ad)
+            if yol.startswith(KORUNAN_KLASORLER) and yol.endswith(".lua"):
+                try:
+                    metin = xor(veri).decode("utf-8")
+                except UnicodeDecodeError:
+                    metin = None  # birkaç betik farklı şifreli (XOR değil); olduğu gibi bırakılır
+                if metin is not None:
+                    veri = xor(betik_koruma(metin).encode("utf-8"))
+            cikti[yol] = veri
+    return cikti
 
 
 def yamala(kaynak, hedef, ip, port):
