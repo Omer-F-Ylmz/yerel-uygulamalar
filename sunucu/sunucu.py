@@ -218,9 +218,23 @@ def cdn_gamepack(yol, istek):
     return Ham("")
 
 
+# Yamalı veri tablosu paketi (araclar/conf_yamala.py üretir): betiklerin kullandığı eksik buff tanımları.
+# Oyun conf_time.txt'deki md5 cihazdakiyle uyuşmayınca paketi buradan indirip kaydeder; OBB değişmez.
+YAMALI_CONF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "veri", "conf_qte.assetbundle")
+
+
+def conf_paketi():
+    """Verilecek conf_qte.assetbundle: yamalı dosya varsa o, yoksa OBB'deki."""
+    if os.path.exists(YAMALI_CONF):
+        with open(YAMALI_CONF, "rb") as f:
+            return f.read()
+    return obb_oku("assets/Android/conf_qte.assetbundle")
+
+
 def conf_zamani():
-    """ConfManager'ın md5 karşılaştırması: conf#?#conf_json#surum; eşleşirse yerel dosyayı kullanır."""
-    a = obb_oku("assets/Android/conf_qte.assetbundle") or b""
+    """ConfManager'ın md5 karşılaştırması: conf#?#conf_json#surum; eşleşirse cihazdaki dosyayı kullanır,
+    uyuşmazsa /res/ANDROID/Conf/<dil>/conf_qte.assetbundle indirir."""
+    a = conf_paketi() or b""
     b = obb_oku("assets/Android/conf_luatab_qte.assetbundle") or b""
     return "%s#0#%s#1" % (hashlib.md5(a).hexdigest(), hashlib.md5(b).hexdigest())
 
@@ -231,6 +245,11 @@ def kaynak(yol, istek):
     ad = yol.rsplit("/", 1)[-1]
     if ad == "conf_time.txt":
         return Ham(conf_zamani())
+    if ad == "conf_qte.assetbundle":
+        veri = conf_paketi()
+        if veri is not None:
+            log.info("yamalı conf paketi veriliyor (%d bayt)", len(veri))
+            return Ham(veri, "application/octet-stream")
     veri = obb_oku("assets/Android/" + yol, "assets/Android/md5/" + yol, "assets/Android/" + ad)
     if veri is None:
         log.warning("kaynak bulunamadı: %s", yol)

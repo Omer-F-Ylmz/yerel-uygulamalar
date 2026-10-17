@@ -50,4 +50,14 @@
   fonksiyonları pcall ile sarılır. Hata veren beceri atlanır (nil döner), hata bir kez 999/2 ile sunucuya
   "BETIK HATA modül.fonksiyon: mesaj" olarak bildirilir (kayit/mac_izi.txt). 16 betik XOR dışında
   şifreli (Skill_Active_HanDi vb.), onlar olduğu gibi bırakılır.
-- Yan etki: eksik buff'ları kullanan beceriler maçta etkisiz kalır; buff tablosunu tamamlamak sıradaki iş.
+- Tablo tamamlama (araclar/conf_yamala.py): 36 eksik buff BuffInformation + BuffEffect tablolarına eklenir ve
+  yamalı paket `sunucu/veri/conf_qte.assetbundle` olarak depoda durur. Oyun açılışta `Conf/<dil>/conf_time.txt`
+  md5'ini cihazdaki `files!/assets/Conf/<dil>/conf_qte.assetbundle` ile karşılaştırır; uyuşmazsa paketi
+  `/res/ANDROID/Conf/<dil>/conf_qte.assetbundle` adresinden indirip kaydeder (ConfManager.loadConfTime/loadConf).
+  Sunucu bu adreste yamalı paketi, conf_time.txt'de onun md5'ini verir. OBB'ye dokunulmaz.
+  Lua tarafındaki kopya (BuffInformation_LuaTab) LuaConfManager.lua yamasıyla tamamlanır (buff_lua_eki).
+- Paket biçimi: UnityWeb v3 (Unity 4.6.9f1), lzma_alone (512 KB sözlük, boyut yazılı), tek SerializedFile biçim 9,
+  little-endian, nesneler 8 hizalı; tip ağacı olmadığı için UnityPy okuyamıyor, ham bayt işleniyor.
+  Kayıt düzeni BuffInformation: int×3, int[] (sayı+elemanlar), 5 metin (uzunluk+bayt, 4 hizalı), int×3, 3 bool
+  (her biri 4 bayt). BuffEffect: int, int, 4 double. Yeniden üretmek: `python araclar/conf_yamala.py main.obb`.
+- pcall koruması yine de durur: eksik başka bir şey çıkarsa beceri atlanır ve `BETIK HATA` izi düşer.

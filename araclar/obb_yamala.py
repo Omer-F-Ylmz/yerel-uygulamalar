@@ -21,6 +21,9 @@ import os
 import sys
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import conf_yamala  # noqa: E402  (eksik buff tanımlarının Lua tarafı)
+
 XML_YOLU = "assets/Lua/XmlReadInAdvanceManager.lua"
 CDN_YOLU = "assets/Lua/Utils/CdnPathUtils.lua"
 CONF_YOLU = "assets/Lua/Conf/LuaConfManager.lua"
@@ -260,7 +263,7 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
             raise SystemExit("XmlReadInAdvanceManager.lua beklenen satiri icermiyor")
         cikti[XML_YOLU] = xor(metin.replace(XML_CAPA, XML_CAPA + XML_EK, 1).encode("utf-8"))
         cikti[CDN_YOLU] = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
-        cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
+        cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + (CONF_EK + conf_yamala.buff_lua_eki()).encode("utf-8"))
         cikti[MAC_YOLU] = xor(mac_izi(xor(giris.read(MAC_YOLU)).decode("utf-8")).encode("utf-8"))
         cikti[NITELIK_YOLU] = xor(izli(xor(giris.read(NITELIK_YOLU)).decode("utf-8"), NITELIK_IZLERI,
                                        "PlayerAttribute dosyasi yuklendi", NITELIK_SON).encode("utf-8"))
@@ -342,7 +345,7 @@ def yamala(kaynak, hedef, ip, port):
                 veri = xor(metin.replace(XML_CAPA, XML_CAPA + XML_EK, 1).encode("utf-8"))
                 bulunan.add(XML_YOLU)
             elif bilgi.filename == CONF_YOLU:
-                veri = xor(xor(veri) + CONF_EK.encode("utf-8"))
+                veri = xor(xor(veri) + (CONF_EK + conf_yamala.buff_lua_eki()).encode("utf-8"))
                 bulunan.add(CONF_YOLU)
             elif bilgi.filename == CDN_YOLU:
                 veri = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
