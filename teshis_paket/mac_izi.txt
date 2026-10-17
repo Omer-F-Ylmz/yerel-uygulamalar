@@ -21,3 +21,80 @@
 2026-10-17 05:45:59 oyuncu true dalga=0 id=1014 beceri=18
 2026-10-17 05:45:59 nitelik basladi id=1014
 2026-10-17 05:45:59 ortak nitelik id=1014
+2026-10-17 07:06:23 PlayerAttribute dosyasi yuklendi
+2026-10-17 07:06:23 705 gonderiliyor id=16000101
+2026-10-17 07:06:23 705 cevabi geldi sonuc=0
+2026-10-17 07:06:23 initBattleInfo
+2026-10-17 07:06:23 oyuncu true dalga=0 id=1014 beceri=17
+2026-10-17 07:06:23 kendi takim
+2026-10-17 07:06:23 nitelik basladi id=1014
+2026-10-17 07:06:23 ortak nitelik id=1014
+2026-10-17 07:06:23 ortak nitelik bitti
+2026-10-17 07:06:23 oyuncu bitti
+2026-10-17 07:06:23 oyuncu true dalga=0 id=1048 beceri=17
+2026-10-17 07:06:23 ortak nitelik bitti
+2026-10-17 07:06:23 nitelik basladi id=1048
+2026-10-17 07:06:23 oyuncu true dalga=0 id=1011 beceri=17
+2026-10-17 07:06:23 ortak nitelik id=1048
+2026-10-17 07:06:23 nitelik basladi id=1011
+2026-10-17 07:06:23 oyuncu bitti
+2026-10-17 07:06:23 ortak nitelik id=1011
+2026-10-17 07:06:24 oyuncu bitti
+2026-10-17 07:06:24 ortak nitelik bitti
+2026-10-17 07:06:28 oyuncu false dalga=0 id=2446 beceri=1
+2026-10-17 07:06:28 battleBeginOver basliyor
+2026-10-17 07:06:28 battleBeginOver bitti - bundan sonrasi oyunun kendi yuklemesi
+2026-10-17 07:06:28 rakip takim
+2026-10-17 07:06:28 ortak nitelik id=1048
+2026-10-17 07:06:28 oyuncu false dalga=0 id=2215 beceri=1
+2026-10-17 07:06:28 nitelik basladi id=2147
+2026-10-17 07:06:28 oyuncu false dalga=0 id=2147 beceri=2
+2026-10-17 07:06:28 ortak nitelik id=2215
+2026-10-17 07:06:28 oyuncu bitti
+2026-10-17 07:06:28 ortak nitelik id=2215
+2026-10-17 07:06:28 nitelik basladi id=2215
+2026-10-17 07:06:28 amigo 2000
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=2446
+2026-10-17 07:06:28 initPlayerTeam
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 oyuncu bitti
+2026-10-17 07:06:28 oyuncu bitti
+2026-10-17 07:06:28 nitelik basladi id=2147
+2026-10-17 07:06:28 ortak nitelik id=2215
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 sahne 100
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=2446
+2026-10-17 07:06:28 ortak nitelik id=2446
+2026-10-17 07:06:28 nitelik basladi id=2215
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=1014
+2026-10-17 07:06:28 nitelik basladi id=1048
+2026-10-17 07:06:28 ortak nitelik id=1014
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 ortak nitelik id=1011
+2026-10-17 07:06:28 ortak nitelik id=2147
+2026-10-17 07:06:28 nitelik basladi id=1011
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=2147
+2026-10-17 07:06:28 ortak nitelik id=2147
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=2215
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=2446
+2026-10-17 07:06:28 ortak nitelik id=2446
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=1014
+2026-10-17 07:06:28 ortak nitelik id=1014
+2026-10-17 07:06:28 nitelik basladi id=1048
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 nitelik basladi id=1011
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 ortak nitelik id=1048
+2026-10-17 07:06:28 ortak nitelik id=1011
+2026-10-17 07:06:28 ortak nitelik bitti
+2026-10-17 07:06:28 ortak nitelik id=2446
+2026-10-17 07:06:28 ortak nitelik id=2147
