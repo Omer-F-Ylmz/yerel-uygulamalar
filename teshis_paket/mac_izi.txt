@@ -13,3 +13,11 @@
 2026-10-17 05:37:36 initBattleInfo
 2026-10-17 05:37:36 oyuncu true dalga=0 id=1014 beceri=4
 2026-10-17 05:37:36 kendi takim
+2026-10-17 05:45:59 PlayerAttribute dosyasi yuklendi
+2026-10-17 05:45:59 705 gonderiliyor id=16000101
+2026-10-17 05:45:59 705 cevabi geldi sonuc=0
+2026-10-17 05:45:59 initBattleInfo
+2026-10-17 05:45:59 kendi takim
+2026-10-17 05:45:59 oyuncu true dalga=0 id=1014 beceri=18
+2026-10-17 05:45:59 nitelik basladi id=1014
+2026-10-17 05:45:59 ortak nitelik id=1014
