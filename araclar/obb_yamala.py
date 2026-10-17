@@ -376,7 +376,7 @@ EFSANE_LUA = (
     '\tend\r\n'
     'end\r\n'
 ) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS,
-       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE, "surum": "v4"}
+       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE, "surum": "v5"}
 
 # player_formula.lua: fonksiyon başlığından hemen sonra eklenen satırlar
 FORMUL_IZLERI = (
@@ -443,6 +443,20 @@ ULTI_EK = (
     "\tend\r\n" % {"b": EFSANE_BUFF})
 
 
+# Zincirlenen ultiler (Rukawa 10071, Kagami 10020) Efsane oyuncusuna geçici beceri olarak ekli; bu betiklerin kendi
+# effect_PressSkillBtn'leri de ulti düğmesine cevap verip asıl ulti betiğini bastırıyordu (listede sonuncu olan Kagami
+# hep kazanıyordu, kayıt 15:19-15:22: ULTI izi yok). Efsane oyuncusunda düğmeye tepki vermesinler; seçici başlatır.
+ZINCIR_YOLLARI = ("assets/Lua/Skill_QTE/Skill_Active_TuRuBaoKou.lua", "assets/Lua/Skill_QTE/Skill_Active_LiuXingGuanLan.lua")
+ZINCIR_CAPA = "function effect_PressSkillBtn(p_player,p_skillId)\r\n"
+ZINCIR_EK = "\tif p_player:luaHasBuff(%d) then return end\r\n" % EFSANE_BUFF
+
+
+def zincir_yamala(metin, yol):
+    if metin.count(ZINCIR_CAPA) != 1:
+        raise SystemExit("%s beklenen effect_PressSkillBtn satirini icermiyor" % yol)
+    return metin.replace(ZINCIR_CAPA, ZINCIR_CAPA + ZINCIR_EK, 1)
+
+
 def ulti_yamala(metin, yol):
     if metin.count(ULTI_CAPA) != 1:
         raise SystemExit("%s beklenen start satirini icermiyor" % yol)
@@ -482,6 +496,8 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[MV3_YOLU] = xor(betik_koruma(mv3_yamala(xor(giris.read(MV3_YOLU)).decode("utf-8"))).encode("utf-8"))
         for yol in ULTI_YOLLARI:
             cikti[yol] = xor(betik_koruma(ulti_yamala(xor(giris.read(yol)).decode("utf-8"), yol)).encode("utf-8"))
+        for yol in ZINCIR_YOLLARI:
+            cikti[yol] = xor(betik_koruma(zincir_yamala(xor(giris.read(yol)).decode("utf-8"), yol)).encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
