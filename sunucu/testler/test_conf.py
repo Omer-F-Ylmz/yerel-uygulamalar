@@ -93,7 +93,7 @@ class ConfYamaTesti(unittest.TestCase):
         self.assertIn("YEREL_EK_BUFFLAR", ek)
         self.assertIn("function BuffInformationReader.OnJsonCall(data)", ek)
         self.assertEqual(ek.count("buffId="), len(cy.EK_BUFFLAR))
-        self.assertIn('buffName="帝王の威势"', ek)
+        self.assertIn('buffName="İmparatorun Heybeti"', ek)
 
     def test_uretilen_paket_varsa_dogru(self):
         yol = os.path.join(KOK, "sunucu", "veri", "conf_qte.assetbundle")
@@ -104,6 +104,45 @@ class ConfYamaTesti(unittest.TestCase):
         idler = {r["buffId"] for r in s["buff"]}
         self.assertTrue({r["buffId"] for r in cy.EK_BUFFLAR} <= idler)
         self.assertGreater(len(s["etki"]), len(cy.EK_BUFF_ETKILERI))
+
+    def test_duzen_dogrula_ve_cevir(self):
+        alanlar = [["kimlik", "i"], ["ad", "s"], ["oran", "d"], ["kucuk", "f"], ["acik", "b"], ["liste", "ai"],
+                   ["adlar", "as"]]
+        kayitlar = [{"kimlik": 1, "ad": "天生扣将", "oran": 7.2, "kucuk": 1.5, "acik": 10, "liste": [1, 2],
+                     "adlar": ["攻击力上升", "x"]},
+                    {"kimlik": 2, "ad": "yok", "oran": 0, "kucuk": 0, "acik": 0, "liste": [], "adlar": []}]
+        govde = b""
+        for r in kayitlar:
+            govde += (struct.pack("<i", r["kimlik"]) + cy._metin(r["ad"]) + struct.pack("<d", float(r["oran"]))
+                      + struct.pack("<f", float(r["kucuk"])) + struct.pack("<i", 1 if r["acik"] else 0)
+                      + cy._i32(len(r["liste"])) + b"".join(cy._i32(x) for x in r["liste"])
+                      + cy._i32(len(r["adlar"])) + b"".join(cy._metin(x) for x in r["adlar"]))
+        raw = mono_basligi("Deneme") + cy._i32(len(kayitlar)) + govde
+        self.assertIsNone(cy.duzen_dogrula(raw, kayitlar, alanlar))  # bool 10 -> 1 kabul edilir
+        self.assertIsNotNone(cy.duzen_dogrula(raw, kayitlar, alanlar[:-1]))
+        self.assertIsNotNone(cy.duzen_dogrula(raw + b"\0", kayitlar, alanlar))
+        sozluk = {"天生扣将": "Doğuştan Smaççı", "攻击力上升": "Saldırı arttı"}
+        yeni, sayac = cy.tablo_cevir(raw, kayitlar, sozluk, alanlar)
+        self.assertEqual(sayac, 2)
+        okunan = []
+        o = cy.mono_adi(yeni)[1] + 4
+        for _ in kayitlar:
+            r, o = cy._kayit_oku(yeni, o, [a for a, _ in alanlar], [t for _, t in alanlar])
+            okunan.append(r)
+        self.assertEqual(o, len(yeni))
+        self.assertEqual(okunan[0]["ad"], "Doğuştan Smaççı")
+        self.assertEqual(okunan[0]["adlar"], ["Saldırı arttı", "x"])
+        self.assertEqual(okunan[0]["acik"], 1)
+        self.assertAlmostEqual(okunan[0]["oran"], 7.2)
+        # bilinen düzen yoksa JSON'dan çıkarım da aynı sonucu vermeli
+        yeni2, sayac2 = cy.tablo_cevir(raw, kayitlar, sozluk)
+        self.assertEqual((yeni2, sayac2), (yeni, sayac))
+
+    def test_duzen_dosyasi(self):
+        duzenler = cy.duzenleri_yukle()
+        self.assertIn("BuffInformation", duzenler)
+        self.assertEqual([a for a, _ in duzenler["BuffInformation"]], list(cy._buff(1, "a", "b").keys()))
+        self.assertIn("LoadingTipsInfo", duzenler)
 
 
 if __name__ == "__main__":

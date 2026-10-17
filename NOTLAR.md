@@ -61,3 +61,14 @@
   Kayıt düzeni BuffInformation: int×3, int[] (sayı+elemanlar), 5 metin (uzunluk+bayt, 4 hizalı), int×3, 3 bool
   (her biri 4 bayt). BuffEffect: int, int, 4 double. Yeniden üretmek: `python araclar/conf_yamala.py main.obb`.
 - pcall koruması yine de durur: eksik başka bir şey çıkarsa beceri atlanır ve `BETIK HATA` izi düşer.
+
+## Yükleme ekranları ve C# tablolarının çevirisi
+- Lobi yükleme ekranındaki ~12-17 saniyenin kaynağı: `LuaConfManager.updateLoad` kare başına tek tablo
+  yüklüyordu (367 tablo, ConfManager.loadJsonFile eşzamanlı). LuaConfManager yaması (CONF_EK) artık kare başına
+  80 tablo işler: 367 tablo 5 karede biter. Kalan süre asset bundle/sahne yüklemesidir (OBB'den okunur).
+- Yükleme ipuçları (LoadingTipsInfo, LoadingBaseInfo), oyuncu adları (PlayerBaseInfo), beceri adları (SkillInfo)
+  gibi C# tarafından okunan tablolar Lua çevirisinden geçmiyordu. `conf_yamala.py` artık 61 tablonun metin alanlarını
+  `ceviri_tr.json` sözlüğüyle çevirip pakete yazıyor (8181 metin, 28 tablo). Alan düzenleri çözülmüş C# sınıflarından
+  `araclar/conf_duzen_cikar.py` ile çıkarılıp `araclar/conf_duzenleri.json` dosyasına kaydedildi; her düzen OBB'deki
+  JSON ikiziyle (conf_json_qte.assetbundle) doğrulanır, uymayan tablo olduğu gibi bırakılır.
+- Çevrilmeden kalan tek alan `data_droplist.name` (iç ad, ekranda görünmez).
