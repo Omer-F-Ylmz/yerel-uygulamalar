@@ -3,3 +3,13 @@
 2026-10-17 05:29:06 initBattleInfo
 2026-10-17 05:29:06 kendi takim
 2026-10-17 05:29:06 oyuncu true dalga=0 id=1014 beceri=18
+2026-10-17 05:30:55 705 gonderiliyor id=16000101
+2026-10-17 05:30:55 705 cevabi geldi sonuc=0
+2026-10-17 05:30:55 initBattleInfo
+2026-10-17 05:30:55 kendi takim
+2026-10-17 05:30:55 oyuncu true dalga=0 id=1014 beceri=4
+2026-10-17 05:37:36 705 gonderiliyor id=16000101
+2026-10-17 05:37:36 705 cevabi geldi sonuc=0
+2026-10-17 05:37:36 initBattleInfo
+2026-10-17 05:37:36 oyuncu true dalga=0 id=1014 beceri=4
+2026-10-17 05:37:36 kendi takim
