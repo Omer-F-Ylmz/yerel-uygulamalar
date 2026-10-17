@@ -37,6 +37,7 @@ VARSAYILAN_CIKTI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 
 EFSANE_BUFF = 90001
 EFSANE_YUKSELIS = 90002
+EFSANE_YUKSELIS_AOMINE = 90003
 
 
 def _buff(bid, ad, aciklama, tur=0, sn=0, yigin=1, iyi=1, tip=0, soz="0", fx1="0", fx2="0"):
@@ -99,6 +100,8 @@ EK_BUFFLAR = [
     # Her tur bir kat daha eklenir (yığın 99): saldırı x1.5 ve savunma x1.5.
     _buff(EFSANE_YUKSELIS, "Efsane Yükselişi", "Her tur saldırı ve savunma 1.5 kat artar, üst üste biner",
           yigin=99, soz="全属性上升"),
+    _buff(EFSANE_YUKSELIS_AOMINE, "Efsane Yükselişi (Aomine)", "Her tur saldırı 5 kat, savunma 1.5 kat artar, üst üste biner",
+          yigin=99, soz="全属性上升"),
 ]
 
 # ---------------------------------------------------------------- yerel beceri: Efsane Modu
@@ -134,6 +137,8 @@ EK_BUFF_ETKILERI = [
     _etki(2097, 335),
     _etki(EFSANE_YUKSELIS, 127, 0, 1.5),  # saldırı (AttackMorale) katsayısı
     _etki(EFSANE_YUKSELIS, 130, 0, 1.5),  # savunma (Defend) katsayısı
+    _etki(EFSANE_YUKSELIS_AOMINE, 127, 0, 5.0),
+    _etki(EFSANE_YUKSELIS_AOMINE, 130, 0, 1.5),
 ]
 
 

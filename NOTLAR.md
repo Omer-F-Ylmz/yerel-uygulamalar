@@ -98,4 +98,9 @@
 - C# effect çağrısı argüman sırası: (oyuncu, olay parametreleri..., beceriId) — beceri id EN SONDA.
 - İzler (YEREL_IZ) varsayılan kapalı (IZ_ACIK=False): her iz eşzamanlı HTTP isteği, maçta saniyede onlarca
   nitelik izi takılmaya yol açıyordu; yalnız "HATA" içerenler gönderilir.
+- Aomine'nin tur başı buff'ı 90003 (saldırı x5, savunma x1.5); Kise 90002 (x1.5 / x1.5). Betik playerId'ye bakar.
+- Ulti zinciri: Skill_Active_ZiWoYiZhi (Aomine) ve Skill_Active_WanMeiWuQue (Kise) start() başında Efsane
+  oyuncusu 1/3 Rukawa 10071 (Skill_Active_TuRuBaoKou), 1/3 Kagami 10020 (Skill_Active_LiuXingGuanLan) betiğine
+  luaStartActionScript ile geçer (quitLuaFancyMove + startLuaFancyMove: mevcut aksiyonu bırakır). Geçici
+  beceriler GameStart'ta addSkillTemp ile eklenir (Kise'nin 模仿术 betiğiyle aynı yöntem).
 

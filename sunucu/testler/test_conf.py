@@ -51,7 +51,7 @@ class ConfYamaTesti(unittest.TestCase):
         self.assertEqual(idler, [1000] + [r["buffId"] for r in cy.EK_BUFFLAR])
 
     def test_eksik_bufflar_tam(self):
-        beklenen = set(range(1147, 1177)) | {2036, 2097, 2098, 2099, 2100, 3006, cy.EFSANE_BUFF, cy.EFSANE_YUKSELIS}
+        beklenen = set(range(1147, 1177)) | {2036, 2097, 2098, 2099, 2100, 3006, cy.EFSANE_BUFF, cy.EFSANE_YUKSELIS, cy.EFSANE_YUKSELIS_AOMINE}
         self.assertEqual({r["buffId"] for r in cy.EK_BUFFLAR}, beklenen)
         self.assertTrue({r["buffId"] for r in cy.EK_BUFF_ETKILERI} <= beklenen)
         for r in cy.EK_BUFFLAR:  # C# specialEffectOne.Length > 1 ise efekt arar: boş yerine "0"

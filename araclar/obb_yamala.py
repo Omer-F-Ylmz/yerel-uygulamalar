@@ -285,6 +285,9 @@ EFSANE_LUA = (
     '-- Yerel sunucu: Efsane Modu. Isaret buff %(buff)d player_formula yamasinda okunur.\r\n'
     'local YEREL_BUFF = %(buff)d\r\n'
     'local YEREL_YUKSELIS = %(yukselis)d\r\n'
+    'local YEREL_YUKSELIS_AOMINE = %(yukselis_aomine)d\r\n'
+    'local YEREL_AOMINE = 1011\r\n'
+    'local YEREL_EK_ULTILER = {10071, 10020}  -- Rukawa "突击暴扣", Kagami "流星灌篮" (ulti zinciri icin gecici beceri)\r\n'
     'local YEREL_UYANIS = 1133\r\n'
     'local SIFIR_CD = {30089, 30063, 30005, 20136}\r\n'
     '\r\n'
@@ -330,11 +333,18 @@ EFSANE_LUA = (
     '\tend\r\n'
     '\tdayaniklilik_kilitle(p_player)\r\n'
     '\tzone_koru(p_player)\r\n'
+    '\tfor _, id in ipairs(YEREL_EK_ULTILER) do\r\n'
+    '\t\tif p_player:luaHasSkill(id) == false then p_player:addSkillTemp(id) end\r\n'
+    '\tend\r\n'
     'end\r\n'
     '\r\n'
     '-- Her tur: saldiri ve savunma x1.5 (yigilir), Zone tazelenir.\r\n'
     'function effect_TurnStart(p_player, p_skillId)\r\n'
-    '\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_YUKSELIS)\r\n'
+    '\tif p_player.playerId == YEREL_AOMINE then\r\n'
+    '\t\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_YUKSELIS_AOMINE)\r\n'
+    '\telse\r\n'
+    '\t\tPlayerBuffManager.luaInstance:addBuff(p_player, YEREL_YUKSELIS)\r\n'
+    '\tend\r\n'
     '\tzone_koru(p_player)\r\n'
     '\tdayaniklilik_kilitle(p_player)\r\n'
     'end\r\n'
@@ -353,7 +363,8 @@ EFSANE_LUA = (
     '\t\tp_player:luaDoCure(takim.TeamHpMax * 0.2)\r\n'
     '\tend\r\n'
     'end\r\n'
-) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS}
+) % {"buff": EFSANE_BUFF, "yukselis": conf_yamala.EFSANE_YUKSELIS,
+       "yukselis_aomine": conf_yamala.EFSANE_YUKSELIS_AOMINE}
 
 # player_formula.lua: fonksiyon başlığından hemen sonra eklenen satırlar
 FORMUL_IZLERI = (
@@ -391,6 +402,27 @@ MV3_EK = ("\tif blocktarget ~= nil and p_player:luaHasBuff(%d) and p_player:luaI
           "\tend\r\n" % EFSANE_BUFF)
 
 
+# Ulti zinciri: Aomine (超越, Skill_Active_ZiWoYiZhi) ve Kise (完美无缺的模仿, Skill_Active_WanMeiWuQue) ultisi
+# başlarken Efsane oyuncusu 1/3 Rukawa "突击暴扣", 1/3 Kagami "流星灌篮" ultisine geçer (Kise'nin 模仿术 betiğiyle
+# aynı yol: luaStartActionScript mevcut aksiyonu bırakıp diğer betiği başlatır). Geçici beceriler GameStart'ta eklenir.
+ULTI_YOLLARI = ("assets/Lua/Skill_QTE/Skill_Active_ZiWoYiZhi.lua", "assets/Lua/Skill_QTE/Skill_Active_WanMeiWuQue.lua")
+ULTI_CAPA = "function start(p_player,p_skillId)\r\n"
+ULTI_EK = (
+    "\tif p_player:luaHasBuff(%(b)d) then\r\n"
+    "\t\tif RandomManager.luaInstance:luaIsInOne(0.334) then\r\n"
+    "\t\t\tif p_player:luaHasSkill(10071) then p_player:luaStartActionScript(\"Skill_QTE/Skill_Active_TuRuBaoKou\", 10071) return end\r\n"
+    "\t\telseif RandomManager.luaInstance:luaIsInOne(0.5) then\r\n"
+    "\t\t\tif p_player:luaHasSkill(10020) then p_player:luaStartActionScript(\"Skill_QTE/Skill_Active_LiuXingGuanLan\", 10020) return end\r\n"
+    "\t\tend\r\n"
+    "\tend\r\n" % {"b": EFSANE_BUFF})
+
+
+def ulti_yamala(metin, yol):
+    if metin.count(ULTI_CAPA) != 1:
+        raise SystemExit("%s beklenen start satirini icermiyor" % yol)
+    return metin.replace(ULTI_CAPA, ULTI_CAPA + ULTI_EK, 1)
+
+
 def mv3_yamala(metin):
     if metin.count(MV3_CAPA) != 1:
         raise SystemExit("Skill_Passive_MV3.lua beklenen satiri icermiyor")
@@ -422,6 +454,8 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[FORMUL_YOLU] = xor(formul_yamala(xor(giris.read(FORMUL_YOLU)).decode("utf-8")).encode("utf-8"))
         cikti["assets/" + EFSANE_YOLU] = xor(EFSANE_LUA.encode("utf-8"))
         cikti[MV3_YOLU] = xor(betik_koruma(mv3_yamala(xor(giris.read(MV3_YOLU)).decode("utf-8"))).encode("utf-8"))
+        for yol in ULTI_YOLLARI:
+            cikti[yol] = xor(betik_koruma(ulti_yamala(xor(giris.read(yol)).decode("utf-8"), yol)).encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
