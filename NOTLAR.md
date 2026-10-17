@@ -112,4 +112,6 @@
   becerilerinde luaChangeSkillCoolDown(0,0), luaChangeSkillEnergyCost(0,0), luaChangeSkillAtkPressure(0,0) ve
   setCoolDownRestTime(0) uygular (ilk bekleme dahil sıfır).
 - Zararsız BETIK HATA: Skill_Gift_DangTouYiJi luaRemoveFx(nil) - oyunun kendi hatası, pcall yutuyor.
+- Ulti seçici (ULTI_EK): 1 kendi, 2 Rukawa 10071, 3 Kagami 10020; `_G.YEREL_SON_ULTI[playerId]` son seçimi tutar,
+  bir önceki hariç eşit olasılıkla seçilir (art arda aynı ulti çıkmaz). Geçici beceri yoksa o an addSkillTemp.
 
