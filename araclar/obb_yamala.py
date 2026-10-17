@@ -177,6 +177,10 @@ def mac_izi(metin):
         if metin.count(capa) != 1:
             raise SystemExit("MatchLoader.lua beklenen satiri icermiyor: " + capa.strip())
         metin = metin.replace(capa, once + capa + sonra, 1)
+    # Oyuncu yüklemesi bitti izi: initPlayerInfo satırının sonuna
+    bas = metin.index("\t\t\tMatchManager.luaInstance:initPlayerInfo(_isSelf")
+    son = metin.index("\r\n", bas)
+    metin = metin[:son] + " YEREL_IZ(\"oyuncu bitti\")" + metin[son:]
     return metin + MAC_IZ_SON
 
 

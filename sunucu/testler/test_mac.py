@@ -140,9 +140,25 @@ class MacTesti(unittest.TestCase):
                 msg = mac.battlemsg(k, bid, m[0], m[1], m[3], m[2], m[4])
                 self.battlemsg_dogrula(msg, len(m[3]))
 
+    def test_teshis_mac(self):
+        k = self.durum.veri
+        k["mac_modu"] = "teshis"
+        m = mac.MV["mac"][16000101]
+        msg = mac.battlemsg(k, 16000101, m[0], m[1], m[3], m[2], m[4])
+        self.battlemsg_dogrula(msg, len(m[3]))
+        sade, nitelik, beceri = msg["battle_player_self"][0]["team"]
+        def sade_beceri(p):
+            o = dict(k["oyuncular"][str(p["id"])], break_level=1, beceri=1)
+            return mac.beceri_listesi(p["id"], o)
+        self.assertEqual(sade["skill_list"], sade_beceri(sade))
+        self.assertEqual(nitelik["skill_list"], sade_beceri(nitelik))
+        self.assertGreater(len(beceri["skill_list"]), len(sade_beceri(beceri)))
+        self.assertEqual(sade["level"], 1)
+        self.assertGreater(nitelik["level"], 1)
+
     def test_sade_mac(self):
         k = self.durum.veri
-        k["sade_mac"] = True
+        k["mac_modu"] = "sade"
         m = mac.MV["mac"][16000101]
         msg = mac.battlemsg(k, 16000101, m[0], m[1], m[3], m[2], m[4])
         self.battlemsg_dogrula(msg, len(m[3]))

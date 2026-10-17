@@ -150,6 +150,14 @@ def beceri_listesi(pid, o):
     return [{"skill_id": s, "skill_level": sv} for s, sv in seviyeler.items()]
 
 
+MAC_MODLARI = ("normal", "sade", "teshis")
+
+
+def mac_modu(k):
+    mod = k.get("mac_modu") or ("sade" if k.get("sade_mac") else "normal")
+    return mod if mod in MAC_MODLARI else "normal"
+
+
 def kendi_takim(k):
     """Seçili 3 oyuncu (pos sırasıyla); eksik varsa sahip olunan oyunculardan tamamlanır."""
     secili = [s for s in sorted(k.get("secili") or [], key=lambda s: s["pos"])
@@ -160,24 +168,29 @@ def kendi_takim(k):
             break
         if int(pid) in MV["oyuncu"] and int(pid) not in idler:
             idler.append(int(pid))
-    # Sade maç (panelden açılır): eğitim maçındaki gibi başlangıç düzeyi oyuncu, amigo yok. Maç yüklemesi
-    # takılırsa sorunun gelişmiş oyuncu verisinden mi geldiğini ayırmak için.
-    sade = bool(k.get("sade_mac"))
-    ek = amigo_niteligi(k) if AMIGO_NITELIK_EKLE and not sade else None
-    carpan = 1.0 if sade else float(k.get("guc_carpani", GUC_CARPANI) or 1.0)
+    # Maç modu (panelden): "sade" eğitim maçındaki gibi başlangıç düzeyi oyuncu ve amigosuz gönderir;
+    # "teshis" üç oyuncuyu ayırır: 1. sade, 2. yalnız nitelikler full, 3. yalnız beceriler full. Maç yüklemesi
+    # bir oyuncuda takılırsa mac_izi.txt hangisinde takıldığını, yani sebebin nitelik mi beceri mi olduğunu gösterir.
+    mod = mac_modu(k)
+    ek = amigo_niteligi(k) if AMIGO_NITELIK_EKLE and mod == "normal" else None
+    carpan = float(k.get("guc_carpani", GUC_CARPANI) or 1.0)
     oyuncular = []
     for i, pid in enumerate(idler):
         o = k["oyuncular"][str(pid)]
-        if sade:
-            o = dict(o, level=1, break_level=1, color=1, train=0, beceri=1)
-        deger = [int(math.ceil(x * carpan)) for x in nitelik_hesapla(pid, o, ek)]
+        sade = dict(o, level=1, break_level=1, color=1, train=0, beceri=1)
+        nitelik_o, nitelik_carpan, beceri_o = o, carpan, o
+        if mod == "sade" or (mod == "teshis" and i == 0):
+            nitelik_o, nitelik_carpan, beceri_o = sade, 1.0, sade
+        elif mod == "teshis":
+            nitelik_o, nitelik_carpan, beceri_o = (o, carpan, sade) if i == 1 else (sade, 1.0, o)
+        deger = [int(math.ceil(x * nitelik_carpan)) for x in nitelik_hesapla(pid, nitelik_o, ek)]
         enerji = MV["oyuncu"][pid]["e"]
         oyuncular.append({
-            "id": pid, "enemy_id": 0, "level": int(o.get("level", 1)), "break_level": int(o.get("break_level", 1)),
-            "color": int(o.get("color", 1)), "pos": i + 1, "skill_list": beceri_listesi(pid, o),
-            "attr": attr_json(deger, enerji[0], enerji[1]),
+            "id": pid, "enemy_id": 0, "level": int(nitelik_o.get("level", 1)),
+            "break_level": int(nitelik_o.get("break_level", 1)), "color": int(nitelik_o.get("color", 1)),
+            "pos": i + 1, "skill_list": beceri_listesi(pid, beceri_o), "attr": attr_json(deger, enerji[0], enerji[1]),
         })
-    a = None if sade else amigo_bilgisi(k)
+    a = None if mod == "sade" else amigo_bilgisi(k)
     amigo = {"id": a[0], "level": a[1], "gears": a[2]} if a else dict(BOS_AMIGO)
     return oyuncular, amigo
 

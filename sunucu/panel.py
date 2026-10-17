@@ -37,7 +37,7 @@ def kur(yon, durum):
                         for e in VERI["esyalar"] if e["cantada"]],
             "sinir": SINIR,
             "guc_carpani": k.get("guc_carpani", 2.5),
-            "sade_mac": bool(k.get("sade_mac")),
+            "mac_modu": k.get("mac_modu") or ("sade" if k.get("sade_mac") else "normal"),
         }
 
     def islem(veri):
@@ -50,8 +50,9 @@ def kur(yon, durum):
                         k[a] = _sayi(veri[a])
                 if "takim_seviye" in veri:
                     k["takim"]["seviye"] = _sayi(veri["takim_seviye"], 1, SINIR["takim_seviye"])
-                if "sade_mac" in veri:
-                    k["sade_mac"] = bool(veri["sade_mac"])
+                if veri.get("mac_modu") in ("normal", "sade", "teshis"):
+                    k["mac_modu"] = veri["mac_modu"]
+                    k.pop("sade_mac", None)
                 if "guc_carpani" in veri:
                     k["guc_carpani"] = max(0.1, min(20.0, float(veri["guc_carpani"])))
                 if veri.get("takim_adi"):
