@@ -1852,3 +1852,9 @@ d=1037 beceri=17
 2026-10-17 14:11:57 nitelik basladi id=1065
 2026-10-17 14:11:57 ortak nitelik id=1065
 2026-10-17 14:11:57 ortak nitelik bitti
+2026-10-17 15:19:52 EFSANE v4 basladi id=1012
+2026-10-17 15:19:52 EFSANE v4 basladi id=1011
+2026-10-17 15:20:50 EFSANE v4 basladi id=1011
+2026-10-17 15:20:50 EFSANE v4 basladi id=1012
+2026-10-17 15:22:39 EFSANE v4 basladi id=1011
+2026-10-17 15:22:39 EFSANE v4 basladi id=1012

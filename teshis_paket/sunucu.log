@@ -1,76 +1,87 @@
-14:25:24 Sunucu hazır: port 8881  |  Panel: http://localhost:8881/panel
-14:25:26 GET /panel
-14:25:26 GET /panel/api/durum
-14:25:26 BILINMEYEN /favicon.ico alanlar={}
-14:42:42 GET /GameConfig/seastar_mix/GatewayList.xml
-14:42:42 GET /GameConfig/seastar_mix/ServerNotice.xml
-14:42:42 GET /GameConfig/seastar_mix/VersionConfig.xml
-14:42:42 GET /GamePack/1.1.8/ANDROID/ResourceZip_ANDROID.txt
-14:43:31 /login param={}
-14:43:31 giriş: hesap=thugylody
-14:43:31 /login param={}
-14:43:31 GET /res/ANDROID/md5Check_ANDROID.txt
-14:43:31 GET /res/ANDROID/ResourceZip_ANDROID.txt
-14:43:32 GET /res/ANDROID/Conf/en/conf_time.txt
-14:43:32 GET /res/ANDROID/Conf/en/conf_qte.assetbundle
-14:43:32 GET /res/ANDROID/time_ANDROID.txt
-14:43:32 GET /res/ANDROID/revision.txt
-14:43:32 kaynak bulunamadı: revision.txt
-14:43:32 yamalı conf paketi veriliyor (205549 bayt)
-14:43:32 GET /res/ANDROID/Conf/en/conf_luatab_qte.assetbundle
-14:43:33 /ball_team param=0
-14:43:33 /get_notice param={}
-14:43:33 /get_server_time param={}
-14:43:33 /get_user_info param={}
-14:43:33 /player_month_checkin param=0
-14:43:33 /player_strength param=0
-14:43:33 client 16/1601 param={}
-14:43:34 /cheer_leader param=0
-14:43:34 /growth_fund param=0
-14:43:34 client 2/1 param={}
-14:43:34 client 24/2401 param={}
-14:43:34 /gem_shop param={"paramlist":0}
-14:43:34 /month_card param=0
-14:43:34 client 16/1610 param={}
-14:43:36 client 35/3501 param={}
-14:43:36 client 40/4003 param={}
-14:43:36 client 54/5433 param={}
-14:43:36 client 58/5811 param={}
-14:43:36 /activity param=0
-14:43:36 /player_mission param=0
-14:43:36 client 34/3401 param={}
-14:43:36 client 45/4501 param={}
-14:43:36 /gem_shop param=0
-14:43:36 /online_package param=0
-14:43:36 /trailer param=0
-14:43:36 /seven param=0
-14:43:36 /gem_shop param={"paramlist":0}
-14:43:36 /player_mission param=0
-14:43:36 /player_mission param=0
-14:43:36 /reward_mission param={"paramlist":0}
-14:43:36 client 21/2103 param={}
-14:43:36 client 10/1001 param={}
-14:43:36 client 47/4701 param={}
-14:43:36 /activity param=0
-14:43:36 client 51/5101 param={}
-14:43:36 /two_week param=0
-14:43:36 /icon param=0
-14:43:36 client 52/5203 param={}
-14:43:36 /activity_mission param=0
-14:43:36 client 57/5701 param={}
-14:43:36 /facebook_gift param={}
-14:43:36 /gem_shop param={"paramlist":0}
-14:43:36 client 60/6003 param={}
-14:43:36 client 110/11001 param={"paramlist":["Seastar","1.1.8"]}
-14:43:36 /time_pay_gift param=0
-14:43:36 /player_book param=[]
-14:43:38 client 17/1711 param={}
-14:43:38 client 33/3301 param={}
-14:43:38 /activity param=0
-14:43:38 /gem_shop param=0
-14:43:39 /time_pay_gift param=0
-14:43:42 client 52/5203 param={}
-14:43:43 client 52/5214 param={"paramlist":[2300051]}
-14:43:45 client 7/701 param={"paramlist":[12,2300051,0,0]}
-14:43:45 mod maçı: tür=12 rakip=Red Cobras 401 güç=10766074 dalga=3
-14:43:57 client 7/711 param={"paramlist":[1]}
+15:16:58 Sunucu hazır: port 8881  |  Panel: http://localhost:8881/panel
+15:16:59 GET /panel
+15:16:59 GET /panel/api/durum
+15:17:00 BILINMEYEN /favicon.ico alanlar={}
+15:18:33 GET /GameConfig/seastar_mix/GatewayList.xml
+15:18:33 GET /GameConfig/seastar_mix/ServerNotice.xml
+15:18:33 GET /GameConfig/seastar_mix/VersionConfig.xml
+15:18:33 GET /GamePack/1.1.8/ANDROID/ResourceZip_ANDROID.txt
+15:19:19 /login param={}
+15:19:19 giriş: hesap=thugylody
+15:19:19 /login param={}
+15:19:19 GET /res/ANDROID/md5Check_ANDROID.txt
+15:19:19 GET /res/ANDROID/ResourceZip_ANDROID.txt
+15:19:19 GET /res/ANDROID/Conf/en/conf_time.txt
+15:19:19 GET /res/ANDROID/time_ANDROID.txt
+15:19:19 GET /res/ANDROID/revision.txt
+15:19:19 kaynak bulunamadı: revision.txt
+15:19:21 /ball_team param=0
+15:19:21 /get_notice param={}
+15:19:21 /get_server_time param={}
+15:19:21 /get_user_info param={}
+15:19:21 /player_month_checkin param=0
+15:19:21 /player_strength param=0
+15:19:21 /month_card param=0
+15:19:21 /cheer_leader param=0
+15:19:21 client 2/1 param={}
+15:19:21 client 16/1610 param={}
+15:19:21 client 16/1601 param={}
+15:19:21 /growth_fund param=0
+15:19:21 /player_mission param=0
+15:19:21 client 24/2401 param={}
+15:19:24 /two_week param=0
+15:19:24 /seven param=0
+15:19:24 client 52/5203 param={}
+15:19:24 /gem_shop param=0
+15:19:24 client 34/3401 param={}
+15:19:24 /player_mission param=0
+15:19:24 /activity param=0
+15:19:24 client 45/4501 param={}
+15:19:24 /online_package param=0
+15:19:24 /trailer param=0
+15:19:24 /player_mission param=0
+15:19:24 /gem_shop param={"paramlist":0}
+15:19:24 /reward_mission param={"paramlist":0}
+15:19:24 client 40/4003 param={}
+15:19:24 client 35/3501 param={}
+15:19:24 /gem_shop param={"paramlist":0}
+15:19:24 client 47/4701 param={}
+15:19:24 client 21/2103 param={}
+15:19:24 /activity param=0
+15:19:24 client 51/5101 param={}
+15:19:24 /activity_mission param=0
+15:19:24 client 54/5433 param={}
+15:19:24 /gem_shop param={"paramlist":0}
+15:19:24 /icon param=0
+15:19:24 client 57/5701 param={}
+15:19:24 /facebook_gift param={}
+15:19:24 client 10/1001 param={}
+15:19:24 client 58/5811 param={}
+15:19:24 client 60/6003 param={}
+15:19:24 client 110/11001 param={"paramlist":["Seastar","1.1.8"]}
+15:19:24 /time_pay_gift param=0
+15:19:24 /player_book param=[]
+15:19:25 client 33/3301 param={}
+15:19:25 client 17/1711 param={}
+15:19:25 /gem_shop param=0
+15:19:25 /activity param=0
+15:19:36 /time_pay_gift param=0
+15:19:38 client 52/5203 param={}
+15:19:39 client 52/5214 param={"paramlist":[2300071]}
+15:19:42 client 7/701 param={"paramlist":[12,2300071,0,0]}
+15:19:42 mod maçı: tür=12 rakip=Red Rebels 401 güç=10604731 dalga=3
+15:19:52 client 7/711 param={"paramlist":[1]}
+15:19:52 client 999/2 param={"m":"EFSANE v4 basladi id=1012"}
+15:19:52 IZ: EFSANE v4 basladi id=1012
+15:19:52 client 999/2 param={"m":"EFSANE v4 basladi id=1011"}
+15:19:52 IZ: EFSANE v4 basladi id=1011
+15:20:50 client 999/2 param={"m":"EFSANE v4 basladi id=1012"}
+15:20:50 client 7/711 param={"paramlist":[1]}
+15:20:50 client 999/2 param={"m":"EFSANE v4 basladi id=1011"}
+15:20:50 IZ: EFSANE v4 basladi id=1011
+15:20:50 IZ: EFSANE v4 basladi id=1012
+15:22:39 client 7/711 param={"paramlist":[1]}
+15:22:39 client 999/2 param={"m":"EFSANE v4 basladi id=1011"}
+15:22:39 client 999/2 param={"m":"EFSANE v4 basladi id=1012"}
+15:22:39 IZ: EFSANE v4 basladi id=1011
+15:22:39 IZ: EFSANE v4 basladi id=1012
