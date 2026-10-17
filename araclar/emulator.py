@@ -110,19 +110,30 @@ def kur():
 
 
 def yamalari_gonder(a, obb):
-    """Yerel sunucu Lua yamalarını emülatördeki öncelikli klasöre kopyalar (OBB'ye dokunmaz)."""
+    """Bütün Lua dosyalarını (yamalılar dahil) emülatördeki öncelikli klasöre kopyalar; OBB'ye dokunmaz.
+    Değişmediyse (sürüm imzası aynıysa) atlar."""
+    import hashlib
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from obb_yamala import lua_yamalari
-    print("Yerel sunucu yamalari kopyalaniyor...")
+    from obb_yamala import lua_yamalari, tum_lua
+    dosyalar = tum_lua(obb)
+    dosyalar.update(lua_yamalari(obb, "127.0.0.1", PORT))
+    imza = hashlib.md5(b"".join(ad.encode() + veri for ad, veri in sorted(dosyalar.items()))).hexdigest()
+    isaret = YAMA_KLASORU + "Lua/yerel_surum.txt"
+    if a("shell", "cat '%s'" % isaret, kontrol=False).strip() == imza:
+        print("Lua dosyalari zaten guncel.")
+        return
+    print("Lua dosyalari kopyalaniyor (%d dosya, bir kez)..." % len(dosyalar))
     with tempfile.TemporaryDirectory() as gecici:
-        for ad, veri in lua_yamalari(obb, "127.0.0.1", PORT).items():
-            yerel = os.path.join(gecici, ad.replace("/", "_"))
-            with open(yerel, "wb") as f:
+        for ad, veri in dosyalar.items():
+            yol = os.path.join(gecici, *ad.split("/"))
+            os.makedirs(os.path.dirname(yol), exist_ok=True)
+            with open(yol, "wb") as f:
                 f.write(veri)
-            uzak = YAMA_KLASORU + ad
-            a("shell", "mkdir -p '%s'" % uzak.rsplit("/", 1)[0])
-            a("push", yerel, uzak)
-            print("  ", ad)
+        with open(os.path.join(gecici, "Lua", "yerel_surum.txt"), "w") as f:
+            f.write(imza)
+        a("shell", "mkdir -p '%s'" % YAMA_KLASORU)
+        a("push", os.path.join(gecici, "Lua"), YAMA_KLASORU)
+    print("Lua dosyalari kopyalandi.")
 
 
 def baglan():

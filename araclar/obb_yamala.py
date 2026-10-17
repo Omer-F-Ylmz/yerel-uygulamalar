@@ -184,6 +184,26 @@ def mac_izi(metin):
     return metin + MAC_IZ_SON
 
 
+NITELIK_YOLU = "assets/Lua/PlayerAttribute.lua"
+NITELIK_IZLERI = [
+    ("function initDataWithLuaTable(playerId, attrTable, playerAttributeCalc)\r\n", "",
+     "\tYEREL_IZ(\"nitelik basladi id=\" .. tostring(playerId))\r\n"),
+    ("function initCommonAttr(playerId, playerAttributeCalc)\r\n", "",
+     "\tYEREL_IZ(\"ortak nitelik id=\" .. tostring(playerId))\r\n"),
+]
+
+
+def izli(metin, izler, yukleme_izi):
+    """Lua dosyasına YEREL_IZ tanımı ve iz noktaları ekler; çapa yoksa hata verir."""
+    ilk = metin.index("\r\n") + 2
+    metin = metin[:ilk] + MAC_IZ_TANIM + "YEREL_IZ(\"%s\")\r\n" % yukleme_izi + metin[ilk:]
+    for capa, once, sonra in izler:
+        if metin.count(capa) != 1:
+            raise SystemExit("Lua dosyasi beklenen satiri icermiyor: " + capa.strip())
+        metin = metin.replace(capa, once + capa + sonra, 1)
+    return metin
+
+
 def lua_metni(s):
     """Lua 5.1 / LuaJIT için güvenli tırnaklı metin."""
     ozel = {"\\": "\\\\", '"': '\\"', "\n": "\\n", "\r": "\\r", "\t": "\\t", "\0": "\\0"}
@@ -217,10 +237,21 @@ def lua_yamalari(kaynak, ip="127.0.0.1", port=8881):
         cikti[CDN_YOLU] = xor(CDN_SABLON.replace("IP_PORT", "%s:%d" % (ip, port)).encode("utf-8"))
         cikti[CONF_YOLU] = xor(xor(giris.read(CONF_YOLU)) + CONF_EK.encode("utf-8"))
         cikti[MAC_YOLU] = xor(mac_izi(xor(giris.read(MAC_YOLU)).decode("utf-8")).encode("utf-8"))
+        cikti[NITELIK_YOLU] = xor(izli(xor(giris.read(NITELIK_YOLU)).decode("utf-8"), NITELIK_IZLERI,
+                                       "PlayerAttribute dosyasi yuklendi").encode("utf-8"))
     if os.path.exists(CEVIRI_JSON):
         with open(CEVIRI_JSON, encoding="utf-8") as f:
             cikti["assets/Lua/Ceviri.lua"] = xor(ceviri_lua(json.load(f)).encode("utf-8"))
     return {ad[len("assets/"):]: veri for ad, veri in cikti.items()}
+
+
+def tum_lua(kaynak):
+    """OBB'deki bütün Lua dosyaları (şifreli, olduğu gibi): {'Lua/...': bayt}.
+    Oyunun Lua yükleyicisi dosyayı yama klasöründe bulursa diskten okur; bulamazsa OBB'den WWW ile okuyup
+    bitmesini boş döngüde bekliyor (LuaScriptMgr.LoaderSuperStar). Maç yüklemesindeki donma bu beklemede."""
+    with zipfile.ZipFile(kaynak) as giris:
+        return {ad[len("assets/"):]: giris.read(ad) for ad in giris.namelist()
+                if ad.startswith("assets/Lua/") and not ad.endswith("/")}
 
 
 def yamala(kaynak, hedef, ip, port):
