@@ -134,7 +134,8 @@ function ciz() {
       [['normal','Normal'],['sade','Sade (başlangıç düzeyi)'],['teshis','Teşhis (sorunu bulmak için)']]
         .map(([d, ad]) => `<option value="${d}" ${D.mac_modu === d ? 'selected' : ''}>${ad}</option>`).join('') +
     `</select></label>` +
-    `<label title="Aomine ve Kise: şutları bloklanamaz, Wade gibi arkadan blok, CP3 gibi top çalma, dayanıklılık tükenmez">Efsane modu (Aomine, Kise)<input id="k-efsane" type="checkbox" ${D.efsane ? 'checked' : ''}></label>`;
+    `<label title="Aomine ve Kise: şutları bloklanamaz, Wade gibi arkadan blok, CP3 gibi top çalma, dayanıklılık tükenmez">Efsane modu (Aomine, Kise)<input id="k-efsane" type="checkbox" ${D.efsane === false ? '' : 'checked'}></label>` +
+    (D.efsane === undefined ? `<p class="soluk">Sunucu eski sürümde çalışıyor: pencereyi kapatıp baslat.bat'ı yeniden çalıştır.</p>` : '');
 
   const sahip = D.oyuncular.filter(o => o.sahip);
   document.getElementById('kadro').innerHTML = [1,2,3].map((p, i) => {
